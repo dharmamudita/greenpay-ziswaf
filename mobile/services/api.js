@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { getItemAsync, deleteItemAsync } from '../utils/storage';
 
 // Change this to your backend URL
 const API_BASE_URL = 'http://192.168.1.100:5000/api';
@@ -13,12 +13,12 @@ const api = axios.create({
 // Interceptor: attach JWT token to every request
 api.interceptors.request.use(async (config) => {
   try {
-    const token = await SecureStore.getItemAsync('token');
+    const token = await getItemAsync('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
   } catch (e) {
-    // SecureStore not available
+    // Storage not available
   }
   return config;
 });
@@ -28,7 +28,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      await SecureStore.deleteItemAsync('token');
+      await deleteItemAsync('token');
     }
     return Promise.reject(error);
   }
