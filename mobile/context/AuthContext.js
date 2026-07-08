@@ -1,0 +1,91 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import * as SecureStore from 'expo-secure-store';
+import authService from '../services/authService';
+
+const AuthContext = createContext({});
+
+export const ROLES = {
+  USER: 'user',
+  DISTRIK: 'distrik',
+  ADMIN: 'admin',
+};
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load token on startup
+  useEffect(() => {
+    loadToken();
+  }, []);
+
+  const loadToken = async () => {
+    try {
+      const savedToken = await SecureStore.getItemAsync('token');
+      if (savedToken) {
+        setToken(savedToken);
+        // Fetch user profile
+        const profile = await authService.getProfile();
+        setUser(profile);
+      }
+    } catch (error) {
+      console.log('Token expired or invalid');
+      await SecureStore.deleteItemAsync('token');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email, password) => {
+    const data = await authService.login(email, password);
+    await SecureStore.setItemAsync('token', data.token);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  };
+
+  const register = async (email, password, displayName, role) => {
+    const data = await authService.register(email, password, displayName, role);
+    await SecureStore.setItemAsync('token', data.token);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  };
+
+  const logout = async () => {
+    await SecureStore.deleteItemAsync('token');
+    setToken(null);
+    setUser(null);
+  };
+
+  const refreshProfile = async () => {
+    try {
+      const profile = await authService.getProfile();
+      setUser(profile);
+    } catch (error) {
+      console.log('Failed to refresh profile');
+    }
+  };
+
+  const hasRole = (role) => user?.role === role;
+  const isAdmin = () => hasRole(ROLES.ADMIN);
+  const isDistrik = () => hasRole(ROLES.DISTRIK);
+
+  return (
+    <AuthContext.Provider value={{
+      user, token, loading,
+      login, register, logout, refreshProfile,
+      hasRole, isAdmin, isDistrik,
+      isAuthenticated: !!token,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+export default AuthContext;
