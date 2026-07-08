@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "GreenPay ZISWAF",
+    "slug": "greenpay-ziswaf",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "greenpay",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0A0F0A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.greenpay.ziswaf"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0F0A"
+      },
+      "package": "com.greenpay.ziswaf"
+    },
+    "plugins": ["expo-router", "expo-font", "expo-secure-store"]
+  }
+}
