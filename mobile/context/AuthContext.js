@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { getItemAsync, setItemAsync, deleteItemAsync } from '../utils/storage';
 import authService from '../services/authService';
 
 const AuthContext = createContext({});
@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
 
   const loadToken = async () => {
     try {
-      const savedToken = await SecureStore.getItemAsync('token');
+      const savedToken = await getItemAsync('token');
       if (savedToken) {
         setToken(savedToken);
         // Fetch user profile
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
       }
     } catch (error) {
       console.log('Token expired or invalid');
-      await SecureStore.deleteItemAsync('token');
+      await deleteItemAsync('token');
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
-    await SecureStore.setItemAsync('token', data.token);
+    await setItemAsync('token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data;
@@ -47,14 +47,14 @@ export function AuthProvider({ children }) {
 
   const register = async (email, password, displayName, role) => {
     const data = await authService.register(email, password, displayName, role);
-    await SecureStore.setItemAsync('token', data.token);
+    await setItemAsync('token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data;
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync('token');
+    await deleteItemAsync('token');
     setToken(null);
     setUser(null);
   };
