@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.expo/
+dist/
+
+# Environment
+.env
+.env.local
+!.env.example
+
+# Build
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# PostgreSQL
+*.sql.bak
+
+# Expo
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
