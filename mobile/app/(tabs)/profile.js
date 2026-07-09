@@ -1,21 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Image, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import { uploadToCloudinary } from '../../utils/cloudinary';
+import authService from '../../services/authService';
 
 const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, refreshProfile } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -29,6 +33,36 @@ export default function ProfileScreen() {
       </View>
     );
   }
+
+  const handleUpdateAvatar = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert('Izin Ditolak', 'Anda perlu mengizinkan akses galeri untuk mengubah foto.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5, // Kompresi untuk menghemat data
+      });
+
+      if (!result.canceled) {
+        setUploadingAvatar(true);
+        const imageUrl = await uploadToCloudinary(result.assets[0].uri);
+        
+        await authService.updateProfile({ photo_url: imageUrl });
+        await refreshProfile(); // Perbarui state user global
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const menuItems = [
     { icon: 'document-text', label: 'Impact Passport', route: '/impact-passport', color: Colors.pink },
@@ -54,11 +88,27 @@ export default function ProfileScreen() {
       <View style={dynamicStyles.container}>
         {/* Avatar Section */}
         <View style={dynamicStyles.avatarSection}>
-          <View style={[dynamicStyles.avatarOuter, Shadows.md, { backgroundColor: colors.bg }]}>
-            <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.avatar}>
-              <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
-            </LinearGradient>
-          </View>
+          <TouchableOpacity 
+            style={[dynamicStyles.avatarOuter, Shadows.md, { backgroundColor: colors.bg }]} 
+            onPress={handleUpdateAvatar} 
+            activeOpacity={0.8}
+            disabled={uploadingAvatar}
+          >
+            {uploadingAvatar ? (
+              <View style={dynamicStyles.avatar}>
+                <ActivityIndicator size="large" color={Colors.green[500]} />
+              </View>
+            ) : user?.photo_url ? (
+              <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
+            ) : (
+              <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.avatar}>
+                <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+              </LinearGradient>
+            )}
+            <View style={dynamicStyles.cameraBadge}>
+              <Ionicons name="camera" size={14} color={Colors.white} />
+            </View>
+          </TouchableOpacity>
           <Text style={dynamicStyles.userName}>{user?.display_name || 'Pengguna'}</Text>
           <Text style={dynamicStyles.userEmail}>{user?.email}</Text>
           <View style={{ marginTop: 8 }}>
@@ -137,6 +187,17 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   avatarOuter: { padding: 4, borderRadius: 50, marginBottom: Spacing.md },
   avatar: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 36, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
+  cameraBadge: { 
+    position: 'absolute', 
+    bottom: 0, 
+    right: 0, 
+    backgroundColor: Colors.green[500], 
+    padding: 6, 
+    borderRadius: 16, 
+    borderWidth: 2, 
+    borderColor: colors.bg,
+    zIndex: 2,
+  },
   userName: { fontSize: 26, fontWeight: '900', color: colors.text, letterSpacing: -0.5 },
   userEmail: { fontSize: 14, color: colors.textMuted, fontWeight: '500', marginTop: 2 },
   

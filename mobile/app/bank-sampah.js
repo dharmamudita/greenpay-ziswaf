@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import Map from '../components/Map';
+import { uploadToCloudinary, getWatermarkedUrl } from '../utils/cloudinary';
+import api from '../services/api';
 
 const wasteTypes = [
   { id: 'plastik', name: 'Plastik', icon: 'water', points: 10, color: Colors.info },
@@ -19,19 +23,81 @@ const wasteTypes = [
 export default function BankSampahScreen() {
   const [selectedType, setSelectedType] = useState('plastik');
   const [weight, setWeight] = useState('');
-  const { colors, isDark } = useTheme();
+  const [photoUri, setPhotoUri] = useState(null);
+  const [loading, setLoading] = useState(false);
   
+  const { colors, isDark } = useTheme();
   const dynamicStyles = getStyles(colors, isDark);
 
   const typeDetails = wasteTypes.find(t => t.id === selectedType);
   const estimatedPoints = weight ? parseFloat(weight) * typeDetails.points : 0;
 
+  // Hardcoded location for demo
+  const locationId = 1; 
   const lat = -5.3687;
   const lng = 105.2393;
 
   const openGoogleMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
     Linking.openURL(url).catch(err => console.error("Gagal membuka peta:", err));
+  };
+
+  const handlePickPhoto = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Izin Ditolak', 'Dibutuhkan akses kamera untuk mengambil bukti foto sampah.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!weight || isNaN(weight) || Number(weight) <= 0) {
+      Alert.alert('Error', 'Silakan masukkan berat sampah yang valid.');
+      return;
+    }
+    if (!photoUri) {
+      Alert.alert('Foto Diperlukan', 'Harap ambil foto bukti sampah terlebih dahulu.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1. Upload ke Cloudinary
+      const rawUrl = await uploadToCloudinary(photoUri);
+      
+      // 2. Tambahkan watermark waktu secara dinamis
+      const watermarkedUrl = getWatermarkedUrl(rawUrl);
+
+      // 3. Simpan ke database via API
+      await api.post('/waste/deposit', {
+        location_id: locationId,
+        waste_type: selectedType,
+        weight_kg: parseFloat(weight),
+        photo_url: watermarkedUrl,
+        notes: 'Diunggah via aplikasi',
+      });
+
+      Alert.alert('Berhasil!', `Setoran sampah berhasil diajukan dan sedang menunggu verifikasi. Bukti foto Anda telah diberi watermark waktu untuk keamanan.`, [
+        { text: 'OK', onPress: () => router.replace('/(tabs)') }
+      ]);
+      
+      setWeight('');
+      setPhotoUri(null);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah setoran.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -87,12 +153,31 @@ export default function BankSampahScreen() {
             <Text style={dynamicStyles.inputUnit}>Kg</Text>
           </View>
 
+          <Text style={[dynamicStyles.label, { marginTop: Spacing.lg }]}>Bukti Foto (Wajib)</Text>
+          <TouchableOpacity style={dynamicStyles.photoBox} onPress={handlePickPhoto} activeOpacity={0.7}>
+            {photoUri ? (
+              <Image source={{ uri: photoUri }} style={dynamicStyles.photoPreview} />
+            ) : (
+              <View style={dynamicStyles.photoPlaceholder}>
+                <Ionicons name="camera" size={32} color={colors.textMuted} />
+                <Text style={dynamicStyles.photoHint}>Ketuk untuk mengambil foto</Text>
+                <Text style={dynamicStyles.photoHintSmall}>Watermark waktu akan otomatis ditambahkan</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
           <View style={dynamicStyles.estimateBox}>
             <Text style={dynamicStyles.estimateLabel}>Estimasi Green Point:</Text>
             <Text style={dynamicStyles.estimateValue}>+ {Math.floor(estimatedPoints)} GP</Text>
           </View>
 
-          <Button title="Ajukan Setoran" icon={<Ionicons name="camera" size={18} color={isDark ? Colors.white : Colors.black} />} onPress={() => {}} />
+          <Button 
+            title={photoUri ? "Ajukan Setoran" : "Ambil Foto Dulu"} 
+            icon={<Ionicons name="cloud-upload-outline" size={18} color={isDark ? Colors.white : Colors.black} />} 
+            onPress={handleSubmit} 
+            loading={loading}
+            disabled={!photoUri}
+          />
         </Card>
       </View>
       <View style={{ height: Spacing['3xl'] }} />
@@ -121,6 +206,24 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   inputWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface2, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: colors.border, paddingHorizontal: Spacing.md },
   input: { flex: 1, color: colors.text, fontSize: 16, paddingVertical: Spacing.md },
   inputUnit: { color: colors.textMuted, fontWeight: '600' },
+  
+  photoBox: { 
+    backgroundColor: colors.surface2, 
+    borderRadius: BorderRadius.lg, 
+    borderWidth: 1.5, 
+    borderColor: colors.border, 
+    borderStyle: 'dashed',
+    height: 180, 
+    overflow: 'hidden',
+    alignItems: 'center', 
+    justifyContent: 'center',
+    marginBottom: Spacing.sm,
+  },
+  photoPlaceholder: { alignItems: 'center', gap: 8 },
+  photoHint: { color: colors.text, fontSize: 14, fontWeight: '600' },
+  photoHintSmall: { color: colors.textMuted, fontSize: 11 },
+  photoPreview: { width: '100%', height: '100%', resizeMode: 'cover' },
+  
   estimateBox: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: isDark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)', padding: Spacing.md, borderRadius: BorderRadius.lg, marginVertical: Spacing.md },
   estimateLabel: { color: Colors.green[500], fontSize: 13 },
   estimateValue: { color: Colors.green[500], fontSize: 18, fontWeight: '800' },
