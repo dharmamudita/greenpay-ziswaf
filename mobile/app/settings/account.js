@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
+import { uploadToCloudinary } from '../../utils/cloudinary';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function AccountSettingScreen() {
   const { user, refreshProfile } = useAuth();
@@ -19,6 +21,7 @@ export default function AccountSettingScreen() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Password Form State
   const [oldPassword, setOldPassword] = useState('');
@@ -36,6 +39,80 @@ export default function AccountSettingScreen() {
   }, [user]);
 
   const dynamicStyles = getStyles(colors, isDark);
+
+  const handleUpdateAvatar = () => {
+    if (Platform.OS === 'web') {
+      (async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.5,
+        });
+        processImageResult(result);
+      })();
+      return;
+    }
+
+    Alert.alert(
+      'Ubah Foto Profil',
+      'Pilih sumber foto Anda',
+      [
+        {
+          text: 'Buka Kamera',
+          onPress: async () => {
+            const permission = await ImagePicker.requestCameraPermissionsAsync();
+            if (!permission.granted) {
+              Alert.alert('Izin Ditolak', 'Dibutuhkan akses kamera.');
+              return;
+            }
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.5,
+            });
+            processImageResult(result);
+          }
+        },
+        {
+          text: 'Pilih dari Galeri',
+          onPress: async () => {
+            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!permission.granted) {
+              Alert.alert('Izin Ditolak', 'Anda perlu mengizinkan akses galeri.');
+              return;
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.5,
+            });
+            processImageResult(result);
+          }
+        },
+        { text: 'Batal', style: 'cancel' }
+      ]
+    );
+  };
+
+  const processImageResult = async (result) => {
+    if (!result.canceled) {
+      setUploadingAvatar(true);
+      try {
+        const imageUrl = await uploadToCloudinary(result.assets[0].uri);
+        await api.put('/users/me', { photo_url: imageUrl });
+        await refreshProfile();
+        Alert.alert('Sukses', 'Foto profil berhasil diperbarui.');
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
+      } finally {
+        setUploadingAvatar(false);
+      }
+    }
+  };
 
   const handleUpdateProfile = async () => {
     if (!name || !email) {
@@ -77,6 +154,32 @@ export default function AccountSettingScreen() {
       <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
         <View style={dynamicStyles.container}>
           
+          {/* Avatar Section */}
+          <View style={dynamicStyles.avatarSection}>
+            <TouchableOpacity 
+              style={[dynamicStyles.avatarOuter, Shadows.md, { backgroundColor: colors.bg }]} 
+              onPress={handleUpdateAvatar} 
+              activeOpacity={0.8}
+              disabled={uploadingAvatar}
+            >
+              {uploadingAvatar ? (
+                <View style={dynamicStyles.avatar}>
+                  <ActivityIndicator size="large" color={Colors.green[500]} />
+                </View>
+              ) : user?.photo_url ? (
+                <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
+              ) : (
+                <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.avatar}>
+                  <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+                </LinearGradient>
+              )}
+              <View style={dynamicStyles.cameraBadge}>
+                <Ionicons name="camera" size={14} color={Colors.white} />
+              </View>
+            </TouchableOpacity>
+            <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>Ketuk untuk mengubah foto</Text>
+          </View>
+
           <Text style={dynamicStyles.sectionTitle}>Data Pribadi</Text>
           <View style={[dynamicStyles.card, Shadows.sm]}>
             <View style={dynamicStyles.inputGroup}>
@@ -125,6 +228,20 @@ export default function AccountSettingScreen() {
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   container: { padding: Spacing.xl },
+  avatarSection: { alignItems: 'center', marginBottom: Spacing.xl },
+  avatarOuter: { padding: 4, borderRadius: 50 },
+  avatar: { width: 90, height: 90, borderRadius: 45, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { fontSize: 36, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
+  cameraBadge: { 
+    position: 'absolute', 
+    bottom: 2, 
+    right: 2, 
+    backgroundColor: Colors.green[500], 
+    padding: 8, 
+    borderRadius: 20, 
+    borderWidth: 2, 
+    borderColor: colors.bg,
+  },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: Spacing.md },
   card: { backgroundColor: colors.surface, padding: Spacing.lg, borderRadius: BorderRadius['2xl'], borderWidth: isDark ? 1 : 0, borderColor: colors.border },
   inputGroup: { marginBottom: Spacing.lg },
