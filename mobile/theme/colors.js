@@ -1,46 +1,46 @@
-// GreenPay ZISWAF Color Palette
+// GreenPay ZISWAF Premium Color Palette
 export const Colors = {
-  // Primary Green
+  // Primary Green (Slightly more vivid and emerald-like)
   green: {
     50: '#ECFDF5',
     100: '#D1FAE5',
     200: '#A7F3D0',
     300: '#6EE7B7',
     400: '#34D399',
+    500: '#0EA5E9', // Wait, this is blue! Let's use Emerald
     500: '#10B981',
     600: '#059669',
     700: '#047857',
     800: '#065F46',
     900: '#064E3B',
   },
-  // Gold Accent
+  // We'll stick to the original emerald greens but refine Dark/Light theme colors.
   gold: {
     300: '#FCD34D',
     400: '#FBBF24',
     500: '#F59E0B',
     600: '#D97706',
   },
-  // Dark Theme
+  // Dark Theme (More OLED friendly, deeper contrast)
   dark: {
-    bg: '#0A0F0A',
-    surface: '#111B11',
-    surface2: '#1A2B1A',
-    surface3: '#243524',
-    border: '#2D3D2D',
-    text: '#FFFFFF',
-    textMuted: '#9CA3AF', // gray 400
+    bg: '#000000',
+    surface: '#0F1713',
+    surface2: '#16231D',
+    surface3: '#20332B',
+    border: '#1F2F28',
+    text: '#F3F4F6',
+    textMuted: '#9CA3AF',
   },
-  // Light Theme
+  // Light Theme (Softer, cleaner, modern)
   light: {
-    bg: '#F9FAFB',
+    bg: '#F8FAFC',
     surface: '#FFFFFF',
-    surface2: '#F3F4F6',
-    surface3: '#E5E7EB',
-    border: '#E5E7EB',
-    text: '#111827',
-    textMuted: '#6B7280', // gray 500
+    surface2: '#F1F5F9',
+    surface3: '#E2E8F0',
+    border: '#E2E8F0',
+    text: '#0F172A',
+    textMuted: '#64748B',
   },
-  // Grays
   gray: {
     100: '#F3F4F6',
     200: '#E5E7EB',
@@ -50,7 +50,6 @@ export const Colors = {
     600: '#4B5563',
     700: '#374151',
   },
-  // Semantic
   white: '#FFFFFF',
   black: '#000000',
   error: '#EF4444',
