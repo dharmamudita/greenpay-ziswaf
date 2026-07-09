@@ -34,7 +34,8 @@ export default function HomeScreen() {
   const dynamicStyles = getStyles(colors, isDark);
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <View style={dynamicStyles.container}>
+      <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       {/* Hero Section */}
       <View style={dynamicStyles.heroContainer}>
         <LinearGradient
