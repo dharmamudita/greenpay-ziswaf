@@ -1,49 +1,112 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
-
-const rewards = [
-  { id: 1, name: 'Voucher Belanja Rp 50K', cost: 500, stock: 15, emoji: '🎟️' },
-  { id: 2, name: 'Tumbler Eco Premium', cost: 800, stock: 8, emoji: '🥤' },
-  { id: 3, name: 'Bibit Pohon Mangga', cost: 200, stock: 50, emoji: '🌱' },
-  { id: 4, name: 'Donasi 5 Pohon', cost: 300, stock: 100, emoji: '🌳' },
-  { id: 5, name: 'Kaos GreenPay', cost: 1000, stock: 5, emoji: '👕' },
-];
+import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function RewardScreen() {
-  const userPoints = 1247;
+  const { user } = useAuth();
+  const [rewards, setRewards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [redeeming, setRedeeming] = useState(null);
+
+  useEffect(() => {
+    fetchRewards();
+  }, []);
+
+  const fetchRewards = async () => {
+    try {
+      const res = await api.get('/green-points/rewards');
+      setRewards(res.data);
+    } catch (error) {
+      console.log('Error fetching rewards:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRedeem = async (rewardId, rewardName, cost) => {
+    Alert.alert(
+      "Konfirmasi Penukaran",
+      `Tukar ${cost} GP dengan ${rewardName}?`,
+      [
+        { text: "Batal", style: "cancel" },
+        { 
+          text: "Tukar", 
+          onPress: async () => {
+            try {
+              setRedeeming(rewardId);
+              await api.post('/green-points/redeem', { reward_id: rewardId });
+              Alert.alert('Berhasil', 'Reward berhasil ditukar! Silakan cek notifikasi Anda.');
+              fetchRewards(); // Refresh stock
+            } catch (error) {
+              console.log('Error redeeming:', error);
+              Alert.alert('Gagal', error.response?.data?.error || 'Gagal menukar poin.');
+            } finally {
+              setRedeeming(null);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const getIconForCategory = (category) => {
+    switch((category || '').toLowerCase()) {
+      case 'voucher': return 'ticket';
+      case 'produk': return 'cube';
+      case 'lingkungan': return 'leaf';
+      case 'merchandise': return 'shirt';
+      default: return 'gift';
+    }
+  };
+
+  const userPoints = user?.green_points || 0;
 
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.pageTitle}>Katalog Reward</Text>
-          <Badge text={`${userPoints} GP`} variant="gold" />
+          <Badge text={`${userPoints.toLocaleString()} GP`} variant="gold" />
         </View>
 
-        <View style={styles.grid}>
-          {rewards.map((r) => (
-            <Card key={r.id} style={styles.rewardCard}>
-              <View style={styles.imgPlaceholder}><Text style={{ fontSize: 32 }}>{r.emoji}</Text></View>
-              <Text style={styles.rewardName}>{r.name}</Text>
-              <Text style={styles.rewardStock}>Sisa: {r.stock}</Text>
-              <View style={styles.footer}>
-                <Text style={styles.costText}>{r.cost} GP</Text>
-                <Button 
-                  title="Tukar" 
-                  variant="gold" 
-                  style={{ paddingHorizontal: Spacing.sm, paddingVertical: 6 }} 
-                  textStyle={{ fontSize: 12 }} 
-                  disabled={userPoints < r.cost}
-                  onPress={() => {}} 
-                />
-              </View>
-            </Card>
-          ))}
-        </View>
+        {loading ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={Colors.green[500]} />
+          </View>
+        ) : rewards.length === 0 ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <Ionicons name="gift-outline" size={48} color={Colors.gray[600]} />
+            <Text style={{ color: Colors.gray[500], marginTop: Spacing.md }}>Belum ada reward tersedia.</Text>
+          </View>
+        ) : (
+          <View style={styles.grid}>
+            {rewards.map((r) => (
+              <Card key={r.id} style={styles.rewardCard}>
+                <View style={styles.imgPlaceholder}>
+                  <Ionicons name={getIconForCategory(r.category)} size={32} color={Colors.gold[400]} />
+                </View>
+                <Text style={styles.rewardName}>{r.name}</Text>
+                <Text style={styles.rewardStock}>Sisa: {r.stock}</Text>
+                <View style={styles.footer}>
+                  <Text style={styles.costText}>{r.points_cost} GP</Text>
+                  <Button 
+                    title={redeeming === r.id ? "..." : "Tukar"} 
+                    variant="gold" 
+                    style={{ paddingHorizontal: Spacing.sm, paddingVertical: 6 }} 
+                    textStyle={{ fontSize: 12 }} 
+                    disabled={userPoints < r.points_cost || r.stock <= 0 || redeeming === r.id}
+                    onPress={() => handleRedeem(r.id, r.name, r.points_cost)} 
+                  />
+                </View>
+              </Card>
+            ))}
+          </View>
+        )}
       </View>
       <View style={{ height: Spacing['3xl'] }} />
     </ScrollView>
