@@ -8,7 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Button, Card, Badge } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
-import { uploadImageToCloudinary } from '../utils/cloudinary';
+import { uploadToCloudinary } from '../utils/cloudinary';
 import api from '../services/api';
 
 const { width } = Dimensions.get('window');
@@ -71,7 +71,7 @@ export default function AiScannerScreen() {
     setLoading(true);
     try {
       // 1. Upload ke Cloudinary
-      const cloudinaryUrl = await uploadImageToCloudinary(imageUri);
+      const cloudinaryUrl = await uploadToCloudinary(imageUri);
       
       // 2. Kirim URL ke Backend AI
       const response = await api.post('/ai/scan-waste', { imageUrl: cloudinaryUrl });
