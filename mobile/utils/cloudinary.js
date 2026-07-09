@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 export const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dqf0a7fgm/image/upload';
 export const UPLOAD_PRESET = 'greenpay-ziswaf';
 
@@ -9,12 +11,21 @@ export const UPLOAD_PRESET = 'greenpay-ziswaf';
 export const uploadToCloudinary = async (imageUri) => {
   try {
     const data = new FormData();
-    data.append('file', {
-      uri: imageUri,
-      type: 'image/jpeg',
-      name: `upload_${Date.now()}.jpg`,
-    });
     data.append('upload_preset', UPLOAD_PRESET);
+
+    if (Platform.OS === 'web') {
+      // Di Web, kita harus mengonversi blob URL menjadi objek Blob asli
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      data.append('file', blob, `upload_${Date.now()}.jpg`);
+    } else {
+      // Di Mobile (iOS/Android), kita bisa menggunakan format objek khusus React Native
+      data.append('file', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: `upload_${Date.now()}.jpg`,
+      });
+    }
 
     const response = await fetch(CLOUDINARY_URL, {
       method: 'POST',
