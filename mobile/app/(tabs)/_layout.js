@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TabLayout() {
+  const { isDistrik, isAdmin } = useAuth();
+  
   return (
     <Tabs
       screenOptions={{
@@ -51,6 +54,17 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Ionicons name="storefront" size={size} color={color} />,
         }}
       />
+      
+      <Tabs.Screen
+        name="distrik"
+        options={{
+          title: 'Distrik',
+          tabBarIcon: ({ color, size }) => <Ionicons name="scan" size={size} color={color} />,
+          // Sembunyikan tab ini dari navigasi bawah jika role BUKAN distrik/admin
+          href: (isDistrik() || isAdmin()) ? '/distrik' : null,
+        }}
+      />
+
       <Tabs.Screen
         name="profile"
         options={{
