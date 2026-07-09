@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
 import { useTheme } from '../context/ThemeContext';
@@ -40,24 +40,32 @@ export default function BankSampahScreen() {
         {/* Map */}
         <Card style={dynamicStyles.mapCard}>
           <TouchableOpacity activeOpacity={0.9} onPress={openGoogleMaps} style={{ width: '100%', height: 180 }}>
-            <MapView
-              style={{ width: '100%', height: '100%' }}
-              mapType="hybrid"
-              initialRegion={{
-                latitude: lat,
-                longitude: lng,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              onPress={openGoogleMaps}
-            >
-              <Marker 
-                coordinate={{ latitude: lat, longitude: lng }}
-                title="Bank Sampah Hijau Lestari"
-                description="Jl. ZA Pagar Alam No. 45, Rajabasa"
+            {Platform.OS === 'web' ? (
+              <View style={{ width: '100%', height: '100%', backgroundColor: colors.surface2, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="map" size={48} color={colors.textMuted} />
+                <Text style={{ color: colors.textMuted, marginTop: Spacing.sm }}>Peta tidak didukung di Web.</Text>
+                <Text style={{ color: colors.textMuted }}>Klik untuk buka di Google Maps.</Text>
+              </View>
+            ) : (
+              <MapView
+                style={{ width: '100%', height: '100%' }}
+                mapType="hybrid"
+                initialRegion={{
+                  latitude: lat,
+                  longitude: lng,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
                 onPress={openGoogleMaps}
-              />
-            </MapView>
+              >
+                <Marker 
+                  coordinate={{ latitude: lat, longitude: lng }}
+                  title="Bank Sampah Hijau Lestari"
+                  description="Jl. ZA Pagar Alam No. 45, Rajabasa"
+                  onPress={openGoogleMaps}
+                />
+              </MapView>
+            )}
             <View style={dynamicStyles.mapOverlayHint}>
               <Text style={dynamicStyles.mapOverlayText}>Buka di Google Maps</Text>
             </View>
