@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
-import { Spacing, BorderRadius } from '../theme/spacing';
+import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import api from '../services/api';
 
 export default function LeaderboardScreen() {
@@ -30,46 +31,60 @@ export default function LeaderboardScreen() {
   };
 
   const renderItem = ({ item, index }) => {
-    const isTop3 = index < 3;
+    const isTop1 = index === 0;
+    const isTop2 = index === 1;
+    const isTop3 = index === 2;
+    const isPodium = isTop1 || isTop2 || isTop3;
+    
     let rankColor = colors.textMuted;
     let rankIcon = null;
+    let gradientColors = [colors.surface, colors.surface];
 
-    if (index === 0) {
+    if (isTop1) {
       rankColor = Colors.gold[400];
+      rankIcon = 'trophy';
+      gradientColors = isDark ? [Colors.gold[600] + '30', Colors.gold[600] + '10'] : [Colors.gold[100], Colors.surface];
+    } else if (isTop2) {
+      rankColor = isDark ? Colors.gray[300] : Colors.gray[400];
       rankIcon = 'medal';
-    } else if (index === 1) {
-      rankColor = isDark ? Colors.gray[300] : Colors.gray[500]; // Silver
-      rankIcon = 'medal-outline';
-    } else if (index === 2) {
+      gradientColors = isDark ? [Colors.gray[600] + '30', Colors.gray[600] + '10'] : [Colors.gray[100], Colors.surface];
+    } else if (isTop3) {
       rankColor = '#cd7f32'; // Bronze
-      rankIcon = 'medal-outline';
+      rankIcon = 'medal';
+      gradientColors = isDark ? ['#cd7f3230', '#cd7f3210'] : ['#FDF1E7', Colors.surface];
     }
 
-    return (
-      <View style={[dynamicStyles.card, isTop3 && dynamicStyles.cardTop3]}>
-        <View style={dynamicStyles.rankContainer}>
-          {isTop3 ? (
-            <Ionicons name={rankIcon} size={24} color={rankColor} />
-          ) : (
-            <Text style={dynamicStyles.rankText}>#{index + 1}</Text>
-          )}
-        </View>
+    const CardComponent = isPodium ? LinearGradient : View;
+    const cardProps = isPodium ? { colors: gradientColors, start: { x: 0, y: 0 }, end: { x: 1, y: 1 } } : {};
 
-        <View style={dynamicStyles.userInfo}>
-          {item.photo_url ? (
-            <Image source={{ uri: item.photo_url }} style={dynamicStyles.avatar} />
-          ) : (
-            <View style={dynamicStyles.avatarPlaceholder}>
-              <Text style={dynamicStyles.avatarText}>{item.display_name.charAt(0).toUpperCase()}</Text>
-            </View>
-          )}
-          <View>
-            <Text style={dynamicStyles.userName}>{item.display_name}</Text>
-            <Text style={dynamicStyles.userImpact}>
-              <Ionicons name="leaf" size={12} color={Colors.green[500]} /> {item.green_points} GP
-            </Text>
+    return (
+      <View style={isPodium ? Shadows.md : Shadows.sm}>
+        <CardComponent {...cardProps} style={[dynamicStyles.card, isTop1 && { borderColor: Colors.gold[400], borderWidth: 1.5 }]}>
+          <View style={dynamicStyles.rankContainer}>
+            {isPodium ? (
+              <Ionicons name={rankIcon} size={isTop1 ? 32 : 28} color={rankColor} />
+            ) : (
+              <Text style={dynamicStyles.rankText}>{index + 1}</Text>
+            )}
           </View>
-        </View>
+
+          <View style={dynamicStyles.userInfo}>
+            {item.photo_url ? (
+              <Image source={{ uri: item.photo_url }} style={[dynamicStyles.avatar, isTop1 && { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: Colors.gold[400] }]} />
+            ) : (
+              <View style={[dynamicStyles.avatarPlaceholder, isTop1 && { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: Colors.gold[400] }]}>
+                <Text style={dynamicStyles.avatarText}>{item.display_name.charAt(0).toUpperCase()}</Text>
+              </View>
+            )}
+            <View>
+              <Text style={[dynamicStyles.userName, isTop1 && { fontSize: 18, color: isDark ? Colors.gold[300] : Colors.gold[600] }]}>{item.display_name}</Text>
+              <View style={dynamicStyles.impactBadge}>
+                <Ionicons name="leaf" size={12} color={Colors.green[500]} />
+                <Text style={dynamicStyles.userImpact}> {item.green_points} GP</Text>
+              </View>
+            </View>
+          </View>
+        </CardComponent>
       </View>
     );
   };
@@ -94,7 +109,9 @@ export default function LeaderboardScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
             <View style={dynamicStyles.heroSection}>
-              <Ionicons name="trophy" size={64} color={Colors.gold[400]} />
+              <View style={dynamicStyles.heroIconBg}>
+                <Ionicons name="trophy" size={56} color={Colors.gold[400]} />
+              </View>
               <Text style={dynamicStyles.heroText}>Jadilah yang Terbaik!</Text>
             </View>
           )}
@@ -111,20 +128,25 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   },
   header: {
     padding: Spacing.xl,
+    paddingBottom: Spacing.lg,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     alignItems: 'center',
+    ...Shadows.sm,
+    zIndex: 10,
   },
   title: {
     fontSize: 24,
-    fontWeight: '800',
+    fontWeight: '900',
     color: colors.text,
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: 14,
     color: colors.textMuted,
     marginTop: 4,
+    fontWeight: '500',
   },
   centerContent: {
     flex: 1,
@@ -137,38 +159,40 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   },
   heroSection: {
     alignItems: 'center',
-    marginBottom: Spacing.xl,
-    marginTop: Spacing.md,
+    marginBottom: Spacing['2xl'],
+    marginTop: Spacing.xl,
+  },
+  heroIconBg: {
+    backgroundColor: isDark ? Colors.gold[600] + '20' : Colors.gold[100],
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.full,
+    marginBottom: Spacing.sm,
   },
   heroText: {
-    color: Colors.gold[400],
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 8,
+    color: Colors.gold[500],
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius['2xl'],
     marginBottom: Spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
   },
-  cardTop3: {
-    borderColor: isDark ? Colors.gold[600] : Colors.gold[400],
-    backgroundColor: isDark ? 'rgba(212, 175, 55, 0.05)' : 'rgba(212, 175, 55, 0.1)',
-  },
   rankContainer: {
-    width: 40,
+    width: 48,
     alignItems: 'center',
     marginRight: Spacing.md,
   },
   rankText: {
     color: colors.textMuted,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '800',
   },
   userInfo: {
     flex: 1,
@@ -193,16 +217,26 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   avatarText: {
     color: colors.text,
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   userName: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '800',
     marginBottom: 4,
   },
+  impactBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: isDark ? Colors.green[900] : Colors.green[50],
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.full,
+  },
   userImpact: {
-    color: colors.textMuted,
-    fontSize: 13,
+    color: Colors.green[500],
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
