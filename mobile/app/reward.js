@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
@@ -12,6 +13,9 @@ export default function RewardScreen() {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [redeeming, setRedeeming] = useState(null);
+  const { colors, isDark } = useTheme();
+
+  const dynamicStyles = getStyles(colors, isDark);
 
   useEffect(() => {
     fetchRewards();
@@ -67,10 +71,10 @@ export default function RewardScreen() {
   const userPoints = user?.green_points || 0;
 
   return (
-    <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.pageTitle}>Katalog Reward</Text>
+    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+      <View style={dynamicStyles.container}>
+        <View style={dynamicStyles.header}>
+          <Text style={dynamicStyles.pageTitle}>Katalog Reward</Text>
           <Badge text={`${userPoints.toLocaleString()} GP`} variant="gold" />
         </View>
 
@@ -80,20 +84,20 @@ export default function RewardScreen() {
           </View>
         ) : rewards.length === 0 ? (
           <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
-            <Ionicons name="gift-outline" size={48} color={Colors.gray[600]} />
-            <Text style={{ color: Colors.gray[500], marginTop: Spacing.md }}>Belum ada reward tersedia.</Text>
+            <Ionicons name="gift-outline" size={48} color={colors.textMuted} />
+            <Text style={{ color: colors.textMuted, marginTop: Spacing.md }}>Belum ada reward tersedia.</Text>
           </View>
         ) : (
-          <View style={styles.grid}>
+          <View style={dynamicStyles.grid}>
             {rewards.map((r) => (
-              <Card key={r.id} style={styles.rewardCard}>
-                <View style={styles.imgPlaceholder}>
+              <Card key={r.id} style={dynamicStyles.rewardCard}>
+                <View style={dynamicStyles.imgPlaceholder}>
                   <Ionicons name={getIconForCategory(r.category)} size={32} color={Colors.gold[400]} />
                 </View>
-                <Text style={styles.rewardName}>{r.name}</Text>
-                <Text style={styles.rewardStock}>Sisa: {r.stock}</Text>
-                <View style={styles.footer}>
-                  <Text style={styles.costText}>{r.points_cost} GP</Text>
+                <Text style={dynamicStyles.rewardName}>{r.name}</Text>
+                <Text style={dynamicStyles.rewardStock}>Sisa: {r.stock}</Text>
+                <View style={dynamicStyles.footer}>
+                  <Text style={dynamicStyles.costText}>{r.points_cost} GP</Text>
                   <Button 
                     title={redeeming === r.id ? "..." : "Tukar"} 
                     variant="gold" 
@@ -113,16 +117,16 @@ export default function RewardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.dark.bg },
+const getStyles = (colors, isDark) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg },
   container: { padding: Spacing.xl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
-  pageTitle: { fontSize: 22, fontWeight: '800', color: Colors.white },
+  pageTitle: { fontSize: 22, fontWeight: '800', color: colors.text },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  rewardCard: { width: '48%', gap: Spacing.xs, padding: Spacing.md },
-  imgPlaceholder: { height: 80, backgroundColor: Colors.dark.surface2, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center' },
-  rewardName: { fontSize: 13, fontWeight: '700', color: Colors.white },
-  rewardStock: { fontSize: 10, color: Colors.gray[400] },
+  rewardCard: { width: '48%', gap: Spacing.xs, padding: Spacing.md, backgroundColor: colors.surface, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: colors.border },
+  imgPlaceholder: { height: 80, backgroundColor: colors.surface2, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center' },
+  rewardName: { fontSize: 13, fontWeight: '700', color: colors.text },
+  rewardStock: { fontSize: 10, color: colors.textMuted },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Spacing.xs },
   costText: { fontSize: 14, fontWeight: '800', color: Colors.gold[400] },
 });
