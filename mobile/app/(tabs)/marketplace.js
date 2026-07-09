@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius } from '../../theme/spacing';
@@ -14,6 +15,9 @@ export default function MarketplaceScreen() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(null);
+  const { colors, isDark } = useTheme();
+
+  const dynamicStyles = getStyles(colors, isDark);
 
   useEffect(() => {
     fetchProducts();
@@ -79,31 +83,31 @@ export default function MarketplaceScreen() {
   const fmt = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
 
   return (
-    <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>Marketplace <Text style={{ color: Colors.green[400] }}>UMKM</Text></Text>
+    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+      <View style={dynamicStyles.container}>
+        <Text style={dynamicStyles.pageTitle}>Marketplace <Text style={{ color: Colors.green[500] }}>UMKM</Text></Text>
 
         {/* Search */}
-        <View style={styles.searchWrap}>
-          <Ionicons name="search" size={18} color={Colors.gray[500]} />
+        <View style={dynamicStyles.searchWrap}>
+          <Ionicons name="search" size={18} color={colors.textMuted} />
           <TextInput 
-            style={styles.searchInput} 
+            style={dynamicStyles.searchInput} 
             placeholder="Cari produk ramah lingkungan..." 
-            placeholderTextColor={Colors.gray[600]} 
+            placeholderTextColor={colors.textMuted} 
             value={search} 
             onChangeText={setSearch} 
           />
         </View>
 
         {/* Categories */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.catScroll}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={dynamicStyles.catScroll}>
           {categories.map((cat) => (
             <TouchableOpacity
               key={cat}
-              style={[styles.catBtn, activeCategory === cat && styles.catBtnActive]}
+              style={[dynamicStyles.catBtn, activeCategory === cat && dynamicStyles.catBtnActive]}
               onPress={() => setActiveCategory(cat)}
             >
-              <Text style={[styles.catText, activeCategory === cat && styles.catTextActive]}>{cat}</Text>
+              <Text style={[dynamicStyles.catText, activeCategory === cat && dynamicStyles.catTextActive]}>{cat}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -115,23 +119,23 @@ export default function MarketplaceScreen() {
           </View>
         ) : filtered.length === 0 ? (
           <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
-            <Ionicons name="cube-outline" size={48} color={Colors.gray[600]} />
-            <Text style={{ color: Colors.gray[500], marginTop: Spacing.md }}>Produk tidak ditemukan.</Text>
+            <Ionicons name="cube-outline" size={48} color={colors.textMuted} />
+            <Text style={{ color: colors.textMuted, marginTop: Spacing.md }}>Produk tidak ditemukan.</Text>
           </View>
         ) : (
-          <View style={styles.prodGrid}>
+          <View style={dynamicStyles.prodGrid}>
             {filtered.map((p) => (
-              <Card key={p.id} style={styles.prodCard}>
-                <View style={styles.prodImgPlaceholder}>
-                  <Ionicons name={getIconForCategory(p.category)} size={40} color={Colors.green[400]} />
+              <Card key={p.id} style={dynamicStyles.prodCard}>
+                <View style={dynamicStyles.prodImgPlaceholder}>
+                  <Ionicons name={getIconForCategory(p.category)} size={40} color={Colors.green[500]} />
                 </View>
-                <Badge text={`+${p.points_bonus} GP`} />
-                <Text style={styles.prodName}>{p.name}</Text>
-                <Text style={styles.prodUmkm}>{p.umkm_name}</Text>
+                <Badge text={`+${p.points_bonus} GP`} variant="primary" />
+                <Text style={dynamicStyles.prodName}>{p.name}</Text>
+                <Text style={dynamicStyles.prodUmkm}>{p.umkm_name}</Text>
                 
-                <View style={styles.prodFooter}>
-                  <Text style={styles.prodPrice}>{fmt(p.price)}</Text>
-                  <Text style={styles.prodRating}>
+                <View style={dynamicStyles.prodFooter}>
+                  <Text style={dynamicStyles.prodPrice}>{fmt(p.price)}</Text>
+                  <Text style={dynamicStyles.prodRating}>
                     <Ionicons name="star" size={10} color={Colors.gold[400]} /> {p.rating}
                   </Text>
                 </View>
@@ -153,23 +157,23 @@ export default function MarketplaceScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.dark.bg },
+const getStyles = (colors, isDark) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg },
   container: { padding: Spacing.xl },
-  pageTitle: { fontSize: 24, fontWeight: '800', color: Colors.white, marginBottom: Spacing.base },
-  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, backgroundColor: Colors.dark.surface, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: Colors.dark.border, paddingHorizontal: Spacing.md, marginBottom: Spacing.md },
-  searchInput: { flex: 1, color: Colors.white, fontSize: 14, paddingVertical: Spacing.md },
+  pageTitle: { fontSize: 24, fontWeight: '800', color: colors.text, marginBottom: Spacing.base },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, backgroundColor: colors.surface, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: colors.border, paddingHorizontal: Spacing.md, marginBottom: Spacing.md },
+  searchInput: { flex: 1, color: colors.text, fontSize: 14, paddingVertical: Spacing.md },
   catScroll: { marginBottom: Spacing.lg },
-  catBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.base, borderRadius: BorderRadius.full, backgroundColor: Colors.dark.surface, marginRight: Spacing.sm, borderWidth: 1, borderColor: Colors.dark.border },
+  catBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.base, borderRadius: BorderRadius.full, backgroundColor: colors.surface, marginRight: Spacing.sm, borderWidth: 1, borderColor: colors.border },
   catBtnActive: { backgroundColor: Colors.green[600], borderColor: Colors.green[500] },
-  catText: { fontSize: 12, fontWeight: '600', color: Colors.gray[400] },
+  catText: { fontSize: 12, fontWeight: '600', color: colors.textMuted },
   catTextActive: { color: Colors.white },
   prodGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  prodCard: { width: '48%', gap: Spacing.xs },
-  prodImgPlaceholder: { height: 100, backgroundColor: Colors.dark.surface2, borderRadius: BorderRadius.lg, alignItems: 'center', justifyContent: 'center' },
-  prodName: { fontSize: 13, fontWeight: '700', color: Colors.white },
-  prodUmkm: { fontSize: 10, color: Colors.gray[500] },
+  prodCard: { width: '48%', gap: Spacing.xs, backgroundColor: colors.surface, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: colors.border, padding: Spacing.sm },
+  prodImgPlaceholder: { height: 100, backgroundColor: colors.surface2, borderRadius: BorderRadius.lg, alignItems: 'center', justifyContent: 'center' },
+  prodName: { fontSize: 13, fontWeight: '700', color: colors.text },
+  prodUmkm: { fontSize: 10, color: colors.textMuted },
   prodFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  prodPrice: { fontSize: 14, fontWeight: '800', color: Colors.green[400] },
-  prodRating: { fontSize: 10, color: Colors.gray[400] },
+  prodPrice: { fontSize: 14, fontWeight: '800', color: Colors.green[500] },
+  prodRating: { fontSize: 10, color: colors.textMuted },
 });
