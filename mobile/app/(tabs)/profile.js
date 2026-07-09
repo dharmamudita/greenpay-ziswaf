@@ -55,7 +55,11 @@ export default function ProfileScreen() {
 
       <View style={dynamicStyles.container}>
         {/* Avatar Section */}
-        <View style={dynamicStyles.avatarSection}>
+        <TouchableOpacity 
+          style={dynamicStyles.avatarSection}
+          onPress={() => router.push('/settings/account')}
+          activeOpacity={0.8}
+        >
           <View style={[dynamicStyles.avatarOuter, Shadows.md, { backgroundColor: colors.bg }]}>
             {user?.photo_url ? (
               <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
@@ -70,7 +74,7 @@ export default function ProfileScreen() {
           <View style={{ marginTop: 8 }}>
             <Badge text={user?.role === 'admin' ? 'Administrator' : user?.role === 'distrik' ? 'Akun Distrik' : 'Pengguna Aktif'} />
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Stats */}
         <View style={[dynamicStyles.statsRow, Shadows.sm]}>
