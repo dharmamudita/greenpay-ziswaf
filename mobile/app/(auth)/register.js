@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Modal, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +24,9 @@ export default function RegisterScreen() {
   const [captchaNum2, setCaptchaNum2] = useState(0);
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   
+  const [isSkVisible, setSkVisible] = useState(false);
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  
   const { register } = useAuth();
   const { colors, isDark } = useTheme();
 
@@ -39,7 +42,7 @@ export default function RegisterScreen() {
 
   const dynamicStyles = getStyles(colors, isDark);
 
-  const handleRegister = async () => {
+  const validateAndShowSK = () => {
     if (!name || !email || !password) {
       setError('Semua field harus diisi.');
       return;
@@ -60,6 +63,13 @@ export default function RegisterScreen() {
     }
     
     setError('');
+    // Alih-alih mendaftar, buka modal S&K
+    setSkVisible(true);
+    setIsScrolledToBottom(false);
+  };
+
+  const executeRegister = async () => {
+    setSkVisible(false);
     setLoading(true);
     try {
       await register(email, password, name, role);
@@ -68,6 +78,14 @@ export default function RegisterScreen() {
       setError(err.response?.data?.error || 'Gagal mendaftar.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleScrollSK = (event) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 20;
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+      setIsScrolledToBottom(true);
     }
   };
 
@@ -184,7 +202,7 @@ export default function RegisterScreen() {
                 </View>
               </View>
 
-              <Button title="Daftar Sekarang" onPress={handleRegister} loading={loading} style={{ marginTop: Spacing.sm }} />
+              <Button title="Daftar Sekarang" onPress={validateAndShowSK} loading={loading} style={{ marginTop: Spacing.sm }} />
             </View>
           </View>
 
@@ -200,6 +218,75 @@ export default function RegisterScreen() {
 
         </ScrollView>
       </LinearGradient>
+
+      {/* Modal Syarat & Ketentuan */}
+      <Modal visible={isSkVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setSkVisible(false)}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+          {/* Header Modal */}
+          <View style={{ padding: Spacing.xl, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => setSkVisible(false)} style={{ padding: 4 }}>
+              <Ionicons name="close" size={28} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, marginLeft: Spacing.md }}>Syarat & Ketentuan</Text>
+          </View>
+
+          {/* Konten S&K (Wajib Scroll) */}
+          <ScrollView 
+            style={{ flex: 1, padding: Spacing.xl }} 
+            onScroll={handleScrollSK} 
+            scrollEventThrottle={16}
+            showsVerticalScrollIndicator={true}
+          >
+            <Text style={{ fontSize: 22, fontWeight: '900', color: colors.text, marginBottom: Spacing.lg }}>Perjanjian Pengguna GreenPay ZISWAF</Text>
+            
+            <Text style={dynamicStyles.skText}>
+              Selamat datang di GreenPay ZISWAF. Dengan mendaftar dan menggunakan aplikasi ini, Anda setuju untuk terikat dengan syarat dan ketentuan berikut:
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>1. Penggunaan Layanan</Text>{'\n'}
+              Aplikasi ini dirancang untuk memfasilitasi transaksi bank sampah dan pembayaran ZISWAF (Zakat, Infaq, Sadaqah, Wakaf). Anda dilarang keras menggunakan aplikasi ini untuk kegiatan ilegal atau penipuan finansial.
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>2. Akurasi Data</Text>{'\n'}
+              Anda berjanji untuk memberikan informasi yang akurat saat pendaftaran. Kami berhak menangguhkan akun jika ditemukan data palsu.
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>3. Transaksi & Saldo</Text>{'\n'}
+              Green Point yang Anda dapatkan dari bank sampah dapat digunakan untuk donasi ZISWAF. Saldo tidak dapat ditukar menjadi uang tunai (fiat) melainkan hanya untuk ekosistem amal di dalam aplikasi.
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>4. Privasi & Keamanan</Text>{'\n'}
+              Kami menjaga kerahasiaan data Anda dengan standar enkripsi tinggi. Namun, Anda bertanggung jawab penuh atas kerahasiaan kata sandi Anda. Jangan berikan akses ke pihak ketiga.
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>5. Perubahan Ketentuan</Text>{'\n'}
+              Pihak pengembang berhak mengubah syarat dan ketentuan ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Pengguna diharapkan memeriksa halaman ini secara berkala.
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>6. Penolakan Tanggung Jawab (Disclaimer)</Text>{'\n'}
+              Kami tidak bertanggung jawab atas kerugian tidak langsung yang diakibatkan oleh gangguan jaringan, *maintenance* server, atau hal tak terduga (*force majeure*).
+              {'\n\n'}
+              <Text style={dynamicStyles.skBold}>7. Hukum yang Berlaku</Text>{'\n'}
+              Semua sengketa yang berkaitan dengan aplikasi ini akan diselesaikan berdasarkan asas musyawarah dan hukum yang berlaku di Republik Indonesia.
+              {'\n\n'}
+              (Silakan terus *scroll* hingga ke bagian paling bawah untuk mengaktifkan tombol persetujuan).
+              {'\n\n\n\n'}
+            </Text>
+          </ScrollView>
+
+          {/* Footer Modal (Tombol Setuju) */}
+          <View style={{ padding: Spacing.xl, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.surface }}>
+            <TouchableOpacity 
+              style={[
+                dynamicStyles.skBtn, 
+                { backgroundColor: isScrolledToBottom ? Colors.green[600] : (isDark ? colors.border : Colors.gray[200]) }
+              ]} 
+              onPress={executeRegister} 
+              disabled={!isScrolledToBottom}
+              activeOpacity={0.8}
+            >
+              <Text style={[dynamicStyles.skBtnText, { color: isScrolledToBottom ? Colors.white : colors.textMuted }]}>
+                {isScrolledToBottom ? 'Saya Setuju & Daftar' : 'Scroll ke bawah untuk setuju'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
     </KeyboardAvoidingView>
   );
 }
@@ -239,4 +326,9 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   captchaQuestion: { backgroundColor: isDark ? colors.bg : Colors.gray[200], paddingHorizontal: Spacing.md, paddingVertical: Spacing.md + 2, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
   captchaText: { fontSize: 18, fontWeight: '900', color: colors.text, letterSpacing: 1 },
   captchaRefresh: { padding: Spacing.sm, backgroundColor: isDark ? colors.bg : Colors.gray[100], borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
+  
+  skText: { fontSize: 14, color: colors.textMuted, lineHeight: 22, textAlign: 'justify' },
+  skBold: { fontWeight: '800', color: colors.text },
+  skBtn: { padding: Spacing.md + 4, borderRadius: BorderRadius.xl, alignItems: 'center', justifyContent: 'center' },
+  skBtnText: { fontSize: 16, fontWeight: '800' }
 });
