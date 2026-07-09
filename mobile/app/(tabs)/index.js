@@ -4,9 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
-import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import { Spacing, BorderRadius } from '../../theme/spacing';
 
 const stats = [
   { icon: 'refresh-circle', value: '12.5K', unit: 'Kg', label: 'Sampah Didaur Ulang', color: Colors.green[500] },
@@ -28,24 +29,27 @@ const features = [
 
 export default function HomeScreen() {
   const { user, isAuthenticated } = useAuth();
+  const { colors, isDark } = useTheme();
+
+  const dynamicStyles = getStyles(colors, isDark);
 
   return (
-    <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       {/* Hero Section */}
       <LinearGradient
-        colors={[Colors.green[900], Colors.dark.bg]}
-        style={styles.hero}
+        colors={[Colors.green[isDark ? 900 : 700], colors.bg]}
+        style={dynamicStyles.hero}
       >
-        <View style={styles.heroContent}>
+        <View style={dynamicStyles.heroContent}>
           <Badge text="🌿 Platform Green Economy" />
-          <Text style={styles.heroTitle}>
+          <Text style={dynamicStyles.heroTitle}>
             Bersama Wujudkan{'\n'}
             <Text style={{ color: Colors.green[400] }}>Indonesia Hijau</Text>
           </Text>
-          <Text style={styles.heroSubtitle}>
+          <Text style={dynamicStyles.heroSubtitle}>
             Gabungkan kekuatan ZISWAF dan aksi lingkungan untuk dampak nyata.
           </Text>
-          <View style={styles.heroBtns}>
+          <View style={dynamicStyles.heroBtns}>
             {isAuthenticated ? (
               <Button title="Dashboard Saya" onPress={() => router.push('/dashboard-dampak')} />
             ) : (
@@ -59,40 +63,40 @@ export default function HomeScreen() {
       </LinearGradient>
 
       {/* Stats */}
-      <View style={styles.statsRow}>
+      <View style={dynamicStyles.statsRow}>
         {stats.map((s, i) => (
-          <View key={i} style={styles.statCard}>
+          <View key={i} style={dynamicStyles.statCard}>
             <Ionicons name={s.icon} size={22} color={s.color} />
-            <Text style={[styles.statValue, { color: s.color }]}>{s.value}<Text style={styles.statUnit}> {s.unit}</Text></Text>
-            <Text style={styles.statLabel}>{s.label}</Text>
+            <Text style={[dynamicStyles.statValue, { color: s.color }]}>{s.value}<Text style={dynamicStyles.statUnit}> {s.unit}</Text></Text>
+            <Text style={dynamicStyles.statLabel}>{s.label}</Text>
           </View>
         ))}
       </View>
 
       {/* Features Grid */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Fitur <Text style={{ color: Colors.green[400] }}>Unggulan</Text></Text>
-        <View style={styles.featGrid}>
+      <View style={dynamicStyles.section}>
+        <Text style={dynamicStyles.sectionTitle}>Fitur <Text style={{ color: Colors.green[500] }}>Unggulan</Text></Text>
+        <View style={dynamicStyles.featGrid}>
           {features.map((f, i) => (
-            <TouchableOpacity key={i} style={styles.featCard} onPress={() => router.push(f.route)} activeOpacity={0.7}>
-              <View style={[styles.featIcon, { backgroundColor: f.color + '18' }]}>
+            <TouchableOpacity key={i} style={dynamicStyles.featCard} onPress={() => router.push(f.route)} activeOpacity={0.7}>
+              <View style={[dynamicStyles.featIcon, { backgroundColor: f.color + '18' }]}>
                 <Ionicons name={f.icon} size={22} color={f.color} />
               </View>
-              <Text style={styles.featTitle}>{f.title}</Text>
-              <Text style={styles.featDesc}>{f.desc}</Text>
+              <Text style={dynamicStyles.featTitle}>{f.title}</Text>
+              <Text style={dynamicStyles.featDesc}>{f.desc}</Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
       {/* CTA */}
-      <View style={styles.section}>
-        <Card style={styles.ctaCard}>
-          <LinearGradient colors={[Colors.green[800], Colors.green[900]]} style={StyleSheet.absoluteFillObject} />
+      <View style={dynamicStyles.section}>
+        <Card style={dynamicStyles.ctaCard}>
+          <LinearGradient colors={[Colors.green[700], Colors.green[900]]} style={StyleSheet.absoluteFillObject} />
           <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
-            <Ionicons name="earth" size={40} color={Colors.green[400]} />
-            <Text style={styles.ctaTitle}>Siap Membuat Perubahan?</Text>
-            <Text style={styles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
+            <Ionicons name="earth" size={40} color={Colors.green[300]} />
+            <Text style={dynamicStyles.ctaTitle}>Siap Membuat Perubahan?</Text>
+            <Text style={dynamicStyles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
             <Button title="Daftar Gratis" variant="gold" onPress={() => router.push('/(auth)/register')} />
           </View>
         </Card>
@@ -103,30 +107,30 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.dark.bg },
+const getStyles = (colors, isDark) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg },
   hero: { paddingTop: Spacing['5xl'], paddingBottom: Spacing['3xl'], paddingHorizontal: Spacing.xl },
   heroContent: { gap: Spacing.md },
-  heroTitle: { fontSize: 30, fontWeight: '800', color: Colors.white, lineHeight: 38 },
-  heroSubtitle: { fontSize: 15, color: Colors.gray[400], lineHeight: 22 },
+  heroTitle: { fontSize: 30, fontWeight: '800', color: isDark ? Colors.white : colors.text, lineHeight: 38 },
+  heroSubtitle: { fontSize: 15, color: isDark ? Colors.gray[400] : colors.textMuted, lineHeight: 22 },
   heroBtns: { flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.sm },
 
   statsRow: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: Spacing.md, gap: Spacing.sm, marginTop: -Spacing.lg },
-  statCard: { flex: 1, minWidth: '45%', backgroundColor: Colors.dark.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: Colors.dark.border, padding: Spacing.md, alignItems: 'center', gap: 4 },
+  statCard: { flex: 1, minWidth: '45%', backgroundColor: colors.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, padding: Spacing.md, alignItems: 'center', gap: 4 },
   statValue: { fontSize: 20, fontWeight: '800' },
   statUnit: { fontSize: 12, fontWeight: '500' },
-  statLabel: { fontSize: 10, color: Colors.gray[500], textAlign: 'center' },
+  statLabel: { fontSize: 10, color: colors.textMuted, textAlign: 'center' },
 
   section: { paddingHorizontal: Spacing.xl, marginTop: Spacing['2xl'] },
-  sectionTitle: { fontSize: 22, fontWeight: '800', color: Colors.white, marginBottom: Spacing.base },
+  sectionTitle: { fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: Spacing.base },
 
   featGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  featCard: { width: '48%', backgroundColor: Colors.dark.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: Colors.dark.border, padding: Spacing.base, gap: Spacing.sm },
+  featCard: { width: '48%', backgroundColor: colors.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, padding: Spacing.base, gap: Spacing.sm },
   featIcon: { width: 40, height: 40, borderRadius: BorderRadius.lg, alignItems: 'center', justifyContent: 'center' },
-  featTitle: { fontSize: 14, fontWeight: '700', color: Colors.white },
-  featDesc: { fontSize: 11, color: Colors.gray[500], lineHeight: 16 },
+  featTitle: { fontSize: 14, fontWeight: '700', color: colors.text },
+  featDesc: { fontSize: 11, color: colors.textMuted, lineHeight: 16 },
 
   ctaCard: { overflow: 'hidden', borderWidth: 0, padding: 0 },
   ctaTitle: { fontSize: 22, fontWeight: '800', color: Colors.white, textAlign: 'center', marginTop: Spacing.md },
-  ctaDesc: { fontSize: 13, color: Colors.green[200], textAlign: 'center', marginBottom: Spacing.lg, lineHeight: 20 },
+  ctaDesc: { fontSize: 13, color: Colors.green[100], textAlign: 'center', marginBottom: Spacing.lg, lineHeight: 20 },
 });
