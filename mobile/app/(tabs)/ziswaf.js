@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Button, Card, Badge } from '../../components/ui';
+import { Button, Card } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius } from '../../theme/spacing';
+import api from '../../services/api';
 
 const tabs = [
   { id: 'zakat', label: 'Zakat', icon: 'cash', color: Colors.gold[400] },
@@ -13,40 +14,81 @@ const tabs = [
   { id: 'kalkulator', label: 'Kalkulator', icon: 'calculator', color: Colors.info },
 ];
 
-const programs = {
-  zakat: [
-    { title: 'Zakat Mal', desc: 'Tunaikan zakat harta Anda.', target: 50000000, collected: 35000000 },
-    { title: 'Zakat Fitrah', desc: 'Zakat wajib di bulan Ramadhan.', target: 20000000, collected: 18000000 },
-  ],
-  infak: [
-    { title: 'Infak Pendidikan', desc: 'Bantu pendidikan anak-anak.', target: 30000000, collected: 22000000 },
-    { title: 'Infak Kesehatan', desc: 'Bantuan biaya pengobatan.', target: 25000000, collected: 15000000 },
-  ],
-  sedekah: [
-    { title: 'Sedekah Pangan', desc: 'Distribusikan makanan.', target: 15000000, collected: 12000000 },
-    { title: 'Sedekah Jariyah', desc: 'Pahala yang terus mengalir.', target: 40000000, collected: 28000000 },
-  ],
-  wakaf: [
-    { title: 'Wakaf Produktif', desc: 'Pengembangan aset produktif.', target: 100000000, collected: 65000000 },
-    { title: 'Wakaf Lingkungan', desc: 'Penanaman pohon & konservasi.', target: 50000000, collected: 38000000 },
-  ],
-};
-
 const quickAmounts = [10000, 25000, 50000, 100000, 250000, 500000];
-const NISAB_PER_BULAN = 6859000; // Contoh nisab bulanan
+const NISAB_PER_BULAN = 6859000;
 
 export default function ZiswafScreen() {
   const [activeTab, setActiveTab] = useState('zakat');
   const [selectedAmount, setSelectedAmount] = useState(null);
+  const [customAmount, setCustomAmount] = useState('');
+  
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [donating, setDonating] = useState(null);
   
   // States for Zakat Calculator
   const [income, setIncome] = useState('');
   const [bonus, setBonus] = useState('');
 
+  useEffect(() => {
+    fetchPrograms();
+  }, []);
+
+  const fetchPrograms = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/ziswaf/programs');
+      setPrograms(res.data);
+    } catch (error) {
+      console.log('Error fetching programs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDonate = async (programId, title) => {
+    const finalAmount = selectedAmount || parseInt(customAmount);
+    if (!finalAmount || finalAmount < 10000) {
+      Alert.alert('Info', 'Minimal donasi adalah Rp 10.000');
+      return;
+    }
+
+    Alert.alert(
+      "Konfirmasi Donasi",
+      `Tunaikan ${title} sebesar ${fmt(finalAmount)}?`,
+      [
+        { text: "Batal", style: "cancel" },
+        { 
+          text: "Tunaikan", 
+          onPress: async () => {
+            try {
+              setDonating(programId);
+              await api.post('/ziswaf/donate', {
+                programId: programId,
+                amount: finalAmount
+              });
+              Alert.alert('Alhamdulillah', 'Donasi Anda berhasil disalurkan.');
+              setCustomAmount('');
+              setSelectedAmount(null);
+              fetchPrograms(); // Refresh progress
+            } catch (error) {
+              console.log('Error donating:', error);
+              Alert.alert('Gagal', 'Terjadi kesalahan saat menyalurkan donasi.');
+            } finally {
+              setDonating(null);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const fmt = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
 
   const totalIncome = (parseInt(income) || 0) + (parseInt(bonus) || 0);
   const zakatAmount = totalIncome >= NISAB_PER_BULAN ? totalIncome * 0.025 : 0;
+
+  const currentPrograms = programs.filter(p => p.category === activeTab);
 
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
@@ -124,19 +166,28 @@ export default function ZiswafScreen() {
               </View>
             )}
           </Card>
+        ) : loading ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={Colors.green[500]} />
+          </View>
+        ) : currentPrograms.length === 0 ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <Ionicons name="folder-open-outline" size={48} color={Colors.gray[600]} />
+            <Text style={{ color: Colors.gray[500], marginTop: Spacing.md }}>Belum ada program di kategori ini.</Text>
+          </View>
         ) : (
-          programs[activeTab]?.map((p, i) => {
-            const progress = (p.collected / p.target) * 100;
+          currentPrograms.map((p) => {
+            const progress = (Number(p.collected_amount) / Number(p.target_amount)) * 100;
             return (
-              <Card key={i} style={styles.programCard}>
+              <Card key={p.id} style={styles.programCard}>
                 <Text style={styles.programTitle}>{p.title}</Text>
-                <Text style={styles.programDesc}>{p.desc}</Text>
+                <Text style={styles.programDesc}>{p.description}</Text>
                 <View style={styles.progressBar}>
                   <View style={[styles.progressFill, { width: `${progress}%` }]} />
                 </View>
                 <View style={styles.progressInfo}>
-                  <Text style={styles.progressText}>Terkumpul: <Text style={{ color: Colors.green[400], fontWeight: '700' }}>{fmt(p.collected)}</Text></Text>
-                  <Text style={styles.progressText}>Target: {fmt(p.target)}</Text>
+                  <Text style={styles.progressText}>Terkumpul: <Text style={{ color: Colors.green[400], fontWeight: '700' }}>{fmt(p.collected_amount)}</Text></Text>
+                  <Text style={styles.progressText}>Target: {fmt(p.target_amount)}</Text>
                 </View>
                 <View style={styles.quickGrid}>
                   {quickAmounts.map((amt) => (
@@ -149,7 +200,11 @@ export default function ZiswafScreen() {
                     </TouchableOpacity>
                   ))}
                 </View>
-                <Button title="Donasi Sekarang" onPress={() => {}} />
+                <Button 
+                  title={donating === p.id ? "Memproses..." : "Donasi Sekarang"} 
+                  onPress={() => handleDonate(p.id, p.title)} 
+                  disabled={donating === p.id}
+                />
               </Card>
             );
           })
