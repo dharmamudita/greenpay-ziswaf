@@ -1,13 +1,27 @@
 {
   "settings": {
     "title": "Pengaturan",
-    "theme": "Tema Tampilan",
-    "theme_system": "Mengikuti Sistem",
-    "theme_light": "Mode Terang",
-    "theme_dark": "Mode Gelap",
+    "theme": "Mode Tampilan",
+    "theme_system": "Sistem",
+    "theme_light": "Terang",
+    "theme_dark": "Gelap",
     "language": "Bahasa",
     "lang_id": "Indonesia",
-    "lang_en": "Inggris",
-    "save": "Simpan Pengaturan"
+    "lang_en": "Inggris"
+  },
+  "tabs": {
+    "home": "Beranda",
+    "ziswaf": "Ziswaf",
+    "market": "Pasar",
+    "profile": "Profil"
+  },
+  "profile": {
+    "impact_passport": "Paspor Dampak",
+    "impact_dashboard": "Dashboard Dampak",
+    "my_rewards": "Reward Saya",
+    "waste_bank": "Bank Sampah",
+    "logout": "Keluar dari Akun",
+    "login_prompt": "Silakan login untuk melihat profil Anda.",
+    "login_btn": "Masuk"
   }
 }

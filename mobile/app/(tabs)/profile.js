@@ -28,8 +28,8 @@ export default function ProfileScreen() {
       <View style={dynamicStyles.centeredScreen}>
         <Ionicons name="person-circle-outline" size={80} color={colors.textMuted} />
         <Text style={dynamicStyles.noAuthTitle}>{t('settings.title', { defaultValue: 'Belum Masuk' })}</Text>
-        <Text style={dynamicStyles.noAuthDesc}>Silakan login untuk melihat profil Anda.</Text>
-        <Button title="Masuk" onPress={() => router.push('/(auth)/login')} />
+        <Text style={dynamicStyles.noAuthDesc}>{t('profile.login_prompt', { defaultValue: 'Silakan login untuk melihat profil Anda.' })}</Text>
+        <Button title={t('profile.login_btn', { defaultValue: 'Masuk' })} onPress={() => router.push('/(auth)/login')} />
       </View>
     );
   }
@@ -95,10 +95,10 @@ export default function ProfileScreen() {
   };
 
   const menuItems = [
-    { icon: 'document-text', label: 'Impact Passport', route: '/impact-passport', color: Colors.pink },
-    { icon: 'bar-chart', label: 'Dashboard Dampak', route: '/dashboard-dampak', color: Colors.purple },
-    { icon: 'gift', label: 'Reward Saya', route: '/reward', color: Colors.gold[400] },
-    { icon: 'refresh-circle', label: 'Bank Sampah', route: '/bank-sampah', color: Colors.green[500] },
+    { icon: 'document-text', label: t('profile.impact_passport', { defaultValue: 'Impact Passport' }), route: '/impact-passport', color: Colors.pink },
+    { icon: 'bar-chart', label: t('profile.impact_dashboard', { defaultValue: 'Dashboard Dampak' }), route: '/dashboard-dampak', color: Colors.purple },
+    { icon: 'gift', label: t('profile.my_rewards', { defaultValue: 'Reward Saya' }), route: '/reward', color: Colors.gold[400] },
+    { icon: 'refresh-circle', label: t('profile.waste_bank', { defaultValue: 'Bank Sampah' }), route: '/bank-sampah', color: Colors.green[500] },
     { icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[300] : Colors.gray[600] },
   ];
 
@@ -186,7 +186,7 @@ export default function ProfileScreen() {
 
         <TouchableOpacity style={[dynamicStyles.logoutBtn, Shadows.sm]} onPress={logout} activeOpacity={0.8}>
           <Ionicons name="log-out-outline" size={20} color={isDark ? '#FCA5A5' : Colors.error} />
-          <Text style={dynamicStyles.logoutText}>Keluar dari Akun</Text>
+          <Text style={dynamicStyles.logoutText}>{t('profile.logout', { defaultValue: 'Keluar dari Akun' })}</Text>
         </TouchableOpacity>
         
         <Text style={{ textAlign: "center", color: colors.textMuted, marginTop: Spacing['2xl'], marginBottom: Spacing.xl, fontSize: 12, fontWeight: '600' }}>

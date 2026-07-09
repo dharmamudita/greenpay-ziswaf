@@ -1,13 +1,27 @@
 {
   "settings": {
     "title": "Settings",
-    "theme": "App Theme",
-    "theme_system": "System Default",
-    "theme_light": "Light Mode",
-    "theme_dark": "Dark Mode",
+    "theme": "Theme Mode",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
     "language": "Language",
     "lang_id": "Indonesian",
-    "lang_en": "English",
-    "save": "Save Settings"
+    "lang_en": "English"
+  },
+  "tabs": {
+    "home": "Home",
+    "ziswaf": "Ziswaf",
+    "market": "Market",
+    "profile": "Profile"
+  },
+  "profile": {
+    "impact_passport": "Impact Passport",
+    "impact_dashboard": "Impact Dashboard",
+    "my_rewards": "My Rewards",
+    "waste_bank": "Waste Bank",
+    "logout": "Log Out",
+    "login_prompt": "Please log in to view your profile.",
+    "login_btn": "Log In"
   }
 }

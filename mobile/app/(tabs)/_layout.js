@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../theme/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -7,6 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 export default function TabLayout() {
   const { isDistrik, isAdmin } = useAuth();
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   
   return (
     <Tabs
@@ -30,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Beranda',
+          title: t('tabs.home', { defaultValue: 'Beranda' }),
           headerShown: false,
           tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
         }}
@@ -38,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="ziswaf"
         options={{
-          title: 'ZISWAF',
+          title: t('tabs.ziswaf', { defaultValue: 'ZISWAF' }),
           tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} />,
         }}
       />
@@ -52,7 +54,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="marketplace"
         options={{
-          title: 'Marketplace',
+          title: t('tabs.market', { defaultValue: 'Marketplace' }),
           tabBarIcon: ({ color, size }) => <Ionicons name="storefront" size={size} color={color} />,
         }}
       />
@@ -62,7 +64,6 @@ export default function TabLayout() {
         options={{
           title: 'Distrik',
           tabBarIcon: ({ color, size }) => <Ionicons name="scan" size={size} color={color} />,
-          // Sembunyikan tab ini dari navigasi bawah jika role BUKAN distrik/admin
           href: (isDistrik() || isAdmin()) ? '/distrik' : null,
         }}
       />
@@ -70,7 +71,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profil',
+          title: t('tabs.profile', { defaultValue: 'Profil' }),
           tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
         }}
       />
