@@ -145,7 +145,7 @@ export default function RegisterScreen() {
           </View>
 
           <View style={dynamicStyles.footer}>
-            <Text style={dynamicStyles.footerText}>Sudah punya akun? </Text>
+            <Text style={dynamicStyles.footerText}>Dengan mendaftar, Anda menyetujui S&K. Sudah punya akun? </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
               <Text style={dynamicStyles.linkText}>Masuk di sini</Text>
             </TouchableOpacity>
