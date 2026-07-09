@@ -3,16 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../context/AuthContext';
 import Colors from '../theme/colors';
 
-// Polyfill DOMException untuk Hermes Engine di React Native
-if (typeof globalThis.DOMException === "undefined") {
-  class DOMException extends Error {
-    constructor(message, name) {
-      super(message);
-      this.name = name;
-    }
-  }
-  globalThis.DOMException = DOMException;
-}
 
 export default function RootLayout() {
   return (
