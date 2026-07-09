@@ -128,6 +128,12 @@ export default function ProfileScreen() {
       <Modal visible={isPhotoViewerVisible} transparent={true} animationType="fade" onRequestClose={() => setPhotoViewerVisible(false)}>
         <TouchableWithoutFeedback onPress={() => setPhotoViewerVisible(false)}>
           <View style={dynamicStyles.modalOverlay}>
+            
+            {/* Tombol X (Tutup) di pojok kanan atas layar */}
+            <TouchableOpacity style={dynamicStyles.closeModalBtn} onPress={() => setPhotoViewerVisible(false)}>
+              <Ionicons name="close" size={28} color={Colors.white} />
+            </TouchableOpacity>
+
             <TouchableWithoutFeedback>
               <View style={dynamicStyles.modalContent}>
                 {user?.photo_url ? (
@@ -137,11 +143,9 @@ export default function ProfileScreen() {
                     <Text style={dynamicStyles.modalImagePlaceholderText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
                   </LinearGradient>
                 )}
-                <TouchableOpacity style={dynamicStyles.closeModalBtn} onPress={() => setPhotoViewerVisible(false)}>
-                  <Ionicons name="close" size={28} color={Colors.white} />
-                </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>
+
           </View>
         </TouchableWithoutFeedback>
       </Modal>
