@@ -1,7 +1,7 @@
-# Aturan Proyek Khusus (GreenPay ZISWAF)
+# Agent Customizations
 
-## Strategi Git & Commit
-- **Micro-Commits Wajib:** Setiap ada perubahan pada 1 file, WAJIB langsung dibuatkan 1 commit secara terpisah.
-- **Jangan Gabung File:** Jika mengedit 3 file yang berbeda, DILARANG keras melakukan commit secara bersamaan. Harus dilakukan 3 kali `git commit` yang terpisah untuk masing-masing file.
-- **Bahasa Commit:** Judul dan deskripsi commit wajib 100% menggunakan Bahasa Indonesia.
-- **Tujuan:** Strategi ini diwajibkan oleh USER untuk mengejar jumlah history commit yang banyak dan mendetail di GitHub.
+## Rules
+- Do NOT use emojis in responses or in code anymore.
+- Use Icons (like Ionicons) as replacements for emojis in UI.
+- All commits must use Indonesian language.
+- Use 1 file = 1 commit strategy.
