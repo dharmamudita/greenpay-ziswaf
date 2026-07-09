@@ -78,36 +78,6 @@ export default function HomeScreen() {
 
       {/* Features Grid */}
       <View style={dynamicStyles.section}>
-        <Text style={dynamicStyles.sectionTitle}>Fitur <Text style={{ color: Colors.green[500] }}>Unggulan</Text></Text>
-        <View style={dynamicStyles.featGrid}>
-          {features.map((f, i) => (
-            <Card key={i} style={dynamicStyles.featCard} onPress={() => router.push(f.route)}>
-              <View style={[dynamicStyles.featIcon, { backgroundColor: f.color + '18' }]}>
-                <Ionicons name={f.icon} size={26} color={f.color} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={dynamicStyles.featTitle}>{f.title}</Text>
-                <Text style={dynamicStyles.featDesc}>{f.desc}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
-            </Card>
-          ))}
-        </View>
-      </View>
-
-      {/* CTA */}
-      <View style={dynamicStyles.section}>
-        <Card style={dynamicStyles.ctaCard}>
-          <LinearGradient colors={[Colors.green[600], Colors.green[800]]} style={StyleSheet.absoluteFillObject} />
-          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
-            <View style={dynamicStyles.ctaIconBox}>
-              <Ionicons name="earth" size={40} color={Colors.white} />
-            </View>
-            <Text style={dynamicStyles.ctaTitle}>Siap Membuat Perubahan?</Text>
-            <Text style={dynamicStyles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
-
-        {/* Features Grid */}
-        <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Fitur <Text style={{ color: Colors.green[500] }}>Unggulan</Text></Text>
           <View style={dynamicStyles.featGrid}>
             {features.map((f, i) => (
