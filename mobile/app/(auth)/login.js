@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius } from '../../theme/spacing';
@@ -15,6 +16,9 @@ export default function LoginScreen() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { colors, isDark } = useTheme();
+
+  const dynamicStyles = getStyles(colors, isDark);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -35,36 +39,36 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={dynamicStyles.container} keyboardShouldPersistTaps="handled">
         {/* Header */}
-        <View style={styles.header}>
+        <View style={dynamicStyles.header}>
           <LinearGradient
             colors={[Colors.green[600], Colors.green[500]]}
-            style={styles.logo}
+            style={dynamicStyles.logo}
           >
             <Ionicons name="leaf" size={32} color={Colors.white} />
           </LinearGradient>
-          <Text style={styles.title}>Selamat Datang</Text>
-          <Text style={styles.subtitle}>Masuk ke GreenPay ZISWAF</Text>
+          <Text style={dynamicStyles.title}>Selamat Datang</Text>
+          <Text style={dynamicStyles.subtitle}>Masuk ke GreenPay ZISWAF</Text>
         </View>
 
         {/* Error */}
         {error ? (
-          <View style={styles.errorBox}>
-            <Text style={styles.errorText}>{error}</Text>
+          <View style={dynamicStyles.errorBox}>
+            <Text style={dynamicStyles.errorText}>{error}</Text>
           </View>
         ) : null}
 
         {/* Form */}
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <View style={styles.inputWrap}>
-              <Ionicons name="mail-outline" size={18} color={Colors.gray[500]} style={styles.inputIcon} />
+        <View style={dynamicStyles.form}>
+          <View style={dynamicStyles.inputGroup}>
+            <Text style={dynamicStyles.label}>Email</Text>
+            <View style={dynamicStyles.inputWrap}>
+              <Ionicons name="mail-outline" size={18} color={colors.textMuted} style={dynamicStyles.inputIcon} />
               <TextInput
-                style={styles.input}
+                style={dynamicStyles.input}
                 placeholder="nama@email.com"
-                placeholderTextColor={Colors.gray[600]}
+                placeholderTextColor={colors.textMuted}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -73,30 +77,30 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.inputWrap}>
-              <Ionicons name="lock-closed-outline" size={18} color={Colors.gray[500]} style={styles.inputIcon} />
+          <View style={dynamicStyles.inputGroup}>
+            <Text style={dynamicStyles.label}>Password</Text>
+            <View style={dynamicStyles.inputWrap}>
+              <Ionicons name="lock-closed-outline" size={18} color={colors.textMuted} style={dynamicStyles.inputIcon} />
               <TextInput
-                style={[styles.input, { flex: 1 }]}
+                style={[dynamicStyles.input, { flex: 1 }]}
                 placeholder="Masukkan password"
-                placeholderTextColor={Colors.gray[600]}
+                placeholderTextColor={colors.textMuted}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.gray[500]} />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={dynamicStyles.eyeBtn}>
+                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
           </View>
 
           <Button title="Masuk" onPress={handleLogin} loading={loading} />
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Belum punya akun? </Text>
+          <View style={dynamicStyles.footer}>
+            <Text style={dynamicStyles.footerText}>Belum punya akun? </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-              <Text style={styles.linkText}>Daftar di sini</Text>
+              <Text style={dynamicStyles.linkText}>Daftar di sini</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -105,10 +109,10 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDark) => StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.dark.bg,
+    backgroundColor: colors.bg,
     justifyContent: 'center',
     padding: Spacing.xl,
   },
@@ -127,12 +131,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: Colors.white,
+    color: colors.text,
     marginBottom: Spacing.xs,
   },
   subtitle: {
     fontSize: 15,
-    color: Colors.gray[400],
+    color: colors.textMuted,
   },
   errorBox: {
     backgroundColor: 'rgba(239,68,68,0.12)',
@@ -155,22 +159,22 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.gray[300],
+    color: colors.text,
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: colors.border,
   },
   inputIcon: {
     paddingLeft: Spacing.md,
   },
   input: {
     flex: 1,
-    color: Colors.white,
+    color: colors.text,
     fontSize: 15,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
@@ -184,11 +188,11 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
   },
   footerText: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     fontSize: 14,
   },
   linkText: {
-    color: Colors.green[400],
+    color: Colors.green[500],
     fontSize: 14,
     fontWeight: '700',
   },
