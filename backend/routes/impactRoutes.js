@@ -39,12 +39,12 @@ router.get('/passport', authenticateToken, async (req, res) => {
     // Badges calculation
     const badges = [];
     const u = user.rows[0];
-    if (u.total_waste > 0) badges.push({ name: 'Green Starter', icon: '🌱', desc: 'Pertama kali setor sampah' });
-    if (u.total_waste >= 100) badges.push({ name: 'Eco Warrior', icon: '⚔️', desc: 'Setor 100kg sampah' });
-    if (u.total_donation >= 1000000) badges.push({ name: 'ZISWAF Hero', icon: '💎', desc: 'Donasi > Rp 1 juta' });
-    if (u.trees_planted >= 10) badges.push({ name: 'Tree Planter', icon: '🌳', desc: 'Tanam 10 pohon' });
-    if (u.co2_reduced >= 1000) badges.push({ name: 'Carbon Neutral', icon: '🌍', desc: 'Kurangi 1 ton CO₂' });
-    if (u.green_points >= 5000) badges.push({ name: 'Green Legend', icon: '👑', desc: 'Kumpulkan 5000 GP' });
+    if (u.total_waste > 0) badges.push({ name: 'Green Starter', icon: 'leaf', desc: 'Pertama kali setor sampah' });
+    if (u.total_waste >= 100) badges.push({ name: 'Eco Warrior', icon: 'shield-checkmark', desc: 'Setor 100kg sampah' });
+    if (u.total_donation >= 1000000) badges.push({ name: 'ZISWAF Hero', icon: 'diamond', desc: 'Donasi > Rp 1 juta' });
+    if (u.trees_planted >= 10) badges.push({ name: 'Tree Planter', icon: 'flower', desc: 'Tanam 10 pohon' });
+    if (u.co2_reduced >= 1000) badges.push({ name: 'Carbon Neutral', icon: 'earth', desc: 'Kurangi 1 ton CO₂' });
+    if (u.green_points >= 5000) badges.push({ name: 'Green Legend', icon: 'star', desc: 'Kumpulkan 5000 GP' });
 
     res.json({
       user: u,

@@ -1,23 +1,50 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Badge } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-
-const badges = [
-  { name: 'Eco Warrior', icon: '⚔️', desc: 'Setor 100kg sampah', earned: true },
-  { name: 'ZISWAF Hero', icon: '💎', desc: 'Donasi > Rp 1 juta', earned: true },
-  { name: 'Tree Planter', icon: '🌳', desc: 'Tanam 10 pohon', earned: true },
-  { name: 'Carbon Neutral', icon: '🌍', desc: 'Kurangi 1 ton CO₂', earned: false },
-  { name: 'Green Legend', icon: '👑', desc: 'Kumpulkan 5000 GP', earned: false },
-];
 
 export default function ImpactPassportScreen() {
   const { user } = useAuth();
-  
+  const [passportData, setPassportData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPassport();
+  }, []);
+
+  const fetchPassport = async () => {
+    try {
+      const res = await api.get('/impact/passport');
+      setPassportData(res.data);
+    } catch (error) {
+      console.log('Error fetching passport:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fmt = (n) => {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + ' Jt';
+    if (n >= 1000) return (n / 1000).toFixed(1) + ' Rb';
+    return n;
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={Colors.green[500]} />
+      </View>
+    );
+  }
+
+  const pUser = passportData?.user || user;
+  const badges = passportData?.badges || [];
+
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
@@ -31,10 +58,10 @@ export default function ImpactPassportScreen() {
           
           <View style={styles.passBody}>
             <View style={styles.avatar}>
-              <Text style={{ fontSize: 24, fontWeight: '800', color: Colors.white }}>{user?.display_name?.[0] || 'A'}</Text>
+              <Text style={{ fontSize: 24, fontWeight: '800', color: Colors.white }}>{pUser?.display_name?.[0] || 'A'}</Text>
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.name}>{user?.display_name || 'Ahmad Rizki'}</Text>
+              <Text style={styles.name}>{pUser?.display_name || 'Ahmad Rizki'}</Text>
               <Text style={styles.id}>ID: GPZ-2025-{user?.id?.substring(0,5) || '8X9A2'}</Text>
               <Badge text="Eco Citizen" variant="gold" style={{ marginTop: 4 }} />
             </View>
@@ -42,15 +69,15 @@ export default function ImpactPassportScreen() {
 
           <View style={styles.passStats}>
             <View style={styles.passStatItem}>
-              <Text style={styles.passStatVal}>120 kg</Text>
+              <Text style={styles.passStatVal}>{fmt(pUser?.total_waste || 0)} kg</Text>
               <Text style={styles.passStatLbl}>Sampah</Text>
             </View>
             <View style={styles.passStatItem}>
-              <Text style={styles.passStatVal}>1.5 Jt</Text>
+              <Text style={styles.passStatVal}>{fmt(pUser?.total_donation || 0)}</Text>
               <Text style={styles.passStatLbl}>ZISWAF</Text>
             </View>
             <View style={styles.passStatItem}>
-              <Text style={styles.passStatVal}>12</Text>
+              <Text style={styles.passStatVal}>{pUser?.trees_planted || 0}</Text>
               <Text style={styles.passStatLbl}>Pohon</Text>
             </View>
           </View>
@@ -58,15 +85,22 @@ export default function ImpactPassportScreen() {
 
         {/* Badges */}
         <Text style={styles.sectionTitle}>Pencapaian (Badges)</Text>
-        <View style={styles.badgeGrid}>
-          {badges.map((b, i) => (
-            <Card key={i} style={[styles.badgeCard, !b.earned && styles.badgeLocked]}>
-              <Text style={styles.badgeIcon}>{b.icon}</Text>
-              <Text style={[styles.badgeName, !b.earned && { color: Colors.gray[500] }]}>{b.name}</Text>
-              <Text style={styles.badgeDesc}>{b.desc}</Text>
-            </Card>
-          ))}
-        </View>
+        {badges.length === 0 ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <Ionicons name="medal-outline" size={48} color={Colors.gray[600]} />
+            <Text style={{ color: Colors.gray[500], marginTop: Spacing.md }}>Belum ada lencana yang didapat.</Text>
+          </View>
+        ) : (
+          <View style={styles.badgeGrid}>
+            {badges.map((b, i) => (
+              <Card key={i} style={styles.badgeCard}>
+                <Ionicons name={b.icon || 'star'} size={32} color={Colors.gold[400]} />
+                <Text style={styles.badgeName}>{b.name}</Text>
+                <Text style={styles.badgeDesc}>{b.desc}</Text>
+              </Card>
+            ))}
+          </View>
+        )}
       </View>
       <View style={{ height: Spacing['3xl'] }} />
     </ScrollView>
@@ -91,8 +125,6 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 18, fontWeight: '700', color: Colors.white, marginBottom: Spacing.md },
   badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   badgeCard: { width: '31%', padding: Spacing.sm, alignItems: 'center', gap: 4 },
-  badgeLocked: { opacity: 0.5, borderColor: Colors.dark.border },
-  badgeIcon: { fontSize: 32 },
   badgeName: { fontSize: 11, fontWeight: '700', color: Colors.green[400], textAlign: 'center' },
   badgeDesc: { fontSize: 9, color: Colors.gray[400], textAlign: 'center' },
 });
