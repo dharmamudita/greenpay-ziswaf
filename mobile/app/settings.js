@@ -29,6 +29,27 @@ export default function SettingsScreen() {
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       <View style={dynamicStyles.container}>
         
+        {/* Akun */}
+        <View style={[dynamicStyles.card, { marginBottom: Spacing.xl }]}>
+          <TouchableOpacity 
+            style={[dynamicStyles.optionRow, { borderBottomWidth: 0 }]} 
+            onPress={() => router.push('/settings/account')}
+            activeOpacity={0.7}
+          >
+            <View style={dynamicStyles.optionLeft}>
+              <View style={[dynamicStyles.iconWrap, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)' }]}>
+                <Ionicons name="person" size={20} color="#10B981" />
+              </View>
+              <Text style={dynamicStyles.optionTitle}>Pengaturan Akun</Text>
+            </View>
+            <View style={dynamicStyles.optionRight}>
+              <Text style={dynamicStyles.optionValue}>Ubah Data</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Tampilan & Bahasa */}
         <View style={dynamicStyles.card}>
           <TouchableOpacity 
             style={dynamicStyles.optionRow} 

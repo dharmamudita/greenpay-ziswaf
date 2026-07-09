@@ -45,6 +45,7 @@ function AppContent() {
         <Stack.Screen name="reward" options={{ title: 'Reward' }} />
         <Stack.Screen name="impact-passport" options={{ title: 'Impact Passport' }} />
         <Stack.Screen name="settings" options={{ title: 'Pengaturan' }} />
+        <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
         <Stack.Screen name="settings/theme" options={{ title: 'Mode Tampilan' }} />
         <Stack.Screen name="settings/language" options={{ title: 'Bahasa' }} />
       </Stack>
