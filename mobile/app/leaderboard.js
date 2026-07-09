@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import api from '../services/api';
@@ -9,6 +10,9 @@ import api from '../services/api';
 export default function LeaderboardScreen() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { colors, isDark } = useTheme();
+
+  const dynamicStyles = getStyles(colors, isDark);
 
   useEffect(() => {
     fetchLeaderboard();
@@ -27,14 +31,14 @@ export default function LeaderboardScreen() {
 
   const renderItem = ({ item, index }) => {
     const isTop3 = index < 3;
-    let rankColor = Colors.gray[400];
+    let rankColor = colors.textMuted;
     let rankIcon = null;
 
     if (index === 0) {
       rankColor = Colors.gold[400];
       rankIcon = 'medal';
     } else if (index === 1) {
-      rankColor = Colors.gray[300]; // Silver
+      rankColor = isDark ? Colors.gray[300] : Colors.gray[500]; // Silver
       rankIcon = 'medal-outline';
     } else if (index === 2) {
       rankColor = '#cd7f32'; // Bronze
@@ -42,27 +46,27 @@ export default function LeaderboardScreen() {
     }
 
     return (
-      <View style={[styles.card, isTop3 && styles.cardTop3]}>
-        <View style={styles.rankContainer}>
+      <View style={[dynamicStyles.card, isTop3 && dynamicStyles.cardTop3]}>
+        <View style={dynamicStyles.rankContainer}>
           {isTop3 ? (
             <Ionicons name={rankIcon} size={24} color={rankColor} />
           ) : (
-            <Text style={styles.rankText}>#{index + 1}</Text>
+            <Text style={dynamicStyles.rankText}>#{index + 1}</Text>
           )}
         </View>
 
-        <View style={styles.userInfo}>
+        <View style={dynamicStyles.userInfo}>
           {item.photo_url ? (
-            <Image source={{ uri: item.photo_url }} style={styles.avatar} />
+            <Image source={{ uri: item.photo_url }} style={dynamicStyles.avatar} />
           ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>{item.display_name.charAt(0).toUpperCase()}</Text>
+            <View style={dynamicStyles.avatarPlaceholder}>
+              <Text style={dynamicStyles.avatarText}>{item.display_name.charAt(0).toUpperCase()}</Text>
             </View>
           )}
           <View>
-            <Text style={styles.userName}>{item.display_name}</Text>
-            <Text style={styles.userImpact}>
-              <Ionicons name="leaf" size={12} color={Colors.green[400]} /> {item.green_points} GP
+            <Text style={dynamicStyles.userName}>{item.display_name}</Text>
+            <Text style={dynamicStyles.userImpact}>
+              <Ionicons name="leaf" size={12} color={Colors.green[500]} /> {item.green_points} GP
             </Text>
           </View>
         </View>
@@ -71,14 +75,14 @@ export default function LeaderboardScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Peringkat Kebaikan</Text>
-        <Text style={styles.subtitle}>Top 10 Pejuang Lingkungan</Text>
+    <SafeAreaView style={dynamicStyles.container} edges={['top']}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.title}>Peringkat Kebaikan</Text>
+        <Text style={dynamicStyles.subtitle}>Top 10 Pejuang Lingkungan</Text>
       </View>
 
       {loading ? (
-        <View style={styles.centerContent}>
+        <View style={dynamicStyles.centerContent}>
           <ActivityIndicator size="large" color={Colors.green[500]} />
         </View>
       ) : (
@@ -86,12 +90,12 @@ export default function LeaderboardScreen() {
           data={leaders}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={dynamicStyles.listContainer}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
-            <View style={styles.heroSection}>
+            <View style={dynamicStyles.heroSection}>
               <Ionicons name="trophy" size={64} color={Colors.gold[400]} />
-              <Text style={styles.heroText}>Jadilah yang Terbaik!</Text>
+              <Text style={dynamicStyles.heroText}>Jadilah yang Terbaik!</Text>
             </View>
           )}
         />
@@ -100,26 +104,26 @@ export default function LeaderboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.dark.bg,
+    backgroundColor: colors.bg,
   },
   header: {
     padding: Spacing.xl,
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.dark.border,
+    borderBottomColor: colors.border,
     alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: Colors.white,
+    color: colors.text,
   },
   subtitle: {
     fontSize: 14,
-    color: Colors.gray[400],
+    color: colors.textMuted,
     marginTop: 4,
   },
   centerContent: {
@@ -145,16 +149,16 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: colors.surface,
     padding: Spacing.md,
     borderRadius: BorderRadius.xl,
     marginBottom: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: colors.border,
   },
   cardTop3: {
-    borderColor: Colors.gold[600],
-    backgroundColor: 'rgba(212, 175, 55, 0.05)',
+    borderColor: isDark ? Colors.gold[600] : Colors.gold[400],
+    backgroundColor: isDark ? 'rgba(212, 175, 55, 0.05)' : 'rgba(212, 175, 55, 0.1)',
   },
   rankContainer: {
     width: 40,
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
   },
   rankText: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -181,24 +185,24 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.dark.surface2,
+    backgroundColor: colors.surface2,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
   },
   avatarText: {
-    color: Colors.white,
+    color: colors.text,
     fontSize: 20,
     fontWeight: 'bold',
   },
   userName: {
-    color: Colors.white,
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
   userImpact: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     fontSize: 13,
   },
 });
