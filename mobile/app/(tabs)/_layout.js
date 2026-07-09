@@ -2,26 +2,28 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function TabLayout() {
   const { isDistrik, isAdmin } = useAuth();
+  const { colors, isDark } = useTheme();
   
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: Colors.dark.bg, elevation: 0, shadowOpacity: 0 },
-        headerTintColor: Colors.white,
+        headerStyle: { backgroundColor: colors.bg, elevation: 0, shadowOpacity: 0 },
+        headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: '700' },
         tabBarStyle: {
-          backgroundColor: Colors.dark.surface,
-          borderTopColor: Colors.dark.border,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,
           paddingTop: 4,
         },
-        tabBarActiveTintColor: Colors.green[400],
-        tabBarInactiveTintColor: Colors.gray[500],
+        tabBarActiveTintColor: Colors.green[500],
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}
     >
