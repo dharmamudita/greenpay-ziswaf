@@ -86,4 +86,17 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
+// GET /api/impact/leaderboard — Get Top Users by Green Points
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, display_name, photo_url, green_points, co2_reduced FROM users WHERE role = $1 ORDER BY green_points DESC LIMIT 10',
+      ['user']
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal mengambil data leaderboard.' });
+  }
+});
+
 module.exports = router;
