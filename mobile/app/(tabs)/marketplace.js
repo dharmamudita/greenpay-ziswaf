@@ -1,24 +1,74 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius } from '../../theme/spacing';
-
-const products = [
-  { id: 1, name: 'Tas Belanja Daur Ulang', price: 45000, category: 'Aksesoris', umkm: 'EcoStore Bandung', points: 15, rating: 4.8, sold: 234, emoji: '👜' },
-  { id: 2, name: 'Tumbler Bambu 500ml', price: 85000, category: 'Peralatan', umkm: 'Green Living Jakarta', points: 25, rating: 4.9, sold: 189, emoji: '🥤' },
-  { id: 3, name: 'Sabun Natural Organik', price: 25000, category: 'Perawatan', umkm: 'Nature Pure Yogya', points: 10, rating: 4.7, sold: 567, emoji: '🧴' },
-  { id: 4, name: 'Sedotan Stainless Set', price: 35000, category: 'Peralatan', umkm: 'EcoStore Bandung', points: 12, rating: 4.6, sold: 445, emoji: '🥢' },
-  { id: 5, name: 'Beeswax Food Wrap', price: 55000, category: 'Dapur', umkm: 'Green Living Jakarta', points: 18, rating: 4.8, sold: 123, emoji: '🐝' },
-  { id: 6, name: 'Pot Tanaman Daur Ulang', price: 30000, category: 'Dekorasi', umkm: 'Nature Pure Yogya', points: 8, rating: 4.5, sold: 321, emoji: '🪴' },
-];
+import api from '../../services/api';
 
 const categories = ['Semua', 'Aksesoris', 'Peralatan', 'Perawatan', 'Dapur', 'Dekorasi'];
 
 export default function MarketplaceScreen() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('Semua');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(null);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await api.get('/marketplace');
+      setProducts(res.data);
+    } catch (error) {
+      console.log('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePurchase = async (productId, productName) => {
+    Alert.alert(
+      "Konfirmasi Pembelian",
+      `Apakah Anda yakin ingin membeli ${productName}?`,
+      [
+        { text: "Batal", style: "cancel" },
+        { 
+          text: "Beli", 
+          onPress: async () => {
+            try {
+              setPurchasing(productId);
+              await api.post('/marketplace/order', {
+                productId: productId,
+                quantity: 1
+              });
+              Alert.alert('Sukses', 'Pesanan Anda sedang diproses!');
+              fetchProducts(); // Refresh stock
+            } catch (error) {
+              console.log('Error purchasing:', error);
+              Alert.alert('Gagal', 'Terjadi kesalahan saat membuat pesanan.');
+            } finally {
+              setPurchasing(null);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const getIconForCategory = (category) => {
+    switch(category.toLowerCase()) {
+      case 'aksesoris': return 'bag-handle';
+      case 'peralatan': return 'flask';
+      case 'perawatan': return 'leaf';
+      case 'dapur': return 'restaurant';
+      case 'dekorasi': return 'flower';
+      default: return 'cube';
+    }
+  };
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
@@ -26,7 +76,7 @@ export default function MarketplaceScreen() {
     return matchSearch && matchCat;
   });
 
-  const fmt = (n) => 'Rp ' + n.toLocaleString('id-ID');
+  const fmt = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
 
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
@@ -36,7 +86,13 @@ export default function MarketplaceScreen() {
         {/* Search */}
         <View style={styles.searchWrap}>
           <Ionicons name="search" size={18} color={Colors.gray[500]} />
-          <TextInput style={styles.searchInput} placeholder="Cari produk..." placeholderTextColor={Colors.gray[600]} value={search} onChangeText={setSearch} />
+          <TextInput 
+            style={styles.searchInput} 
+            placeholder="Cari produk ramah lingkungan..." 
+            placeholderTextColor={Colors.gray[600]} 
+            value={search} 
+            onChangeText={setSearch} 
+          />
         </View>
 
         {/* Categories */}
@@ -53,21 +109,44 @@ export default function MarketplaceScreen() {
         </ScrollView>
 
         {/* Products */}
-        <View style={styles.prodGrid}>
-          {filtered.map((p) => (
-            <Card key={p.id} style={styles.prodCard}>
-              <View style={styles.prodImgPlaceholder}><Text style={{ fontSize: 32 }}>{p.emoji}</Text></View>
-              <Badge text={`+${p.points} GP`} />
-              <Text style={styles.prodName}>{p.name}</Text>
-              <Text style={styles.prodUmkm}>{p.umkm}</Text>
-              <View style={styles.prodFooter}>
-                <Text style={styles.prodPrice}>{fmt(p.price)}</Text>
-                <Text style={styles.prodRating}>⭐ {p.rating}</Text>
-              </View>
-              <Button title="Beli" variant="outline" onPress={() => {}} style={{ marginTop: Spacing.sm }} />
-            </Card>
-          ))}
-        </View>
+        {loading ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={Colors.green[500]} />
+          </View>
+        ) : filtered.length === 0 ? (
+          <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+            <Ionicons name="cube-outline" size={48} color={Colors.gray[600]} />
+            <Text style={{ color: Colors.gray[500], marginTop: Spacing.md }}>Produk tidak ditemukan.</Text>
+          </View>
+        ) : (
+          <View style={styles.prodGrid}>
+            {filtered.map((p) => (
+              <Card key={p.id} style={styles.prodCard}>
+                <View style={styles.prodImgPlaceholder}>
+                  <Ionicons name={getIconForCategory(p.category)} size={40} color={Colors.green[400]} />
+                </View>
+                <Badge text={`+${p.points_bonus} GP`} />
+                <Text style={styles.prodName}>{p.name}</Text>
+                <Text style={styles.prodUmkm}>{p.umkm_name}</Text>
+                
+                <View style={styles.prodFooter}>
+                  <Text style={styles.prodPrice}>{fmt(p.price)}</Text>
+                  <Text style={styles.prodRating}>
+                    <Ionicons name="star" size={10} color={Colors.gold[400]} /> {p.rating}
+                  </Text>
+                </View>
+                
+                <Button 
+                  title={purchasing === p.id ? "Memproses..." : "Beli"} 
+                  variant="outline" 
+                  onPress={() => handlePurchase(p.id, p.name)} 
+                  style={{ marginTop: Spacing.sm }} 
+                  disabled={purchasing === p.id || p.stock <= 0}
+                />
+              </Card>
+            ))}
+          </View>
+        )}
       </View>
       <View style={{ height: Spacing['3xl'] }} />
     </ScrollView>
@@ -92,5 +171,5 @@ const styles = StyleSheet.create({
   prodUmkm: { fontSize: 10, color: Colors.gray[500] },
   prodFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   prodPrice: { fontSize: 14, fontWeight: '800', color: Colors.green[400] },
-  prodRating: { fontSize: 10, color: Colors.gray[500] },
+  prodRating: { fontSize: 10, color: Colors.gray[400] },
 });
