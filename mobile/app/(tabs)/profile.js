@@ -40,7 +40,7 @@ export default function ProfileScreen() {
           </LinearGradient>
           <Text style={styles.userName}>{user?.display_name || 'Pengguna'}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
-          <Badge text={user?.role === 'admin' ? '🔧 Admin' : user?.role === 'distrik' ? '🏢 Distrik' : '👤 Pengguna'} />
+          <Badge text={user?.role === 'admin' ? 'Admin' : user?.role === 'distrik' ? 'Distrik' : 'Pengguna'} />
         </View>
 
         {/* Stats */}
