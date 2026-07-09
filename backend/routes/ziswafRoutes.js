@@ -55,6 +55,12 @@ router.post('/donate', authenticateToken, async (req, res) => {
       );
     }
 
+    // Emit Socket.io events for Real-Time UI updates
+    if (req.io) {
+      req.io.emit('GLOBAL_IMPACT_UPDATED'); // to update global dashboard
+      req.io.to(`user_${req.user.id}`).emit('USER_PROFILE_UPDATED'); // to update specific user UI
+    }
+
     res.status(201).json({ message: 'Donasi berhasil!', donation: result.rows[0], pointsEarned });
   } catch (error) {
     console.error('Donate error:', error);

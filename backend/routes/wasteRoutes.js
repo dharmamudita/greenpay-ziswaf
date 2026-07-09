@@ -58,6 +58,12 @@ router.put('/verify/:id', authenticateToken, requireRole('distrik', 'admin'), as
         `INSERT INTO green_point_history (user_id, points, type, source, description) VALUES ($1, $2, 'earn', 'waste_deposit', $3)`,
         [d.user_id, d.points_earned, `Setor ${d.waste_type} ${d.weight_kg}kg`]
       );
+
+      // Emit Socket.io events for Real-Time UI updates
+      if (req.io) {
+        req.io.emit('GLOBAL_IMPACT_UPDATED');
+        req.io.to(`user_${d.user_id}`).emit('USER_PROFILE_UPDATED');
+      }
     }
 
     res.json({ message: `Setoran ${status === 'verified' ? 'diverifikasi' : 'ditolak'}.` });

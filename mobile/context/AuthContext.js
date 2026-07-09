@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getItemAsync, setItemAsync, deleteItemAsync } from '../utils/storage';
 import authService from '../services/authService';
+import socket from '../services/socket';
 
 const AuthContext = createContext({});
 
@@ -19,6 +20,23 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     loadToken();
   }, []);
+
+  // Setup Socket.io connection when user changes
+  useEffect(() => {
+    if (user && user.id) {
+      socket.connect();
+      socket.emit('join_user_room', user.id);
+      
+      socket.on('USER_PROFILE_UPDATED', () => {
+        refreshProfile();
+      });
+
+      return () => {
+        socket.off('USER_PROFILE_UPDATED');
+        socket.disconnect();
+      };
+    }
+  }, [user?.id]);
 
   const loadToken = async () => {
     try {
@@ -57,6 +75,7 @@ export function AuthProvider({ children }) {
     await deleteItemAsync('token');
     setToken(null);
     setUser(null);
+    socket.disconnect();
   };
 
   const refreshProfile = async () => {
