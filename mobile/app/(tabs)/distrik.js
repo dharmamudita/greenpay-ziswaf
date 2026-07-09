@@ -5,12 +5,16 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function DistrikDashboard() {
   const { isDistrik, isAdmin } = useAuth();
   const [pendingDeposits, setPendingDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
+  const { colors, isDark } = useTheme();
+
+  const dynamicStyles = getStyles(colors, isDark);
 
   useEffect(() => {
     if (isDistrik() || isAdmin()) {
@@ -46,46 +50,46 @@ export default function DistrikDashboard() {
   };
 
   const renderDepositItem = ({ item }) => (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View style={styles.userInfo}>
-          <Ionicons name="person-circle" size={24} color={Colors.gray[400]} />
-          <Text style={styles.userName}>{item.user_name}</Text>
+    <View style={dynamicStyles.card}>
+      <View style={dynamicStyles.cardHeader}>
+        <View style={dynamicStyles.userInfo}>
+          <Ionicons name="person-circle" size={24} color={colors.textMuted} />
+          <Text style={dynamicStyles.userName}>{item.user_name}</Text>
         </View>
-        <Text style={styles.date}>{new Date(item.created_at).toLocaleDateString('id-ID')}</Text>
+        <Text style={dynamicStyles.date}>{new Date(item.created_at).toLocaleDateString('id-ID')}</Text>
       </View>
       
-      <View style={styles.cardBody}>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Jenis Sampah:</Text>
-          <Text style={styles.value}>{item.waste_type}</Text>
+      <View style={dynamicStyles.cardBody}>
+        <View style={dynamicStyles.detailRow}>
+          <Text style={dynamicStyles.label}>Jenis Sampah:</Text>
+          <Text style={dynamicStyles.value}>{item.waste_type}</Text>
         </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Berat (Kg):</Text>
-          <Text style={styles.value}>{item.weight_kg} Kg</Text>
+        <View style={dynamicStyles.detailRow}>
+          <Text style={dynamicStyles.label}>Berat (Kg):</Text>
+          <Text style={dynamicStyles.value}>{item.weight_kg} Kg</Text>
         </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Lokasi:</Text>
-          <Text style={styles.value}>{item.location_name}</Text>
+        <View style={dynamicStyles.detailRow}>
+          <Text style={dynamicStyles.label}>Lokasi:</Text>
+          <Text style={dynamicStyles.value}>{item.location_name}</Text>
         </View>
       </View>
 
-      <View style={styles.cardFooter}>
+      <View style={dynamicStyles.cardFooter}>
         <TouchableOpacity 
-          style={[styles.button, styles.buttonReject, processingId === item.id && styles.buttonDisabled]} 
+          style={[dynamicStyles.button, dynamicStyles.buttonReject, processingId === item.id && dynamicStyles.buttonDisabled]} 
           onPress={() => handleVerify(item.id, 'rejected')}
           disabled={processingId === item.id}
         >
-          <Ionicons name="close" size={18} color="white" style={styles.btnIcon} />
-          <Text style={styles.buttonText}>Tolak</Text>
+          <Ionicons name="close" size={18} color="white" style={dynamicStyles.btnIcon} />
+          <Text style={dynamicStyles.buttonText}>Tolak</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.button, styles.buttonAccept, processingId === item.id && styles.buttonDisabled]} 
+          style={[dynamicStyles.button, dynamicStyles.buttonAccept, processingId === item.id && dynamicStyles.buttonDisabled]} 
           onPress={() => handleVerify(item.id, 'verified')}
           disabled={processingId === item.id}
         >
-          <Ionicons name="checkmark" size={18} color="white" style={styles.btnIcon} />
-          <Text style={styles.buttonText}>Terima & Beri Poin</Text>
+          <Ionicons name="checkmark" size={18} color="white" style={dynamicStyles.btnIcon} />
+          <Text style={dynamicStyles.buttonText}>Terima & Beri Poin</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -93,24 +97,24 @@ export default function DistrikDashboard() {
 
   if (!isDistrik() && !isAdmin()) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centerContent}>
-          <Ionicons name="lock-closed" size={64} color={Colors.gray[500]} />
-          <Text style={styles.errorText}>Akses Ditolak. Anda bukan admin/distrik.</Text>
+      <SafeAreaView style={dynamicStyles.container}>
+        <View style={dynamicStyles.centerContent}>
+          <Ionicons name="lock-closed" size={64} color={colors.textMuted} />
+          <Text style={dynamicStyles.errorText}>Akses Ditolak. Anda bukan admin/distrik.</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Verifikasi Distrik</Text>
-        <Text style={styles.subtitle}>Antrean Setoran Sampah</Text>
+    <SafeAreaView style={dynamicStyles.container} edges={['top']}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.title}>Verifikasi Distrik</Text>
+        <Text style={dynamicStyles.subtitle}>Antrean Setoran Sampah</Text>
       </View>
 
       {loading ? (
-        <View style={styles.centerContent}>
+        <View style={dynamicStyles.centerContent}>
           <ActivityIndicator size="large" color={Colors.green[500]} />
         </View>
       ) : (
@@ -118,11 +122,11 @@ export default function DistrikDashboard() {
           data={pendingDeposits}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderDepositItem}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={dynamicStyles.listContainer}
           ListEmptyComponent={() => (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="checkmark-circle-outline" size={64} color={Colors.gray[400]} />
-              <Text style={styles.emptyText}>Semua setoran sudah diverifikasi!</Text>
+            <View style={dynamicStyles.emptyContainer}>
+              <Ionicons name="checkmark-circle-outline" size={64} color={colors.textMuted} />
+              <Text style={dynamicStyles.emptyText}>Semua setoran sudah diverifikasi!</Text>
             </View>
           )}
           refreshing={loading}
@@ -133,25 +137,25 @@ export default function DistrikDashboard() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.dark.bg,
+    backgroundColor: colors.bg,
   },
   header: {
     padding: 20,
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.dark.border,
+    borderBottomColor: colors.border,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.white,
+    color: colors.text,
   },
   subtitle: {
     fontSize: 14,
-    color: Colors.gray[400],
+    color: colors.textMuted,
     marginTop: 4,
   },
   centerContent: {
@@ -160,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     marginTop: 16,
     fontSize: 16,
   },
@@ -169,19 +173,19 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   card: {
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: colors.border,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.dark.border,
+    borderBottomColor: colors.border,
     paddingBottom: 12,
     marginBottom: 12,
   },
@@ -190,13 +194,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   userName: {
-    color: Colors.white,
+    color: colors.text,
     fontWeight: '600',
     fontSize: 16,
     marginLeft: 8,
   },
   date: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     fontSize: 12,
   },
   cardBody: {
@@ -208,11 +212,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     fontSize: 14,
   },
   value: {
-    color: Colors.white,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -252,7 +256,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    color: Colors.gray[400],
+    color: colors.textMuted,
     marginTop: 16,
     fontSize: 16,
   }
