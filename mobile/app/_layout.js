@@ -47,6 +47,8 @@ function AppContent() {
         <Stack.Screen name="settings" options={{ title: 'Pengaturan' }} />
         <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
         <Stack.Screen name="settings/theme" options={{ title: 'Mode Tampilan' }} />
+        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', title: 'AI Scanner', headerShown: false }} />
+        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', title: 'Eco-Ustadz AI', headerShown: false }} />
         <Stack.Screen name="settings/language" options={{ title: 'Bahasa' }} />
       </Stack>
     </>

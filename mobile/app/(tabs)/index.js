@@ -105,18 +105,68 @@ export default function HomeScreen() {
             </View>
             <Text style={dynamicStyles.ctaTitle}>Siap Membuat Perubahan?</Text>
             <Text style={dynamicStyles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
-            <Button title="Daftar Gratis" variant="gold" onPress={() => router.push('/(auth)/register')} style={{ width: '100%', marginTop: Spacing.md }} />
-          </View>
-        </Card>
-      </View>
 
-      <View style={{ height: Spacing['3xl'] }} />
-    </ScrollView>
+        {/* Features Grid */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Fitur <Text style={{ color: Colors.green[500] }}>Unggulan</Text></Text>
+          <View style={dynamicStyles.featGrid}>
+            {features.map((f, i) => (
+              <Card key={i} style={dynamicStyles.featCard} onPress={() => router.push(f.route)}>
+                <View style={[dynamicStyles.featIcon, { backgroundColor: f.color + '18' }]}>
+                  <Ionicons name={f.icon} size={26} color={f.color} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={dynamicStyles.featTitle}>{f.title}</Text>
+                  <Text style={dynamicStyles.featDesc}>{f.desc}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              </Card>
+            ))}
+          </View>
+        </View>
+
+        {/* CTA */}
+        <View style={dynamicStyles.section}>
+          <Card style={dynamicStyles.ctaCard}>
+            <LinearGradient colors={[Colors.green[600], Colors.green[800]]} style={StyleSheet.absoluteFillObject} />
+            <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
+              <View style={dynamicStyles.ctaIconBox}>
+                <Ionicons name="earth" size={40} color={Colors.white} />
+              </View>
+              <Text style={dynamicStyles.ctaTitle}>Siap Membuat Perubahan?</Text>
+              <Text style={dynamicStyles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
+              <Button title="Daftar Gratis" variant="gold" onPress={() => router.push('/(auth)/register')} style={{ width: '100%', marginTop: Spacing.md }} />
+            </View>
+          </Card>
+        </View>
+
+        <View style={{ height: Spacing['3xl'] }} />
+      </ScrollView>
+
+      {/* Floating Action Button untuk Eco-Ustadz AI */}
+      <TouchableOpacity 
+        style={[dynamicStyles.fab, Shadows.md]} 
+        activeOpacity={0.9}
+        onPress={() => router.push('/eco-ustadz')}
+      >
+        <LinearGradient 
+          colors={[Colors.green[500], Colors.green[700]]} 
+          style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
+        <Ionicons name="chatbubbles" size={28} color={Colors.white} />
+        <View style={dynamicStyles.fabSparkle}>
+          <Ionicons name="sparkles" size={14} color={Colors.gold[400]} />
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
+  container: { flex: 1, backgroundColor: colors.bg },
+  screen: { flex: 1 },
   heroContainer: { 
     paddingTop: Spacing['5xl'], 
     paddingBottom: Spacing['4xl'] + Spacing.xl, 
@@ -174,10 +224,12 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   },
   featIcon: { width: 50, height: 50, borderRadius: BorderRadius.xl, alignItems: 'center', justifyContent: 'center' },
   featTitle: { fontSize: 16, fontWeight: '800', color: colors.text, marginBottom: 2 },
-  featDesc: { fontSize: 13, color: colors.textMuted, lineHeight: 18 },
-
-  ctaCard: { overflow: 'hidden', borderWidth: 0, padding: 0, borderRadius: BorderRadius['2xl'] },
-  ctaIconBox: { backgroundColor: 'rgba(255,255,255,0.2)', padding: Spacing.md, borderRadius: BorderRadius.full, marginBottom: Spacing.sm },
-  ctaTitle: { fontSize: 24, fontWeight: '900', color: Colors.white, textAlign: 'center', marginTop: Spacing.sm },
-  ctaDesc: { fontSize: 15, color: 'rgba(255,255,255,0.9)', textAlign: 'center', marginBottom: Spacing.sm, lineHeight: 22 },
+  heroTextContent: { paddingHorizontal: Spacing['2xl'], alignItems: 'center' },
+  badge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: Spacing.md, paddingVertical: 6, borderRadius: BorderRadius.full, marginBottom: Spacing.lg, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
+  badgeText: { color: Colors.white, fontSize: 12, fontWeight: '700', marginLeft: 4, letterSpacing: 0.5 },
+  heroTitle: { fontSize: 38, fontWeight: '900', color: Colors.white, textAlign: 'center', lineHeight: 44, marginBottom: Spacing.md, letterSpacing: -1 },
+  heroDesc: { fontSize: 16, color: Colors.green[100], textAlign: 'center', lineHeight: 24, marginBottom: Spacing['2xl'], fontWeight: '500' },
+  
+  fab: { position: 'absolute', bottom: Spacing['2xl'], right: Spacing.xl, width: 64, height: 64, borderRadius: 32, backgroundColor: Colors.green[600], alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  fabSparkle: { position: 'absolute', top: 12, right: 12 },
 });

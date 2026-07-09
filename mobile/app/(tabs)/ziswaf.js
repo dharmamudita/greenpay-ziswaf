@@ -26,6 +26,7 @@ export default function ZiswafScreen() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [donating, setDonating] = useState(null);
+  const [forecasting, setForecasting] = useState(false);
   
   // States for Zakat Calculator
   const [income, setIncome] = useState('');
@@ -47,6 +48,32 @@ export default function ZiswafScreen() {
       console.log('Error fetching programs:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const predictImpact = async (title) => {
+    const finalAmount = selectedAmount || parseInt(customAmount);
+    if (!finalAmount || finalAmount < 10000) {
+      Alert.alert('Info', 'Pilih nominal donasi terlebih dahulu untuk melihat prediksi dampaknya oleh AI ✨.');
+      return;
+    }
+
+    setForecasting(true);
+    try {
+      const response = await api.post('/ai/impact', {
+        points: finalAmount,
+        campaignType: title
+      });
+      
+      if (response.data.error) {
+         Alert.alert('Gagal', response.data.error);
+      } else {
+         Alert.alert('Prediksi Dampak AI 🌍', response.data.forecast);
+      }
+    } catch (error) {
+      Alert.alert('Error AI', error.response?.data?.error || 'Gagal memanggil AI. Pastikan API Key di backend sudah diatur.');
+    } finally {
+      setForecasting(false);
     }
   };
 
@@ -204,11 +231,22 @@ export default function ZiswafScreen() {
                     </TouchableOpacity>
                   ))}
                 </View>
-                <Button 
-                  title={donating === p.id ? "Memproses..." : "Donasi Sekarang"} 
-                  onPress={() => handleDonate(p.id, p.title)} 
-                  disabled={donating === p.id}
-                />
+                
+                <View style={{ flexDirection: 'row', gap: Spacing.sm }}>
+                  <Button 
+                    title={forecasting ? "Memproses..." : "Prediksi AI ✨"} 
+                    variant="outline"
+                    onPress={() => predictImpact(p.title)} 
+                    disabled={donating === p.id || forecasting}
+                    style={{ flex: 1 }}
+                  />
+                  <Button 
+                    title={donating === p.id ? "Memproses..." : "Donasi"} 
+                    onPress={() => handleDonate(p.id, p.title)} 
+                    disabled={donating === p.id || forecasting}
+                    style={{ flex: 1 }}
+                  />
+                </View>
               </Card>
             );
           })

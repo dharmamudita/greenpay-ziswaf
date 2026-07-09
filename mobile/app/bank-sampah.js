@@ -118,8 +118,35 @@ export default function BankSampahScreen() {
           </View>
         </Card>
 
+        {/* AI Scanner Banner */}
+        <TouchableOpacity 
+          style={[dynamicStyles.aiBanner, Shadows.sm]} 
+          activeOpacity={0.9}
+          onPress={() => router.push('/ai-scanner')}
+        >
+          <LinearGradient 
+            colors={[Colors.green[500], Colors.green[700]]} 
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          />
+          <View style={dynamicStyles.aiBannerContent}>
+            <View style={dynamicStyles.aiIconWrap}>
+              <Ionicons name="scan" size={24} color={Colors.green[600]} />
+              <View style={dynamicStyles.aiSparkle}>
+                <Ionicons name="sparkles" size={12} color={Colors.gold[400]} />
+              </View>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={dynamicStyles.aiBannerTitle}>AI Waste Scanner ✨</Text>
+              <Text style={dynamicStyles.aiBannerDesc}>Foto sampahmu & prediksi poinnya secara instan!</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={Colors.white} />
+          </View>
+        </TouchableOpacity>
+
         {/* Setor Sampah Form */}
-        <Text style={dynamicStyles.sectionTitle}>Formulir Setoran</Text>
+        <Text style={dynamicStyles.sectionTitle}>Formulir Setoran Manual</Text>
         <Card style={dynamicStyles.formCard}>
           <Text style={dynamicStyles.label}>Pilih Jenis Sampah</Text>
           <View style={dynamicStyles.typeGrid}>
@@ -195,6 +222,14 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   locName: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 4 },
   locAddress: { fontSize: 12, color: colors.textMuted, marginBottom: Spacing.xs },
   locDistance: { fontSize: 12, fontWeight: '600', color: Colors.green[500] },
+  
+  aiBanner: { borderRadius: BorderRadius.xl, overflow: 'hidden', marginBottom: Spacing.xl },
+  aiBannerContent: { flexDirection: 'row', alignItems: 'center', padding: Spacing.lg, gap: Spacing.md },
+  aiIconWrap: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center' },
+  aiSparkle: { position: 'absolute', top: -2, right: -4 },
+  aiBannerTitle: { color: Colors.white, fontSize: 16, fontWeight: '800', marginBottom: 2 },
+  aiBannerDesc: { color: Colors.green[100], fontSize: 12, lineHeight: 16 },
+
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: Spacing.md },
   formCard: { gap: Spacing.sm },
   label: { fontSize: 13, fontWeight: '600', color: colors.text, marginBottom: Spacing.xs },
