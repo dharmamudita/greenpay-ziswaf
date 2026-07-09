@@ -1,17 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
-import { Spacing, BorderRadius } from '../../theme/spacing';
+import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 const stats = [
   { icon: 'refresh-circle', value: '12.5K', unit: 'Kg', label: 'Sampah Didaur Ulang', color: Colors.green[500] },
-  { icon: 'leaf', value: '1,247', unit: '', label: 'Pohon Ditanam', color: Colors.green[300] },
+  { icon: 'leaf', value: '1,247', unit: '', label: 'Pohon Ditanam', color: Colors.green[400] },
   { icon: 'heart', value: '2.8M', unit: 'Rp', label: 'Dana ZISWAF', color: Colors.gold[400] },
   { icon: 'storefront', value: '156', unit: '', label: 'UMKM Diberdayakan', color: Colors.info },
 ];
@@ -20,7 +21,7 @@ const features = [
   { icon: 'heart', title: 'Program ZISWAF', desc: 'Bayar zakat, infak, sedekah & wakaf', color: Colors.gold[400], route: '/(tabs)/ziswaf' },
   { icon: 'refresh-circle', title: 'Bank Sampah', desc: 'Setor sampah & dapatkan poin', color: Colors.green[500], route: '/bank-sampah' },
   { icon: 'storefront', title: 'Marketplace', desc: 'Belanja produk ramah lingkungan', color: Colors.info, route: '/(tabs)/marketplace' },
-  { icon: 'leaf', title: 'Green Point', desc: 'Kumpulkan & tukar poin', color: Colors.green[300], route: '/(tabs)/green-point' },
+  { icon: 'leaf', title: 'Green Point', desc: 'Kumpulkan & tukar poin', color: Colors.green[400], route: '/(tabs)/green-point' },
   { icon: 'bar-chart', title: 'Dashboard', desc: 'Pantau dampak kontribusi', color: Colors.purple, route: '/dashboard-dampak' },
   { icon: 'document-text', title: 'Impact Passport', desc: 'Paspor digital kontribusi', color: Colors.pink, route: '/impact-passport' },
   { icon: 'gift', title: 'Reward', desc: 'Tukarkan poin dengan hadiah', color: Colors.gold[500], route: '/reward' },
@@ -30,46 +31,48 @@ const features = [
 export default function HomeScreen() {
   const { user, isAuthenticated } = useAuth();
   const { colors, isDark } = useTheme();
-
   const dynamicStyles = getStyles(colors, isDark);
 
   return (
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       {/* Hero Section */}
-      <LinearGradient
-        colors={[Colors.green[isDark ? 900 : 700], colors.bg]}
-        style={dynamicStyles.hero}
-      >
+      <View style={dynamicStyles.heroContainer}>
+        <LinearGradient
+          colors={[isDark ? Colors.dark.surface2 : Colors.green[600], isDark ? Colors.dark.bg : Colors.green[800]]}
+          style={StyleSheet.absoluteFillObject}
+        />
         <View style={dynamicStyles.heroContent}>
-          <Badge text="🌿 Platform Green Economy" />
+          <Badge text="🌿 Platform Green Economy" variant="gold" />
           <Text style={dynamicStyles.heroTitle}>
             Bersama Wujudkan{'\n'}
-            <Text style={{ color: Colors.green[400] }}>Indonesia Hijau</Text>
+            <Text style={{ color: Colors.green[300] }}>Indonesia Hijau</Text>
           </Text>
           <Text style={dynamicStyles.heroSubtitle}>
             Gabungkan kekuatan ZISWAF dan aksi lingkungan untuk dampak nyata.
           </Text>
           <View style={dynamicStyles.heroBtns}>
             {isAuthenticated ? (
-              <Button title="Dashboard Saya" onPress={() => router.push('/dashboard-dampak')} />
+              <Button title="Dashboard Saya" onPress={() => router.push('/dashboard-dampak')} style={{ flex: 1 }} />
             ) : (
               <>
-                <Button title="Mulai Sekarang" onPress={() => router.push('/(auth)/register')} />
-                <Button title="Masuk" variant="outline" onPress={() => router.push('/(auth)/login')} />
+                <Button title="Mulai Sekarang" onPress={() => router.push('/(auth)/register')} style={{ flex: 1 }} />
+                <Button title="Masuk" variant="outline" onPress={() => router.push('/(auth)/login')} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} textStyle={{ color: Colors.white }} />
               </>
             )}
           </View>
         </View>
-      </LinearGradient>
+      </View>
 
-      {/* Stats */}
+      {/* Stats - Overlapping the Hero */}
       <View style={dynamicStyles.statsRow}>
         {stats.map((s, i) => (
-          <View key={i} style={dynamicStyles.statCard}>
-            <Ionicons name={s.icon} size={22} color={s.color} />
-            <Text style={[dynamicStyles.statValue, { color: s.color }]}>{s.value}<Text style={dynamicStyles.statUnit}> {s.unit}</Text></Text>
+          <Card key={i} style={dynamicStyles.statCard}>
+            <View style={[dynamicStyles.statIconBox, { backgroundColor: s.color + '15' }]}>
+              <Ionicons name={s.icon} size={24} color={s.color} />
+            </View>
+            <Text style={[dynamicStyles.statValue, { color: isDark ? Colors.white : Colors.light.text }]}>{s.value}<Text style={dynamicStyles.statUnit}> {s.unit}</Text></Text>
             <Text style={dynamicStyles.statLabel}>{s.label}</Text>
-          </View>
+          </Card>
         ))}
       </View>
 
@@ -78,13 +81,16 @@ export default function HomeScreen() {
         <Text style={dynamicStyles.sectionTitle}>Fitur <Text style={{ color: Colors.green[500] }}>Unggulan</Text></Text>
         <View style={dynamicStyles.featGrid}>
           {features.map((f, i) => (
-            <TouchableOpacity key={i} style={dynamicStyles.featCard} onPress={() => router.push(f.route)} activeOpacity={0.7}>
+            <Card key={i} style={dynamicStyles.featCard} onPress={() => router.push(f.route)}>
               <View style={[dynamicStyles.featIcon, { backgroundColor: f.color + '18' }]}>
-                <Ionicons name={f.icon} size={22} color={f.color} />
+                <Ionicons name={f.icon} size={26} color={f.color} />
               </View>
-              <Text style={dynamicStyles.featTitle}>{f.title}</Text>
-              <Text style={dynamicStyles.featDesc}>{f.desc}</Text>
-            </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                <Text style={dynamicStyles.featTitle}>{f.title}</Text>
+                <Text style={dynamicStyles.featDesc}>{f.desc}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+            </Card>
           ))}
         </View>
       </View>
@@ -92,12 +98,14 @@ export default function HomeScreen() {
       {/* CTA */}
       <View style={dynamicStyles.section}>
         <Card style={dynamicStyles.ctaCard}>
-          <LinearGradient colors={[Colors.green[700], Colors.green[900]]} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={[Colors.green[600], Colors.green[800]]} style={StyleSheet.absoluteFillObject} />
           <View style={{ padding: Spacing.xl, alignItems: 'center' }}>
-            <Ionicons name="earth" size={40} color={Colors.green[300]} />
+            <View style={dynamicStyles.ctaIconBox}>
+              <Ionicons name="earth" size={40} color={Colors.white} />
+            </View>
             <Text style={dynamicStyles.ctaTitle}>Siap Membuat Perubahan?</Text>
             <Text style={dynamicStyles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
-            <Button title="Daftar Gratis" variant="gold" onPress={() => router.push('/(auth)/register')} />
+            <Button title="Daftar Gratis" variant="gold" onPress={() => router.push('/(auth)/register')} style={{ width: '100%', marginTop: Spacing.md }} />
           </View>
         </Card>
       </View>
@@ -109,28 +117,67 @@ export default function HomeScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  hero: { paddingTop: Spacing['5xl'], paddingBottom: Spacing['3xl'], paddingHorizontal: Spacing.xl },
+  heroContainer: { 
+    paddingTop: Spacing['5xl'], 
+    paddingBottom: Spacing['4xl'] + Spacing.xl, 
+    paddingHorizontal: Spacing.xl,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    overflow: 'hidden',
+    ...Shadows.md
+  },
   heroContent: { gap: Spacing.md },
-  heroTitle: { fontSize: 30, fontWeight: '800', color: isDark ? Colors.white : colors.text, lineHeight: 38 },
-  heroSubtitle: { fontSize: 15, color: isDark ? Colors.gray[400] : colors.textMuted, lineHeight: 22 },
-  heroBtns: { flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.sm },
+  heroTitle: { fontSize: 34, fontWeight: '900', color: Colors.white, lineHeight: 40, letterSpacing: -0.5 },
+  heroSubtitle: { fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 24, fontWeight: '500' },
+  heroBtns: { flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.md },
 
-  statsRow: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: Spacing.md, gap: Spacing.sm, marginTop: -Spacing.lg },
-  statCard: { flex: 1, minWidth: '45%', backgroundColor: colors.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, padding: Spacing.md, alignItems: 'center', gap: 4 },
-  statValue: { fontSize: 20, fontWeight: '800' },
-  statUnit: { fontSize: 12, fontWeight: '500' },
-  statLabel: { fontSize: 10, color: colors.textMuted, textAlign: 'center' },
+  statsRow: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    paddingHorizontal: Spacing.lg, 
+    gap: Spacing.md, 
+    marginTop: -Spacing['4xl'], // Overlap
+    zIndex: 10
+  },
+  statCard: { 
+    flex: 1, 
+    minWidth: '45%', 
+    padding: Spacing.md, 
+    alignItems: 'flex-start', 
+    gap: 6,
+    borderRadius: BorderRadius['2xl'],
+    borderWidth: 1,
+    borderColor: isDark ? colors.border : 'rgba(255,255,255,0.8)',
+    backgroundColor: isDark ? colors.surface : 'rgba(255,255,255,0.95)',
+  },
+  statIconBox: {
+    padding: 8,
+    borderRadius: BorderRadius.lg,
+    marginBottom: 4,
+  },
+  statValue: { fontSize: 22, fontWeight: '900', letterSpacing: -0.5 },
+  statUnit: { fontSize: 13, fontWeight: '600' },
+  statLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '500' },
 
-  section: { paddingHorizontal: Spacing.xl, marginTop: Spacing['2xl'] },
-  sectionTitle: { fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: Spacing.base },
+  section: { paddingHorizontal: Spacing.xl, marginTop: Spacing['3xl'] },
+  sectionTitle: { fontSize: 24, fontWeight: '900', color: colors.text, marginBottom: Spacing.lg, letterSpacing: -0.5 },
 
-  featGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  featCard: { width: '48%', backgroundColor: colors.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, padding: Spacing.base, gap: Spacing.sm },
-  featIcon: { width: 40, height: 40, borderRadius: BorderRadius.lg, alignItems: 'center', justifyContent: 'center' },
-  featTitle: { fontSize: 14, fontWeight: '700', color: colors.text },
-  featDesc: { fontSize: 11, color: colors.textMuted, lineHeight: 16 },
+  featGrid: { gap: Spacing.md },
+  featCard: { 
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.md, 
+    gap: Spacing.base,
+    borderRadius: BorderRadius.xl,
+    borderWidth: isDark ? 1 : 0,
+    borderColor: colors.border,
+  },
+  featIcon: { width: 50, height: 50, borderRadius: BorderRadius.xl, alignItems: 'center', justifyContent: 'center' },
+  featTitle: { fontSize: 16, fontWeight: '800', color: colors.text, marginBottom: 2 },
+  featDesc: { fontSize: 13, color: colors.textMuted, lineHeight: 18 },
 
-  ctaCard: { overflow: 'hidden', borderWidth: 0, padding: 0 },
-  ctaTitle: { fontSize: 22, fontWeight: '800', color: Colors.white, textAlign: 'center', marginTop: Spacing.md },
-  ctaDesc: { fontSize: 13, color: Colors.green[100], textAlign: 'center', marginBottom: Spacing.lg, lineHeight: 20 },
+  ctaCard: { overflow: 'hidden', borderWidth: 0, padding: 0, borderRadius: BorderRadius['2xl'] },
+  ctaIconBox: { backgroundColor: 'rgba(255,255,255,0.2)', padding: Spacing.md, borderRadius: BorderRadius.full, marginBottom: Spacing.sm },
+  ctaTitle: { fontSize: 24, fontWeight: '900', color: Colors.white, textAlign: 'center', marginTop: Spacing.sm },
+  ctaDesc: { fontSize: 15, color: 'rgba(255,255,255,0.9)', textAlign: 'center', marginBottom: Spacing.sm, lineHeight: 22 },
 });
