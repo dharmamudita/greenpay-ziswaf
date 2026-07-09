@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import MapView, { Marker } from 'react-native-maps';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
@@ -21,16 +22,42 @@ export default function BankSampahScreen() {
   const typeDetails = wasteTypes.find(t => t.id === selectedType);
   const estimatedPoints = weight ? parseFloat(weight) * typeDetails.points : 0;
 
+  const lat = -5.3687;
+  const lng = 105.2393;
+
+  const openGoogleMaps = () => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    Linking.openURL(url).catch(err => console.error("Gagal membuka peta:", err));
+  };
+
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
-        {/* Map Placeholder */}
+        {/* Map */}
         <Card style={styles.mapCard}>
-          <View style={styles.mapPlaceholder}>
-            <Ionicons name="map" size={48} color={Colors.gray[600]} />
-            <Text style={styles.mapText}>Peta Lokasi Bank Sampah</Text>
-            <Badge text="Google Maps API Required" variant="info" style={{ marginTop: Spacing.sm }} />
-          </View>
+          <TouchableOpacity activeOpacity={0.9} onPress={openGoogleMaps} style={{ width: '100%', height: 180 }}>
+            <MapView
+              style={{ width: '100%', height: '100%' }}
+              mapType="hybrid"
+              initialRegion={{
+                latitude: lat,
+                longitude: lng,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              onPress={openGoogleMaps}
+            >
+              <Marker 
+                coordinate={{ latitude: lat, longitude: lng }}
+                title="Bank Sampah Hijau Lestari"
+                description="Jl. ZA Pagar Alam No. 45, Rajabasa"
+                onPress={openGoogleMaps}
+              />
+            </MapView>
+            <View style={styles.mapOverlayHint}>
+              <Text style={styles.mapOverlayText}>Buka di Google Maps</Text>
+            </View>
+          </TouchableOpacity>
           <View style={styles.locationInfo}>
             <Text style={styles.locName}>Bank Sampah Hijau Lestari</Text>
             <Text style={styles.locAddress}>Jl. ZA Pagar Alam No. 45, Rajabasa, Bandar Lampung</Text>
@@ -86,8 +113,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: Colors.dark.bg },
   container: { padding: Spacing.xl },
   mapCard: { padding: 0, overflow: 'hidden', marginBottom: Spacing.xl },
-  mapPlaceholder: { height: 180, backgroundColor: Colors.dark.surface2, alignItems: 'center', justifyContent: 'center' },
-  mapText: { color: Colors.gray[500], marginTop: Spacing.sm, fontWeight: '600' },
+  mapOverlayHint: { position: 'absolute', bottom: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: BorderRadius.sm },
+  mapOverlayText: { color: Colors.white, fontSize: 10, fontWeight: '700' },
   locationInfo: { padding: Spacing.base },
   locName: { fontSize: 16, fontWeight: '700', color: Colors.white, marginBottom: 4 },
   locAddress: { fontSize: 12, color: Colors.gray[400], marginBottom: Spacing.xs },
