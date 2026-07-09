@@ -34,33 +34,63 @@ export default function ProfileScreen() {
     );
   }
 
-  const handleUpdateAvatar = async () => {
-    try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        Alert.alert('Izin Ditolak', 'Anda perlu mengizinkan akses galeri untuk mengubah foto.');
-        return;
-      }
+  const handleUpdateAvatar = () => {
+    Alert.alert(
+      'Ubah Foto Profil',
+      'Pilih sumber foto Anda',
+      [
+        {
+          text: 'Buka Kamera',
+          onPress: async () => {
+            const permission = await ImagePicker.requestCameraPermissionsAsync();
+            if (!permission.granted) {
+              Alert.alert('Izin Ditolak', 'Dibutuhkan akses kamera.');
+              return;
+            }
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.5,
+            });
+            processImageResult(result);
+          }
+        },
+        {
+          text: 'Pilih dari Galeri',
+          onPress: async () => {
+            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!permission.granted) {
+              Alert.alert('Izin Ditolak', 'Anda perlu mengizinkan akses galeri.');
+              return;
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.5,
+            });
+            processImageResult(result);
+          }
+        },
+        { text: 'Batal', style: 'cancel' }
+      ]
+    );
+  };
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.5, // Kompresi untuk menghemat data
-      });
-
-      if (!result.canceled) {
-        setUploadingAvatar(true);
+  const processImageResult = async (result) => {
+    if (!result.canceled) {
+      setUploadingAvatar(true);
+      try {
         const imageUrl = await uploadToCloudinary(result.assets[0].uri);
-        
         await authService.updateProfile({ photo_url: imageUrl });
         await refreshProfile(); // Perbarui state user global
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
+      } finally {
+        setUploadingAvatar(false);
       }
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
-    } finally {
-      setUploadingAvatar(false);
     }
   };
 

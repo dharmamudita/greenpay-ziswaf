@@ -42,18 +42,15 @@ export const uploadToCloudinary = async (imageUri) => {
  * @returns {string} - URL dengan overlay watermark
  */
 export const getWatermarkedUrl = (originalUrl) => {
-  // Format waktu saat ini: "10 Jul 2026 12:00"
+  // Format waktu saat ini: "10 Jul 2026 12:00:45"
   const now = new Date();
   const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   
   // URL encoding untuk spasi menjadi %20
   const text = encodeURIComponent(`GreenPay ZISWAF - ${dateStr} ${timeStr}`);
   
   // Cloudinary Transformation parameters:
-  // l_text:Roboto_30_bold_white:[text] (Layer text, font Roboto, size 30, bold, white)
-  // co_white (color white), bg_black_50 (background black with 50% opacity)
-  // g_south_east (gravity bottom right), x_20, y_20 (margin 20px)
   const watermarkParams = `l_text:Arial_24_bold:${text},co_white,g_south_east,x_15,y_15`;
   const bgParams = `l_text:Arial_24_bold:${text},co_black,g_south_east,x_13,y_13`; // Shadow effect for readability
 
