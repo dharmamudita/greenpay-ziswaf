@@ -2,12 +2,13 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../context/AuthContext';
 import Colors from '../theme/colors';
-
+import GlobalToast from '../components/ui/GlobalToast';
 
 export default function RootLayout() {
   return (
     <AuthProvider>
       <StatusBar style="light" />
+      <GlobalToast />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: Colors.dark.bg },
