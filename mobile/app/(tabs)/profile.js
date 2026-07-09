@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
-import { Spacing, BorderRadius } from '../../theme/spacing';
+import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+
+const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -33,42 +35,67 @@ export default function ProfileScreen() {
     { icon: 'bar-chart', label: 'Dashboard Dampak', route: '/dashboard-dampak', color: Colors.purple },
     { icon: 'gift', label: 'Reward Saya', route: '/reward', color: Colors.gold[400] },
     { icon: 'refresh-circle', label: 'Bank Sampah', route: '/bank-sampah', color: Colors.green[500] },
-    { icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: colors.textMuted },
+    { icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[300] : Colors.gray[600] },
   ];
 
   return (
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+      
+      {/* Premium Gradient Header Background */}
+      <View style={dynamicStyles.headerBackground}>
+        <LinearGradient 
+          colors={[Colors.green[600], isDark ? colors.bg : Colors.green[50]]} 
+          style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+        />
+      </View>
+
       <View style={dynamicStyles.container}>
-        {/* Avatar */}
+        {/* Avatar Section */}
         <View style={dynamicStyles.avatarSection}>
-          <LinearGradient colors={[Colors.green[600], Colors.green[500]]} style={dynamicStyles.avatar}>
-            <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
-          </LinearGradient>
+          <View style={[dynamicStyles.avatarOuter, Shadows.md, { backgroundColor: colors.bg }]}>
+            <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.avatar}>
+              <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+            </LinearGradient>
+          </View>
           <Text style={dynamicStyles.userName}>{user?.display_name || 'Pengguna'}</Text>
           <Text style={dynamicStyles.userEmail}>{user?.email}</Text>
-          <Badge text={user?.role === 'admin' ? 'Admin' : user?.role === 'distrik' ? 'Distrik' : 'Pengguna'} />
+          <View style={{ marginTop: 8 }}>
+            <Badge text={user?.role === 'admin' ? 'Administrator' : user?.role === 'distrik' ? 'Akun Distrik' : 'Pengguna Aktif'} />
+          </View>
         </View>
 
         {/* Stats */}
-        <View style={dynamicStyles.statsRow}>
+        <View style={[dynamicStyles.statsRow, Shadows.sm]}>
           {[
-            { label: 'Green Point', value: user?.green_points || 0, icon: 'leaf', color: Colors.green[400] },
+            { label: 'Green Point', value: user?.green_points || 0, icon: 'leaf', color: Colors.green[500] },
             { label: 'Donasi', value: `${((user?.total_donation || 0) / 1000).toFixed(0)}K`, icon: 'heart', color: Colors.gold[400] },
-            { label: 'Sampah (kg)', value: user?.total_waste || 0, icon: 'refresh', color: Colors.info },
+            { label: 'Sampah', value: `${user?.total_waste || 0} kg`, icon: 'refresh', color: Colors.info },
           ].map((s, i) => (
             <View key={i} style={dynamicStyles.statItem}>
-              <Ionicons name={s.icon} size={20} color={s.color} />
-              <Text style={[dynamicStyles.statValue, { color: s.color }]}>{s.value}</Text>
+              <View style={[dynamicStyles.statIconWrap, { backgroundColor: isDark ? s.color + '15' : s.color + '10' }]}>
+                <Ionicons name={s.icon} size={20} color={s.color} />
+              </View>
+              <Text style={[dynamicStyles.statValue, { color: isDark ? Colors.white : Colors.black }]}>{s.value}</Text>
               <Text style={dynamicStyles.statLabel}>{s.label}</Text>
             </View>
           ))}
         </View>
 
-        {/* Menu */}
-        <View style={dynamicStyles.menu}>
+        {/* Menu Items (Grouped iOS Style) */}
+        <View style={[dynamicStyles.menuGroup, Shadows.sm]}>
           {menuItems.map((item, i) => (
-            <TouchableOpacity key={i} style={dynamicStyles.menuItem} onPress={() => router.push(item.route)} activeOpacity={0.7}>
-              <View style={[dynamicStyles.menuIcon, { backgroundColor: item.color + '18' }]}>
+            <TouchableOpacity 
+              key={i} 
+              style={[
+                dynamicStyles.menuItem, 
+                i !== menuItems.length - 1 && dynamicStyles.menuItemBorder 
+              ]} 
+              onPress={() => router.push(item.route)} 
+              activeOpacity={0.7}
+            >
+              <View style={[dynamicStyles.menuIcon, { backgroundColor: isDark ? item.color + '15' : item.color + '10' }]}>
                 <Ionicons name={item.icon} size={20} color={item.color} />
               </View>
               <Text style={dynamicStyles.menuLabel}>{item.label}</Text>
@@ -77,31 +104,80 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        <Button title="Keluar" variant="outline" onPress={logout} style={{ marginTop: Spacing.xl }}
-          textStyle={{ color: Colors.error }} icon={<Ionicons name="log-out-outline" size={18} color={Colors.error} />} />
+        <TouchableOpacity style={[dynamicStyles.logoutBtn, Shadows.sm]} onPress={logout} activeOpacity={0.8}>
+          <Ionicons name="log-out-outline" size={20} color={isDark ? '#FCA5A5' : Colors.error} />
+          <Text style={dynamicStyles.logoutText}>Keluar dari Akun</Text>
+        </TouchableOpacity>
+        
+        <Text style={{ textAlign: "center", color: colors.textMuted, marginTop: Spacing['2xl'], marginBottom: Spacing.xl, fontSize: 12, fontWeight: '600' }}>
+          GreenPay ZISWAF v1.0.0
+        </Text>
       </View>
-      <View style={{ height: Spacing['3xl'] }} />
-    <Text style={{textAlign:\"center\", color:\"gray\", marginVertical: 20}}>Versi 1.0.0</Text></ScrollView>
+    </ScrollView>
   );
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  container: { padding: Spacing.xl },
+  headerBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+    opacity: isDark ? 0.3 : 1,
+  },
+  container: { padding: Spacing.xl, paddingTop: Spacing['2xl'] },
+  
   centeredScreen: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: Spacing.xl, gap: Spacing.md },
   noAuthTitle: { fontSize: 22, fontWeight: '800', color: colors.text },
   noAuthDesc: { fontSize: 14, color: colors.textMuted, textAlign: 'center' },
-  avatarSection: { alignItems: 'center', marginBottom: Spacing.xl, gap: Spacing.xs },
-  avatar: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
-  avatarText: { fontSize: 32, fontWeight: '800', color: Colors.white },
-  userName: { fontSize: 22, fontWeight: '800', color: colors.text },
-  userEmail: { fontSize: 13, color: colors.textMuted },
-  statsRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.xl },
-  statItem: { flex: 1, backgroundColor: colors.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, padding: Spacing.md, alignItems: 'center', gap: 4 },
-  statValue: { fontSize: 20, fontWeight: '800' },
-  statLabel: { fontSize: 10, color: colors.textMuted },
-  menu: { gap: Spacing.sm },
-  menuItem: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, backgroundColor: colors.surface, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, padding: Spacing.md },
-  menuIcon: { width: 36, height: 36, borderRadius: BorderRadius.lg, alignItems: 'center', justifyContent: 'center' },
-  menuLabel: { flex: 1, fontSize: 14, fontWeight: '600', color: colors.text },
+  
+  avatarSection: { alignItems: 'center', marginBottom: Spacing.xl, zIndex: 10 },
+  avatarOuter: { padding: 4, borderRadius: 50, marginBottom: Spacing.md },
+  avatar: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { fontSize: 36, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
+  userName: { fontSize: 26, fontWeight: '900', color: colors.text, letterSpacing: -0.5 },
+  userEmail: { fontSize: 14, color: colors.textMuted, fontWeight: '500', marginTop: 2 },
+  
+  statsRow: { 
+    flexDirection: 'row', 
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius['2xl'],
+    borderWidth: isDark ? 1 : 0,
+    borderColor: colors.border,
+    padding: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  statItem: { flex: 1, alignItems: 'center', gap: 6 },
+  statIconWrap: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  statValue: { fontSize: 20, fontWeight: '900', letterSpacing: -0.5 },
+  statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '600' },
+  
+  menuGroup: { 
+    backgroundColor: colors.surface, 
+    borderRadius: BorderRadius['2xl'], 
+    borderWidth: isDark ? 1 : 0,
+    borderColor: colors.border,
+    overflow: 'hidden',
+    marginBottom: Spacing.lg,
+  },
+  menuItem: { flexDirection: 'row', alignItems: 'center', padding: Spacing.md, paddingVertical: Spacing.lg },
+  menuItemBorder: { borderBottomWidth: 1, borderBottomColor: isDark ? colors.border : 'rgba(0,0,0,0.03)' },
+  menuIcon: { width: 38, height: 38, borderRadius: BorderRadius.xl, alignItems: 'center', justifyContent: 'center', marginRight: Spacing.md },
+  menuLabel: { flex: 1, fontSize: 15, fontWeight: '700', color: colors.text },
+  
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : '#FEF2F2',
+    padding: Spacing.lg,
+    borderRadius: BorderRadius['2xl'],
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(239,68,68,0.3)' : '#FECACA',
+    marginTop: Spacing.md,
+  },
+  logoutText: { color: isDark ? '#FCA5A5' : Colors.error, fontSize: 15, fontWeight: '800' },
 });
