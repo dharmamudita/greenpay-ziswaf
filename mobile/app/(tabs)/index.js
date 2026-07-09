@@ -23,7 +23,7 @@ const features = [
   { icon: 'bar-chart', title: 'Dashboard', desc: 'Pantau dampak kontribusi', color: Colors.purple, route: '/dashboard-dampak' },
   { icon: 'document-text', title: 'Impact Passport', desc: 'Paspor digital kontribusi', color: Colors.pink, route: '/impact-passport' },
   { icon: 'gift', title: 'Reward', desc: 'Tukarkan poin dengan hadiah', color: Colors.gold[500], route: '/reward' },
-  { icon: 'chatbox-ellipses', title: 'AI Assistant', desc: 'Chatbot pintar lingkungan', color: '#06B6D4', route: '/' },
+  { icon: 'trophy', title: 'Peringkat', desc: 'Top 10 Pejuang Lingkungan', color: Colors.gold[400], route: '/leaderboard' },
 ];
 
 export default function HomeScreen() {
