@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linkin
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
-import { Spacing, BorderRadius } from '../theme/spacing';
+import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import Map from '../components/Map';
 import { uploadToCloudinary, getWatermarkedUrl } from '../utils/cloudinary';
 import api from '../services/api';
