@@ -33,7 +33,7 @@ export default function BankSampahScreen() {
           </View>
           <View style={styles.locationInfo}>
             <Text style={styles.locName}>Bank Sampah Hijau Lestari</Text>
-            <Text style={styles.locAddress}>Jl. Merdeka No. 45, Jakarta Selatan</Text>
+            <Text style={styles.locAddress}>Jl. ZA Pagar Alam No. 45, Rajabasa, Bandar Lampung</Text>
             <Text style={styles.locDistance}>📍 1.2 km dari lokasi Anda</Text>
           </View>
         </Card>

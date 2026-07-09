@@ -199,18 +199,18 @@ INSERT INTO ziswaf_programs (title, description, category, target_amount, collec
 
 -- SEED DATA: Waste Locations
 INSERT INTO waste_locations (name, address, latitude, longitude, operating_hours, status) VALUES
-('Bank Sampah Hijau Lestari', 'Jl. Merdeka No. 45, Jakarta Selatan', -6.2615, 106.8106, '08:00 - 16:00', 'active'),
-('Bank Sampah Berkah', 'Jl. Sudirman No. 22, Jakarta Pusat', -6.2088, 106.8456, '09:00 - 17:00', 'active'),
-('Bank Sampah Sejahtera', 'Jl. Gatot Subroto No. 10, Bandung', -6.9175, 107.6191, '08:00 - 15:00', 'active');
+('Bank Sampah Hijau Lestari', 'Jl. ZA Pagar Alam No. 45, Rajabasa, Bandar Lampung', -5.3687, 105.2393, '08:00 - 16:00', 'active'),
+('Bank Sampah Berkah', 'Jl. Teuku Umar No. 22, Kedaton, Bandar Lampung', -5.3853, 105.2573, '09:00 - 17:00', 'active'),
+('Bank Sampah Sejahtera', 'Jl. Imam Bonjol No. 10, Kemiling, Bandar Lampung', -5.4057, 105.2287, '08:00 - 15:00', 'active');
 
 -- SEED DATA: Products
 INSERT INTO products (name, description, price, category, umkm_name, stock, points_bonus, rating, sold_count) VALUES
-('Tas Belanja Daur Ulang', 'Tas belanja ramah lingkungan dari bahan daur ulang', 45000, 'Aksesoris', 'EcoStore Bandung', 50, 15, 4.8, 234),
-('Tumbler Bambu 500ml', 'Tumbler eco-friendly berbahan bambu alami', 85000, 'Peralatan', 'Green Living Jakarta', 30, 25, 4.9, 189),
-('Sabun Natural Organik', 'Sabun alami tanpa bahan kimia berbahaya', 25000, 'Perawatan', 'Nature Pure Yogya', 100, 10, 4.7, 567),
-('Sedotan Stainless Set', 'Set sedotan stainless steel reusable', 35000, 'Peralatan', 'EcoStore Bandung', 80, 12, 4.6, 445),
-('Beeswax Food Wrap', 'Pembungkus makanan pengganti plastik wrap', 55000, 'Dapur', 'Green Living Jakarta', 40, 18, 4.8, 123),
-('Pot Tanaman Daur Ulang', 'Pot tanaman dari material daur ulang', 30000, 'Dekorasi', 'Nature Pure Yogya', 60, 8, 4.5, 321);
+('Tas Belanja Daur Ulang', 'Tas belanja ramah lingkungan dari bahan daur ulang', 45000, 'Aksesoris', 'EcoStore Lampung', 50, 15, 4.8, 234),
+('Tumbler Bambu 500ml', 'Tumbler eco-friendly berbahan bambu alami', 85000, 'Peralatan', 'Green Living Lampung', 30, 25, 4.9, 189),
+('Sabun Natural Organik', 'Sabun alami tanpa bahan kimia berbahaya', 25000, 'Perawatan', 'Nature Pure Lampung', 100, 10, 4.7, 567),
+('Sedotan Stainless Set', 'Set sedotan stainless steel reusable', 35000, 'Peralatan', 'EcoStore Lampung', 80, 12, 4.6, 445),
+('Beeswax Food Wrap', 'Pembungkus makanan pengganti plastik wrap', 55000, 'Dapur', 'Green Living Lampung', 40, 18, 4.8, 123),
+('Pot Tanaman Daur Ulang', 'Pot tanaman dari material daur ulang', 30000, 'Dekorasi', 'Nature Pure Lampung', 60, 8, 4.5, 321);
 
 -- SEED DATA: Rewards
 INSERT INTO rewards (name, description, points_cost, category, stock) VALUES
