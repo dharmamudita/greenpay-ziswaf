@@ -1,0 +1,1 @@
+import { useState, useEffect } from 'react'; import { Dimensions } from 'react-native'; export default function useWindowSize() { const [s, setS] = useState(Dimensions.get('window')); useEffect(() => { const sub = Dimensions.addEventListener('change', ({window}) => setS(window)); return () => sub?.remove(); }, []); return s; }
