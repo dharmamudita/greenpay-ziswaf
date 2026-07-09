@@ -10,7 +10,7 @@ const tabs = [
   { id: 'infak', label: 'Infak', icon: 'heart', color: Colors.green[500] },
   { id: 'sedekah', label: 'Sedekah', icon: 'hand-left', color: Colors.pink },
   { id: 'wakaf', label: 'Wakaf', icon: 'business', color: Colors.info },
-  { id: 'kalkulator', label: 'Kalkulator', icon: 'calculator', color: Colors.blue[400] },
+  { id: 'kalkulator', label: 'Kalkulator', icon: 'calculator', color: Colors.info },
 ];
 
 const programs = {
