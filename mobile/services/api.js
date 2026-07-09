@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getItemAsync, deleteItemAsync } from '../utils/storage';
 
 // Change this to your backend URL
-const API_BASE_URL = 'http://192.168.1.100:5000/api';
+const API_BASE_URL = 'http://192.168.1.13:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
