@@ -22,6 +22,11 @@
       },
       "package": "com.greenpay.ziswaf"
     },
-    "plugins": ["expo-router", "expo-font", "expo-secure-store"]
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      "expo-asset"
+    ]
   }
 }
