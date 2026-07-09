@@ -1,24 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Image } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Card, Badge, Button } from '../../components/ui';
-import Colors from '../../theme/colors';
-import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import { Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
-  const { user, isAuthenticated, logout, refreshProfile } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
   const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
