@@ -3,8 +3,29 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 const { JWT_SECRET } = require('../middleware/auth');
+const nodemailer = require('nodemailer');
 
 const router = express.Router();
+
+let transporter;
+(async () => {
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+    });
+  } else {
+    // Ethereal Email for testing without real credentials
+    const testAccount = await nodemailer.createTestAccount();
+    transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false,
+      auth: { user: testAccount.user, pass: testAccount.pass },
+    });
+    console.log('Ethereal Email ready for testing. Check server logs for Preview URLs.');
+  }
+})();
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
@@ -84,6 +105,62 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Gagal login. Silakan coba lagi.' });
+  }
+});
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await pool.query('SELECT id, display_name FROM users WHERE email = $1', [email]);
+    
+    if (user.rows.length === 0) {
+      return res.json({ message: 'Jika email terdaftar, kode reset telah dikirim.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 15 * 60000); // 15 mins
+
+    await pool.query('UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3', [otp, expiry, email]);
+
+    const mailOptions = {
+      from: '"GreenPay ZISWAF" <noreply@greenpay.com>',
+      to: email,
+      subject: 'Kode Reset Password',
+      html: `<p>Halo ${user.rows[0].display_name},</p><p>Kode OTP reset password Anda: <b>${otp}</b></p><p>Berlaku 15 menit.</p>`
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('OTP:', otp);
+    if (!process.env.SMTP_USER) {
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
+
+    res.json({ message: 'Jika email terdaftar, kode reset telah dikirim.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Gagal mengirim email reset password.' });
+  }
+});
+
+// POST /api/auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await pool.query('SELECT id, reset_token, reset_token_expiry FROM users WHERE email = $1', [email]);
+    if (user.rows.length === 0) return res.status(400).json({ error: 'Data tidak valid.' });
+
+    const data = user.rows[0];
+    if (data.reset_token !== otp) return res.status(400).json({ error: 'Kode OTP salah.' });
+    if (new Date() > new Date(data.reset_token_expiry)) return res.status(400).json({ error: 'Kode OTP kadaluarsa.' });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE users SET password = $1, reset_token = NULL, reset_token_expiry = NULL WHERE email = $2', [hashedPassword, email]);
+
+    res.json({ message: 'Password berhasil diubah. Silakan login.' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Gagal mereset password.' });
   }
 });
 

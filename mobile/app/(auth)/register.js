@@ -20,8 +20,22 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaNum1, setCaptchaNum1] = useState(0);
+  const [captchaNum2, setCaptchaNum2] = useState(0);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  
   const { register } = useAuth();
   const { colors, isDark } = useTheme();
+
+  React.useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  const generateCaptcha = () => {
+    setCaptchaNum1(Math.floor(Math.random() * 10) + 1);
+    setCaptchaNum2(Math.floor(Math.random() * 10) + 1);
+    setCaptchaAnswer('');
+  };
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -38,6 +52,13 @@ export default function RegisterScreen() {
       setError('Password minimal 6 karakter.');
       return;
     }
+    
+    if (parseInt(captchaAnswer) !== (captchaNum1 + captchaNum2)) {
+      setError('Jawaban CAPTCHA salah. Silakan coba lagi.');
+      generateCaptcha();
+      return;
+    }
+    
     setError('');
     setLoading(true);
     try {
@@ -140,6 +161,29 @@ export default function RegisterScreen() {
                 </View>
               </View>
 
+              <View style={dynamicStyles.inputGroup}>
+                <Text style={dynamicStyles.label}>Keamanan (CAPTCHA)</Text>
+                <View style={dynamicStyles.captchaWrap}>
+                  <View style={dynamicStyles.captchaQuestion}>
+                    <Text style={dynamicStyles.captchaText}>{captchaNum1} + {captchaNum2} =</Text>
+                  </View>
+                  <View style={[dynamicStyles.inputWrap, { flex: 1 }]}>
+                    <TextInput 
+                      style={[dynamicStyles.input, { textAlign: 'center', fontWeight: '800', fontSize: 20 }]} 
+                      placeholder="?" 
+                      placeholderTextColor={colors.textMuted} 
+                      value={captchaAnswer} 
+                      onChangeText={setCaptchaAnswer} 
+                      keyboardType="number-pad" 
+                      maxLength={2}
+                    />
+                  </View>
+                  <TouchableOpacity onPress={generateCaptcha} style={dynamicStyles.captchaRefresh}>
+                    <Ionicons name="refresh" size={24} color={Colors.green[500]} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
               <Button title="Daftar Sekarang" onPress={handleRegister} loading={loading} style={{ marginTop: Spacing.sm }} />
             </View>
           </View>
@@ -190,4 +234,9 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: Spacing['3xl'] },
   footerText: { color: colors.textMuted, fontSize: 15, fontWeight: '500' },
   linkText: { color: Colors.green[500], fontSize: 15, fontWeight: '800' },
+  
+  captchaWrap: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  captchaQuestion: { backgroundColor: isDark ? colors.bg : Colors.gray[200], paddingHorizontal: Spacing.md, paddingVertical: Spacing.md + 2, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
+  captchaText: { fontSize: 18, fontWeight: '900', color: colors.text, letterSpacing: 1 },
+  captchaRefresh: { padding: Spacing.sm, backgroundColor: isDark ? colors.bg : Colors.gray[100], borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
 });

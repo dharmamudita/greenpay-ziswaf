@@ -112,7 +112,7 @@ export default function LoginScreen() {
           </View>
 
           <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.md }]}>
-            <TouchableOpacity onPress={() => {/* Handle forgot password */}}>
+            <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
               <Text style={[dynamicStyles.footerText, { color: Colors.green[500] }]}>Lupa Password?</Text>
             </TouchableOpacity>
             
