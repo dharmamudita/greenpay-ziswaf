@@ -91,8 +91,8 @@ export function Card({ children, style }) {
 export function Badge({ text, variant = 'green', style }) {
   const { colors, isDark } = useTheme();
   const dynamicStyles = getStyles(colors, isDark);
-  const bgMap = { green: isDark ? Colors.green[900] : Colors.green[100], gold: Colors.gold[600] + '20', info: Colors.info + '20' };
-  const colorMap = { green: isDark ? Colors.green[400] : Colors.green[600], gold: Colors.gold[600], info: Colors.info };
+  const bgMap = { green: isDark ? Colors.green[900] : Colors.green[100], gold: isDark ? Colors.gold[600] + '20' : Colors.gold[100], info: isDark ? Colors.info + '20' : '#DBEAFE' };
+  const colorMap = { green: isDark ? Colors.green[400] : Colors.green[700], gold: isDark ? Colors.gold[400] : Colors.gold[600], info: isDark ? Colors.info : '#1D4ED8' };
   return (
     <Text style={[dynamicStyles.badge, { backgroundColor: bgMap[variant], color: colorMap[variant] }, style]}>
       {text}
