@@ -111,8 +111,8 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <View style={dynamicStyles.footer}>
-            <Text style={dynamicStyles.footerText}>Lupa Password? | Belum bergabung dengan kami? </Text>
+          <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.xs }]}>
+            <Text style={[dynamicStyles.footerText, { textAlign: 'center' }]}>Lupa Password? | Belum bergabung dengan kami?</Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
               <Text style={dynamicStyles.linkText}>Daftar Sekarang</Text>
             </TouchableOpacity>
