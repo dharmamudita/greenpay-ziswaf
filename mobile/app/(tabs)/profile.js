@@ -81,7 +81,7 @@ export default function ProfileScreen() {
           textStyle={{ color: Colors.error }} icon={<Ionicons name="log-out-outline" size={18} color={Colors.error} />} />
       </View>
       <View style={{ height: Spacing['3xl'] }} />
-    </ScrollView>
+    <Text style={{textAlign:\"center\", color:\"gray\", marginVertical: 20}}>Versi 1.0.0</Text></ScrollView>
   );
 }
 
