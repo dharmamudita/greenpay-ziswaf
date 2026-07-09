@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.green[600],
   },
   buttonReject: {
-    backgroundColor: Colors.red[600],
+    backgroundColor: Colors.error,
   },
   buttonDisabled: {
     opacity: 0.5,
