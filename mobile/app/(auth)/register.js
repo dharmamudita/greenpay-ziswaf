@@ -144,12 +144,12 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          <View style={dynamicStyles.footer}>
-            <Text style={dynamicStyles.footerText}>Dengan mendaftar, Anda menyetujui S&K.</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+          <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.sm }]}>
+            <Text style={[dynamicStyles.footerText, { fontSize: 13, textAlign: 'center' }]}>Mendaftar berarti setuju S&K.</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={dynamicStyles.footerText}>Sudah punya akun? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-                <Text style={dynamicStyles.linkText}>Masuk di sini</Text>
+                <Text style={dynamicStyles.linkText}>Masuk</Text>
               </TouchableOpacity>
             </View>
           </View>
