@@ -27,6 +27,18 @@ export const Colors = {
     surface2: '#1A2B1A',
     surface3: '#243524',
     border: '#2D3D2D',
+    text: '#FFFFFF',
+    textMuted: '#9CA3AF', // gray 400
+  },
+  // Light Theme
+  light: {
+    bg: '#F9FAFB',
+    surface: '#FFFFFF',
+    surface2: '#F3F4F6',
+    surface3: '#E5E7EB',
+    border: '#E5E7EB',
+    text: '#111827',
+    textMuted: '#6B7280', // gray 500
   },
   // Grays
   gray: {

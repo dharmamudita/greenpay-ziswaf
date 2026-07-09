@@ -1,20 +1,24 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../context/AuthContext';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
 import GlobalToast from '../components/ui/GlobalToast';
+import '../i18n';
 
-export default function RootLayout() {
+function AppContent() {
+  const { colors, isDark } = useTheme();
+  
   return (
-    <AuthProvider>
-      <StatusBar style="light" />
+    <>
+      <StatusBar style={isDark ? "light" : "dark"} />
       <GlobalToast />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: Colors.dark.bg },
-          headerTintColor: Colors.white,
+          headerStyle: { backgroundColor: colors.bg },
+          headerTintColor: isDark ? Colors.white : Colors.black,
           headerTitleStyle: { fontWeight: '700' },
-          contentStyle: { backgroundColor: Colors.dark.bg },
+          contentStyle: { backgroundColor: colors.bg },
           headerShadowVisible: false,
         }}
       >
@@ -25,7 +29,18 @@ export default function RootLayout() {
         <Stack.Screen name="dashboard-dampak" options={{ title: 'Dashboard Dampak' }} />
         <Stack.Screen name="reward" options={{ title: 'Reward' }} />
         <Stack.Screen name="impact-passport" options={{ title: 'Impact Passport' }} />
+        <Stack.Screen name="settings" options={{ title: 'Pengaturan' }} />
       </Stack>
-    </AuthProvider>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "title": "Pengaturan",
+    "theme": "Tema Tampilan",
+    "theme_system": "Mengikuti Sistem",
+    "theme_light": "Mode Terang",
+    "theme_dark": "Mode Gelap",
+    "language": "Bahasa",
+    "lang_id": "Indonesia",
+    "lang_en": "Inggris",
+    "save": "Simpan Pengaturan"
+  }
+}

@@ -3,8 +3,12 @@ import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../../theme/colors';
 import { BorderRadius, Spacing } from '../../theme/spacing';
+import { useTheme } from '../../context/ThemeContext';
 
 export function Button({ title, onPress, variant = 'primary', loading = false, style, textStyle, icon }) {
+  const { colors, isDark } = useTheme();
+  const dynamicStyles = getStyles(colors, isDark);
+
   if (variant === 'primary') {
     return (
       <TouchableOpacity onPress={onPress} disabled={loading} activeOpacity={0.8} style={style}>
@@ -12,14 +16,14 @@ export function Button({ title, onPress, variant = 'primary', loading = false, s
           colors={[Colors.green[600], Colors.green[500]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={styles.primaryBtn}
+          style={dynamicStyles.primaryBtn}
         >
           {loading ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
             <>
               {icon}
-              <Text style={[styles.primaryText, textStyle]}>{title}</Text>
+              <Text style={[dynamicStyles.primaryText, textStyle]}>{title}</Text>
             </>
           )}
         </LinearGradient>
@@ -34,14 +38,14 @@ export function Button({ title, onPress, variant = 'primary', loading = false, s
           colors={[Colors.gold[500], Colors.gold[400]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={styles.primaryBtn}
+          style={dynamicStyles.primaryBtn}
         >
           {loading ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
             <>
               {icon}
-              <Text style={[styles.primaryText, { color: Colors.dark.bg }, textStyle]}>{title}</Text>
+              <Text style={[dynamicStyles.primaryText, { color: isDark ? Colors.dark.bg : Colors.light.bg }, textStyle]}>{title}</Text>
             </>
           )}
         </LinearGradient>
@@ -51,13 +55,13 @@ export function Button({ title, onPress, variant = 'primary', loading = false, s
 
   if (variant === 'outline') {
     return (
-      <TouchableOpacity onPress={onPress} disabled={loading} activeOpacity={0.7} style={[styles.outlineBtn, style]}>
+      <TouchableOpacity onPress={onPress} disabled={loading} activeOpacity={0.7} style={[dynamicStyles.outlineBtn, style]}>
         {loading ? (
           <ActivityIndicator color={Colors.green[400]} />
         ) : (
           <>
             {icon}
-            <Text style={[styles.outlineText, textStyle]}>{title}</Text>
+            <Text style={[dynamicStyles.outlineText, textStyle]}>{title}</Text>
           </>
         )}
       </TouchableOpacity>
@@ -65,13 +69,13 @@ export function Button({ title, onPress, variant = 'primary', loading = false, s
   }
 
   return (
-    <TouchableOpacity onPress={onPress} disabled={loading} activeOpacity={0.7} style={[styles.secondaryBtn, style]}>
+    <TouchableOpacity onPress={onPress} disabled={loading} activeOpacity={0.7} style={[dynamicStyles.secondaryBtn, style]}>
       {loading ? (
-        <ActivityIndicator color={Colors.white} />
+        <ActivityIndicator color={isDark ? Colors.white : Colors.black} />
       ) : (
         <>
           {icon}
-          <Text style={[styles.secondaryText, textStyle]}>{title}</Text>
+          <Text style={[dynamicStyles.secondaryText, textStyle]}>{title}</Text>
         </>
       )}
     </TouchableOpacity>
@@ -79,20 +83,24 @@ export function Button({ title, onPress, variant = 'primary', loading = false, s
 }
 
 export function Card({ children, style }) {
-  return <TouchableOpacity activeOpacity={1} style={[styles.card, style]}>{children}</TouchableOpacity>;
+  const { colors, isDark } = useTheme();
+  const dynamicStyles = getStyles(colors, isDark);
+  return <TouchableOpacity activeOpacity={1} style={[dynamicStyles.card, style]}>{children}</TouchableOpacity>;
 }
 
 export function Badge({ text, variant = 'green', style }) {
-  const bgMap = { green: Colors.green[900], gold: Colors.gold[600] + '20', info: Colors.info + '20' };
-  const colorMap = { green: Colors.green[400], gold: Colors.gold[400], info: Colors.info };
+  const { colors, isDark } = useTheme();
+  const dynamicStyles = getStyles(colors, isDark);
+  const bgMap = { green: isDark ? Colors.green[900] : Colors.green[100], gold: Colors.gold[600] + '20', info: Colors.info + '20' };
+  const colorMap = { green: isDark ? Colors.green[400] : Colors.green[600], gold: Colors.gold[600], info: Colors.info };
   return (
-    <Text style={[styles.badge, { backgroundColor: bgMap[variant], color: colorMap[variant] }, style]}>
+    <Text style={[dynamicStyles.badge, { backgroundColor: bgMap[variant], color: colorMap[variant] }, style]}>
       {text}
     </Text>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDark) => StyleSheet.create({
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -119,7 +127,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.green[600],
   },
   outlineText: {
-    color: Colors.green[400],
+    color: Colors.green[500],
     fontSize: 14,
     fontWeight: '600',
   },
@@ -131,18 +139,18 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xl,
     borderRadius: BorderRadius.lg,
-    backgroundColor: Colors.dark.surface2,
+    backgroundColor: colors.surface2,
   },
   secondaryText: {
-    color: Colors.white,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },
   card: {
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: colors.border,
     padding: Spacing.base,
   },
   badge: {

@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "title": "Settings",
+    "theme": "App Theme",
+    "theme_system": "System Default",
+    "theme_light": "Light Mode",
+    "theme_dark": "Dark Mode",
+    "language": "Language",
+    "lang_id": "Indonesian",
+    "lang_en": "English",
+    "save": "Save Settings"
+  }
+}
