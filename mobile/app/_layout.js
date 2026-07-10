@@ -37,7 +37,6 @@ function AppContent() {
           headerTitleStyle: { fontWeight: '700' },
           contentStyle: { backgroundColor: colors.bg },
           headerShadowVisible: false,
-          animation: 'fade_from_bottom', // Animasi premium yang lebih aman dari glitch putih
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -50,8 +49,8 @@ function AppContent() {
         <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
         <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
         <Stack.Screen name="settings/theme" options={{ title: t('settings.theme') }} />
-        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('ai_scanner.title'), headerShown: false }} />
-        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('eco_ustadz.title'), headerShown: false }} />
+        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', title: t('ai_scanner.title'), headerShown: false }} />
+        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', title: t('eco_ustadz.title'), headerShown: false }} />
         <Stack.Screen name="settings/language" options={{ title: t('settings.language') }} />
       </Stack>
     </View>
