@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
@@ -12,6 +13,7 @@ export default function DashboardDampakScreen() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -71,8 +73,8 @@ export default function DashboardDampakScreen() {
         style={dynamicStyles.headerGradient}
       >
         <View style={dynamicStyles.container}>
-          <Text style={dynamicStyles.pageTitle}>Dashboard Dampak Global</Text>
-          <Text style={dynamicStyles.pageDesc}>Melihat seberapa besar perubahan yang kita buat bersama untuk masa depan bumi dan kesejahteraan umat.</Text>
+          <Text style={dynamicStyles.pageTitle}>{t('screens.dashboard_title')}</Text>
+          <Text style={dynamicStyles.pageDesc}>{t('screens.dashboard_desc')}</Text>
 
           <View style={dynamicStyles.grid}>
             {impactData.map((item, i) => (
