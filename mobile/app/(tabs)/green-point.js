@@ -262,7 +262,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   
   historyContainer: {
     backgroundColor: colors.surface,
-    borderRadius: BorderRadius.2xl,
+    borderRadius: BorderRadius['2xl'],
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderColor: colors.border,
