@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius } from '../../theme/spacing';
@@ -16,6 +17,7 @@ export default function MarketplaceScreen() {
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(null);
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -85,14 +87,14 @@ export default function MarketplaceScreen() {
   return (
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       <View style={dynamicStyles.container}>
-        <Text style={dynamicStyles.pageTitle}>Marketplace <Text style={{ color: Colors.green[500] }}>UMKM</Text></Text>
+        <Text style={dynamicStyles.pageTitle}>{t('marketplace.title')} <Text style={{ color: Colors.green[500] }}>{t('marketplace.title_highlight')}</Text></Text>
 
         {/* Search */}
         <View style={dynamicStyles.searchWrap}>
           <Ionicons name="search" size={18} color={colors.textMuted} />
           <TextInput 
             style={dynamicStyles.searchInput} 
-            placeholder="Cari produk ramah lingkungan..." 
+            placeholder={t('marketplace.search')} 
             placeholderTextColor={colors.textMuted} 
             value={search} 
             onChangeText={setSearch} 
@@ -107,7 +109,7 @@ export default function MarketplaceScreen() {
               style={[dynamicStyles.catBtn, activeCategory === cat && dynamicStyles.catBtnActive]}
               onPress={() => setActiveCategory(cat)}
             >
-              <Text style={[dynamicStyles.catText, activeCategory === cat && dynamicStyles.catTextActive]}>{cat}</Text>
+              <Text style={[dynamicStyles.catText, activeCategory === cat && dynamicStyles.catTextActive]}>{cat === 'Semua' ? t('marketplace.all') : cat}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
