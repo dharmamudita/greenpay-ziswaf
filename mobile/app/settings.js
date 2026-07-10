@@ -40,10 +40,10 @@ export default function SettingsScreen() {
               <View style={[dynamicStyles.iconWrap, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)' }]}>
                 <Ionicons name="person" size={20} color="#10B981" />
               </View>
-              <Text style={dynamicStyles.optionTitle}>Pengaturan Akun</Text>
+              <Text style={dynamicStyles.optionTitle}>{t('settings.account')}</Text>
             </View>
             <View style={dynamicStyles.optionRight}>
-              <Text style={dynamicStyles.optionValue}>Ubah Data</Text>
+              <Text style={dynamicStyles.optionValue}>{t('settings.edit_data')}</Text>
               <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
             </View>
           </TouchableOpacity>
@@ -87,7 +87,7 @@ export default function SettingsScreen() {
         </View>
 
         <Text style={dynamicStyles.footerText}>
-          Pengaturan lanjutan untuk mempersonalisasi pengalaman Anda.
+          {t('settings.footer')}
         </Text>
 
       </View>
