@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
@@ -19,6 +20,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -58,8 +60,8 @@ export default function LoginScreen() {
                 <Ionicons name="leaf" size={40} color={Colors.white} />
               </LinearGradient>
             </View>
-            <Text style={dynamicStyles.title}>Selamat Datang!</Text>
-            <Text style={dynamicStyles.subtitle}>Masuk ke <Text style={{ color: Colors.green[500], fontWeight: '700' }}>GreenPay ZISWAF</Text></Text>
+            <Text style={dynamicStyles.title}>{t('auth.welcome_back')}</Text>
+            <Text style={dynamicStyles.subtitle}>{t('auth.login_desc')} <Text style={{ color: Colors.green[500], fontWeight: '700' }}>GreenPay ZISWAF</Text></Text>
           </View>
 
           {/* Error */}
@@ -74,7 +76,7 @@ export default function LoginScreen() {
           <View style={[dynamicStyles.formCard, Shadows.md]}>
             <View style={dynamicStyles.form}>
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Alamat Email</Text>
+                <Text style={dynamicStyles.label}>{t('auth.email')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput
@@ -90,7 +92,7 @@ export default function LoginScreen() {
               </View>
 
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Password</Text>
+                <Text style={dynamicStyles.label}>{t('auth.password')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput
@@ -107,19 +109,19 @@ export default function LoginScreen() {
                 </View>
               </View>
 
-              <Button title="Masuk Sekarang" onPress={handleLogin} loading={loading} style={{ marginTop: Spacing.md }} />
+              <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={{ marginTop: Spacing.md }} />
             </View>
           </View>
 
           <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.md }]}>
             <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
-              <Text style={[dynamicStyles.footerText, { color: Colors.green[500] }]}>Lupa Password?</Text>
+              <Text style={[dynamicStyles.footerText, { color: Colors.green[500] }]}>{t('auth.forgot_pwd')}</Text>
             </TouchableOpacity>
             
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={dynamicStyles.footerText}>Belum punya akun? </Text>
+              <Text style={dynamicStyles.footerText}>{t('auth.no_account').split('?')[0]}? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-                <Text style={dynamicStyles.linkText}>Daftar</Text>
+                <Text style={dynamicStyles.linkText}>{t('auth.register')}</Text>
               </TouchableOpacity>
             </View>
           </View>
