@@ -398,7 +398,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     marginBottom: Spacing.lg,
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: BorderRadius.2xl,
+    borderRadius: BorderRadius['2xl'],
     padding: Spacing.xl,
     ...Shadows.md,
     shadowOpacity: 0.08,
@@ -478,7 +478,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   calculatorCard: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: BorderRadius.2xl,
+    borderRadius: BorderRadius['2xl'],
     padding: Spacing.xl,
     ...Shadows.md,
     shadowOpacity: 0.08,
