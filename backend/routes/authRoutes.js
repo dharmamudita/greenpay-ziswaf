@@ -7,25 +7,79 @@ const nodemailer = require('nodemailer');
 
 const router = express.Router();
 
-let transporter;
-(async () => {
-  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-    transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-    });
-  } else {
-    // Ethereal Email for testing without real credentials
-    const testAccount = await nodemailer.createTestAccount();
-    transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
-      auth: { user: testAccount.user, pass: testAccount.pass },
-    });
-    console.log('Ethereal Email ready for testing. Check server logs for Preview URLs.');
+const { sendEmail } = require('../utils/mailer');
+
+// POST /api/auth/request-otp
+router.post('/request-otp', async (req, res) => {
+  try {
+    const { email, type } = req.body;
+    if (!email || !type) return res.status(400).json({ error: 'Email dan tipe (type) harus diisi.' });
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await pool.query(
+      'INSERT INTO otp_codes (email, otp_code, type, expires_at) VALUES ($1, $2, $3, $4)',
+      [email, otp, type, expiresAt]
+    );
+
+    const subject = `Kode Verifikasi (OTP) GreenPay ZISWAF - ${type}`;
+    const text = `Kode OTP Anda adalah: ${otp}. Kode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun.`;
+    const html = `<div style="font-family: sans-serif; padding: 20px;">
+      <h2>GreenPay ZISWAF</h2>
+      <p>Berikut adalah kode verifikasi (OTP) Anda untuk <b>${type}</b>:</p>
+      <h1 style="color: #10B981; letter-spacing: 5px;">${otp}</h1>
+      <p>Kode ini berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun.</p>
+    </div>`;
+
+    const sent = await sendEmail(email, subject, text, html);
+    
+    if (sent) {
+      res.json({ message: 'OTP berhasil dikirim ke email.' });
+    } else {
+      res.status(500).json({ error: 'Gagal mengirim email OTP.' });
+    }
+  } catch (error) {
+    console.error('Request OTP error:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server.' });
   }
-})();
+});
+
+// POST /api/auth/verify-otp
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp, type } = req.body;
+    if (!email || !otp || !type) return res.status(400).json({ error: 'Email, OTP, dan tipe harus diisi.' });
+
+    const result = await pool.query(
+      'SELECT id, expires_at, is_used FROM otp_codes WHERE email = $1 AND otp_code = $2 AND type = $3 ORDER BY created_at DESC LIMIT 1',
+      [email, otp, type]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Kode OTP salah.' });
+    }
+
+    const record = result.rows[0];
+
+    if (record.is_used) {
+      return res.status(400).json({ error: 'Kode OTP sudah digunakan.' });
+    }
+
+    if (new Date() > new Date(record.expires_at)) {
+      return res.status(400).json({ error: 'Kode OTP sudah kedaluwarsa.' });
+    }
+
+    // Mark as used
+    await pool.query('UPDATE otp_codes SET is_used = true WHERE id = $1', [record.id]);
+
+    res.json({ message: 'OTP valid.', success: true });
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server.' });
+  }
+});
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
