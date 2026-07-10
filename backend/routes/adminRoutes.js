@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
-const { authenticateToken, isAdmin } = require('../middleware/auth');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 // Apply auth and admin check to all admin routes
 router.use(authenticateToken);
-router.use(isAdmin);
+router.use(requireRole('admin'));
 
 // 1. GET /api/admin/stats (Realtime Dashboard Stats)
 router.get('/stats', async (req, res) => {

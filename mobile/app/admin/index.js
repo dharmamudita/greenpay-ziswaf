@@ -42,7 +42,16 @@ export default function AdminDashboardScreen() {
 
   const adminMenu = [
     {
-      title: 'Verifikasi Setoran',
+      title: 'Verifikasi Distrik',
+      desc: 'Setujui pengajuan pendaftaran pengelola Distrik.',
+      icon: 'shield-checkmark',
+      route: '/admin/verify-distrik',
+      color: Colors.error,
+      bg: isDark ? 'rgba(239, 68, 68, 0.15)' : '#FEE2E2',
+      ring: isDark ? 'rgba(239, 68, 68, 0.3)' : '#FECACA'
+    },
+    {
+      title: 'Setoran Sampah',
       desc: 'Terima & tolak setoran sampah masuk dari warga.',
       icon: 'scan',
       route: '/admin/distrik',
@@ -157,20 +166,14 @@ export default function AdminDashboardScreen() {
           {adminMenu.map((item, index) => (
             <TouchableOpacity 
               key={index} 
-              style={dynamicStyles.menuCard}
+              style={dynamicStyles.menuItem}
               onPress={() => handleMenuPress(item.route)}
               activeOpacity={0.7}
             >
-              <View style={dynamicStyles.menuIconHeader}>
-                <View style={[dynamicStyles.iconRing, { backgroundColor: item.ring }]}>
-                  <View style={[dynamicStyles.iconWrapper, { backgroundColor: item.bg }]}>
-                    <Ionicons name={item.icon} size={26} color={item.color} />
-                  </View>
-                </View>
-                <Ionicons name="arrow-forward" size={20} color={colors.textMuted} style={{ opacity: 0.5 }} />
+              <View style={[dynamicStyles.menuIconBox, { backgroundColor: item.bg }]}>
+                <Ionicons name={item.icon} size={26} color={item.color} />
               </View>
               <Text style={dynamicStyles.menuTitle}>{item.title}</Text>
-              <Text style={dynamicStyles.menuDesc} numberOfLines={2}>{item.desc}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -203,11 +206,8 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   statDivider: { width: 1, height: 40, backgroundColor: 'rgba(255,255,255,0.15)' },
 
   sectionTitle: { fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: Spacing.lg, letterSpacing: -0.5 },
-  menuGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-  menuCard: { width: '47.5%', backgroundColor: colors.surface, borderRadius: BorderRadius['2xl'], padding: Spacing.lg, borderWidth: 1, borderColor: colors.border, ...Shadows.sm, shadowOpacity: 0.05 },
-  menuIconHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.lg },
-  iconRing: { padding: 6, borderRadius: 30 },
-  iconWrapper: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  menuTitle: { fontSize: 15, fontWeight: '800', color: colors.text, marginBottom: 6, lineHeight: 20, letterSpacing: -0.3 },
-  menuDesc: { fontSize: 12, color: colors.textMuted, lineHeight: 18 }
+  menuGrid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: Spacing.sm, justifyContent: 'flex-start' },
+  menuItem: { width: '33.33%', alignItems: 'center', marginBottom: Spacing.xl },
+  menuIconBox: { width: 56, height: 56, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  menuTitle: { fontSize: 11.5, fontWeight: '600', color: colors.text, textAlign: 'center', marginTop: 4, paddingHorizontal: 4 }
 });

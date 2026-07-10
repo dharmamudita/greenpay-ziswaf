@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
@@ -139,8 +140,17 @@ export default function DistrikDashboard() {
   return (
     <SafeAreaView style={dynamicStyles.container} edges={['top']}>
       <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.title}>Dashboard Admin</Text>
-        <Text style={dynamicStyles.subtitle}>Verifikasi Antrean Setoran Sampah</Text>
+        <TouchableOpacity 
+          style={dynamicStyles.backBtn} 
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+        <View style={dynamicStyles.headerTextWrap}>
+          <Text style={dynamicStyles.title}>Setoran Sampah</Text>
+          <Text style={dynamicStyles.subtitle}>Verifikasi Antrean Setoran Sampah</Text>
+        </View>
       </View>
 
       {loading ? (
@@ -177,21 +187,35 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     backgroundColor: colors.bg,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingBottom: Spacing.lg,
     backgroundColor: colors.bg,
   },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  headerTextWrap: {
+    flex: 1,
+  },
   title: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: '800',
     color: colors.text,
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 13,
     color: colors.textMuted,
-    marginTop: 4,
+    marginTop: 2,
   },
   centerContent: {
     flex: 1,

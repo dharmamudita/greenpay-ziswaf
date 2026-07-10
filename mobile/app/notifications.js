@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -71,8 +71,9 @@ export default function NotificationsScreen() {
         <TouchableOpacity style={dynamicStyles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={dynamicStyles.headerTitle}>Notifikasi</Text>
-        <View style={{ width: 24 }} /> {/* Empty view for centering */}
+        <View style={dynamicStyles.headerTextWrap}>
+          <Text style={dynamicStyles.title}>Notifikasi</Text>
+        </View>
       </View>
 
       {/* Tabs */}
@@ -140,18 +141,28 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
-    paddingTop: 50,
-    paddingBottom: Spacing.sm,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: Spacing.lg,
+    backgroundColor: colors.bg,
   },
   backBtn: {
-    padding: 4,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+  headerTextWrap: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '800',
     color: colors.text,
+    letterSpacing: -0.5,
   },
   tabsContainer: {
     flexDirection: 'row',

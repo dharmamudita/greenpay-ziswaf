@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Image, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -37,8 +37,9 @@ export default function DistrikDashboardScreen() {
           <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
             <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={dynamicStyles.pageTitle}>Panel Distrik</Text>
-          <View style={{ width: 24 }} />
+          <View style={dynamicStyles.headerTextWrap}>
+            <Text style={dynamicStyles.pageTitle}>Panel Distrik</Text>
+          </View>
         </View>
 
         {/* Hero Card: Status & Capacity */}
@@ -168,9 +169,10 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   headerBackground: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   container: { padding: Spacing.xl, paddingTop: Spacing.xl },
   
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.xl },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
-  pageTitle: { fontSize: 20, fontWeight: '900', color: colors.text, letterSpacing: -0.5 },
+  topBar: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.xl },
+  backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100], alignItems: 'center', justifyContent: 'center', marginRight: Spacing.md },
+  headerTextWrap: { flex: 1 },
+  pageTitle: { fontSize: 20, fontWeight: '800', color: colors.text, letterSpacing: -0.5 },
 
   // Hero Card
   heroCard: { borderRadius: BorderRadius['2xl'], marginBottom: Spacing['2xl'], shadowColor: Colors.info, shadowOpacity: isDark ? 0.4 : 0.2, shadowRadius: 15 },

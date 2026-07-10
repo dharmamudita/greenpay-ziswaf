@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContent: { flexGrow: 1, padding: Spacing.xl, paddingTop: 60 },
   backButton: { 
-    width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFF', 
+    width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFF', 
     justifyContent: 'center', alignItems: 'center', marginBottom: 20,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3
   },

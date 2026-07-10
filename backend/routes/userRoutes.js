@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, email, display_name, role, photo_url, phone, address, green_points, total_donation, total_waste, trees_planted, co2_reduced, created_at FROM users WHERE id = $1',
+      'SELECT id, passport_id, email, display_name, role, photo_url, cover_photo_url, phone, address, green_points, total_donation, total_waste, trees_planted, co2_reduced, created_at FROM users WHERE id = $1',
       [req.user.id]
     );
     if (result.rows.length === 0) {
@@ -24,7 +24,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 // PUT /api/users/me — Update profile
 router.put('/me', authenticateToken, async (req, res) => {
   try {
-    const { display_name, phone, address, photo_url, email } = req.body;
+    const { display_name, phone, address, photo_url, email, cover_photo_url } = req.body;
     
     // Check if new email already exists (if email is provided and different from current)
     if (email && email !== req.user.email) {
@@ -41,9 +41,10 @@ router.put('/me', authenticateToken, async (req, res) => {
         address = COALESCE($3, address), 
         photo_url = COALESCE($4, photo_url), 
         email = COALESCE($5, email),
+        cover_photo_url = COALESCE($6, cover_photo_url),
         updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $6 RETURNING id, email, display_name, role, photo_url, phone, address, green_points`,
-      [display_name, phone, address, photo_url, email, req.user.id]
+       WHERE id = $7 RETURNING id, passport_id, email, display_name, role, photo_url, cover_photo_url, phone, address, green_points`,
+      [display_name, phone, address, photo_url, email, cover_photo_url, req.user.id]
     );
     res.json({ message: 'Profil berhasil diperbarui.', user: result.rows[0] });
   } catch (error) {

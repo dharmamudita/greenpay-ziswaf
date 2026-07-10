@@ -340,7 +340,7 @@ export default function ZiswafScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  headerContainer: { padding: Spacing.xl, paddingTop: Spacing['2xl'] },
+  headerContainer: { padding: Spacing.xl, paddingTop: 70 },
   pageTitle: { fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.5 },
   pageDesc: { fontSize: 15, color: colors.textMuted, marginTop: 4, marginBottom: Spacing.xl, lineHeight: 22 },
   

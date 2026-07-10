@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
@@ -81,11 +81,21 @@ export default function VerifyDistrikScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
     >
       <View style={dynamicStyles.header}>
+        <TouchableOpacity 
+          style={dynamicStyles.backBtn} 
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+        <View style={dynamicStyles.headerTextWrap}>
+          <Text style={dynamicStyles.title}>Verifikasi Distrik</Text>
+          <Text style={dynamicStyles.subtitle}>Daftar pengguna yang mengajukan diri.</Text>
+        </View>
+      </View>
+      
+      <View style={{ alignItems: 'center', marginBottom: 16 }}>
         <Ionicons name="shield-checkmark" size={60} color={Colors.error} />
-        <Text style={dynamicStyles.title}>Verifikasi Distrik</Text>
-        <Text style={dynamicStyles.subtitle}>
-          Daftar pengguna yang mengajukan diri sebagai pengelola Bank Sampah.
-        </Text>
       </View>
 
       {requests.length === 0 ? (
@@ -148,9 +158,37 @@ export default function VerifyDistrikScreen() {
 const getStyles = (colors, isDark) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
   centerScreen: { flex: 1, backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' },
-  header: { alignItems: 'center', padding: 24, paddingBottom: 16 },
-  title: { fontSize: 24, fontWeight: '800', color: colors.text, marginTop: 12, marginBottom: 8, textAlign: 'center' },
-  subtitle: { fontSize: 14, color: colors.textMuted, textAlign: 'center', lineHeight: 22 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: 16,
+    backgroundColor: colors.bg,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  headerTextWrap: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.text,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
   listContainer: { padding: 16, paddingBottom: 40 },
   card: { backgroundColor: colors.surface, borderRadius: 20, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },

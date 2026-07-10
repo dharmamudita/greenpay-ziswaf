@@ -226,13 +226,14 @@ export default function EcoUstadzScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
     >
       {/* Header */}
+      {/* Header */}
       <View style={dynamicStyles.header}>
-        <View style={dynamicStyles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={colors.text} />
-          </TouchableOpacity>
-          
-          <View style={dynamicStyles.headerCenter}>
+        <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+        
+        <View style={dynamicStyles.headerTextWrap}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={dynamicStyles.headerAvatar}>
               <View style={dynamicStyles.headerAvatarSolid}>
                 <Ionicons name="leaf" size={18} color={Colors.white} />
@@ -246,8 +247,6 @@ export default function EcoUstadzScreen() {
               </Text>
             </View>
           </View>
-
-          <View style={{ width: 38 }} />
         </View>
       </View>
 
@@ -315,14 +314,27 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   
   // Header
-  header: { 
-    paddingTop: Platform.OS === 'web' ? Spacing.lg : Spacing['3xl'], 
-    paddingBottom: Spacing.md,
-    backgroundColor: colors.surface,
+  // Header
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: Spacing.lg,
+    backgroundColor: colors.bg,
   },
-  headerContent: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg },
-  backBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
-  headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', marginLeft: Spacing.sm },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  headerTextWrap: {
+    flex: 1,
+  },
   headerAvatar: { position: 'relative', marginRight: Spacing.sm },
   headerAvatarSolid: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.green[500], alignItems: 'center', justifyContent: 'center' },
   onlineDot: { position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: '#4ADE80', borderWidth: 2, borderColor: colors.surface },

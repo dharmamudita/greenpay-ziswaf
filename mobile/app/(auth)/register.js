@@ -147,7 +147,7 @@ export default function RegisterScreen() {
       const res = await fetch(`${baseUrl}/auth/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, type: 'register', captchaToken })
+        body: JSON.stringify({ email: email.trim().toLowerCase(), type: 'register', captchaToken })
       });
       
       if (!res.ok) {
@@ -173,7 +173,7 @@ export default function RegisterScreen() {
       const res = await fetch(`${baseUrl}/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, type: 'register' })
+        body: JSON.stringify({ email: email.trim().toLowerCase(), otp, type: 'register' })
       });
       if (!res.ok) {
         let errData = {};
@@ -181,7 +181,7 @@ export default function RegisterScreen() {
         throw new Error(errData.error || `HTTP ${res.status}`);
       }
       
-      await register(email, password, name, role);
+      await register(email.trim().toLowerCase(), password, name, role);
       setOtpVisible(false);
       router.replace('/(tabs)');
     } catch (err) {
@@ -458,9 +458,9 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     flexGrow: 1,
     padding: Spacing.xl,
     paddingTop: height * 0.08,
-    paddingBottom: 100,
+    paddingBottom: 40,
   },
-  header: { alignItems: 'center', marginBottom: Spacing['2xl'] },
+  header: { alignItems: 'center', marginBottom: Spacing.xl },
   logoGlow: { padding: 10, borderRadius: 50, backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)', marginBottom: Spacing.xl },
   logoWrap: { borderRadius: BorderRadius['2xl'] },
   logo: { width: 72, height: 72, borderRadius: BorderRadius['2xl'] },
@@ -489,7 +489,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   socialBtnPill: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : Colors.white, borderWidth: 1, borderColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border, borderRadius: BorderRadius.full, paddingVertical: Spacing.md, gap: Spacing.sm, ...Shadows.sm, shadowOpacity: isDark ? 0 : 0.05 },
   socialBtnText: { fontSize: 14, fontWeight: '800', color: colors.text },
   
-  footer: { alignItems: 'center', marginTop: Spacing['3xl'], gap: Spacing.md },
+  footer: { alignItems: 'center', marginTop: Spacing.xl, gap: Spacing.md },
   footerPolicy: { color: colors.textMuted, fontSize: 13, fontWeight: '500' },
   footerText: { color: colors.textMuted, fontSize: 15, fontWeight: '500' },
   linkText: { color: Colors.green[500], fontSize: 15, fontWeight: '800' },

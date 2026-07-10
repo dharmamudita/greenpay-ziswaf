@@ -11,6 +11,7 @@ import api from '../../services/api';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import * as Clipboard from 'expo-clipboard';
 
 export default function AccountSettingScreen() {
   const { user, refreshProfile } = useAuth();
@@ -22,6 +23,7 @@ export default function AccountSettingScreen() {
   const [address, setAddress] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [previewUri, setPreviewUri] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const { t } = useTranslation();
@@ -42,6 +44,13 @@ export default function AccountSettingScreen() {
   const [otp, setOtp] = useState('');
   const [loadingOtp, setLoadingOtp] = useState(false);
   const [otpError, setOtpError] = useState('');
+
+  const passportIdStr = user?.passport_id ? String(user.passport_id).padStart(8, '0') : '00000000';
+
+  const copyPassportId = async () => {
+    await Clipboard.setStringAsync(passportIdStr);
+    Alert.alert('Disalin!', `ID ${passportIdStr} berhasil disalin ke clipboard.`);
+  };
 
   useEffect(() => {
     if (user) {
@@ -134,6 +143,34 @@ export default function AccountSettingScreen() {
     }
   };
 
+  const handleUploadCoverPhoto = async () => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Izin Ditolak', 'Dibutuhkan akses galeri untuk foto sampul.');
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.8,
+      });
+      if (!result.canceled && result.assets) {
+        setUploadingCover(true);
+        const imageUrl = await uploadToCloudinary(result.assets[0].uri);
+        await api.put('/users/me', { cover_photo_url: imageUrl });
+        await refreshProfile();
+        Alert.alert('Sukses', 'Foto sampul berhasil diperbarui.');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal', 'Gagal mengunggah foto sampul.');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
   const handleUpdateProfile = async () => {
     if (!name) {
       Alert.alert('Gagal', 'Nama tidak boleh kosong.');
@@ -216,34 +253,74 @@ export default function AccountSettingScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}>
-      <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
-        <View style={dynamicStyles.container}>
+      <SafeAreaView style={dynamicStyles.screen}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={dynamicStyles.container}>
           
-          {/* Avatar Section */}
-          <View style={dynamicStyles.avatarSection}>
-            <TouchableOpacity 
-              style={[dynamicStyles.avatarOuter, Shadows.md, { backgroundColor: colors.bg }]} 
-              onPress={handleUpdateAvatar} 
-              activeOpacity={0.8}
-              disabled={uploadingAvatar}
-            >
-              {uploadingAvatar ? (
-                <View style={dynamicStyles.avatar}>
-                  <ActivityIndicator size="large" color={Colors.green[500]} />
+          {/* Unified Cover & Avatar Area */}
+          <TouchableOpacity 
+            style={dynamicStyles.profileCard} 
+            activeOpacity={0.9} 
+            onPress={handleUploadCoverPhoto}
+            disabled={uploadingCover}
+          >
+            {user?.cover_photo_url ? (
+              <Image source={{ uri: user.cover_photo_url }} style={StyleSheet.absoluteFillObject} />
+            ) : (
+              <LinearGradient 
+                colors={[isDark ? 'rgba(16, 185, 129, 0.2)' : Colors.green[100], isDark ? colors.surface : Colors.green[50]]} 
+                style={StyleSheet.absoluteFillObject}
+              />
+            )}
+            
+            <LinearGradient colors={['rgba(0,0,0,0.4)', 'rgba(0,0,0,0.7)']} style={StyleSheet.absoluteFillObject} />
+            
+            <View style={dynamicStyles.editCoverBtn}>
+              <Ionicons name="camera" size={14} color={Colors.white} />
+              <Text style={dynamicStyles.editCoverText}>{uploadingCover ? 'Mengunggah...' : 'Ubah Sampul'}</Text>
+            </View>
+
+            <View style={dynamicStyles.profileCardContent}>
+              <TouchableOpacity 
+                style={dynamicStyles.avatarOuter} 
+                onPress={handleUpdateAvatar} 
+                activeOpacity={0.8}
+                disabled={uploadingAvatar}
+              >
+                {uploadingAvatar ? (
+                  <View style={dynamicStyles.avatar}>
+                    <ActivityIndicator size="large" color={Colors.white} />
+                  </View>
+                ) : user?.photo_url ? (
+                  <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
+                ) : (
+                  <View style={dynamicStyles.avatarPlaceholder}>
+                    <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+                  </View>
+                )}
+                <View style={dynamicStyles.cameraBadge}>
+                  <Ionicons name="camera" size={12} color={Colors.white} />
                 </View>
-              ) : user?.photo_url ? (
-                <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
-              ) : (
-                <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.avatar}>
-                  <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
-                </LinearGradient>
-              )}
-              <View style={dynamicStyles.cameraBadge}>
-                <Ionicons name="camera" size={14} color={Colors.white} />
+              </TouchableOpacity>
+              
+              <View style={dynamicStyles.userInfoCol}>
+                <Text style={dynamicStyles.userName} numberOfLines={1}>{user?.display_name || 'Pengguna'}</Text>
+                
+                <TouchableOpacity 
+                  style={dynamicStyles.idBorderWrap}
+                  onPress={copyPassportId}
+                  activeOpacity={0.7}
+                >
+                  <Text style={dynamicStyles.userIdText}>
+                    ID: {passportIdStr}
+                  </Text>
+                  <Ionicons name="copy-outline" size={12} color={Colors.white} style={{ marginLeft: 6 }} />
+                </TouchableOpacity>
+                
+                <Text style={dynamicStyles.userHelpText}>{t('account.tap_to_change_photo', { defaultValue: 'Ketuk avatar untuk ubah foto' })}</Text>
               </View>
-            </TouchableOpacity>
-            <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>{t('account.tap_to_change_photo', { defaultValue: 'Ketuk untuk ubah foto' })}</Text>
-          </View>
+            </View>
+          </TouchableOpacity>
 
           {/* Photo Preview Modal - Professional Crop Editor */}
           <Modal visible={!!previewUri} transparent animationType="fade">
@@ -376,8 +453,9 @@ export default function AccountSettingScreen() {
             <Button title={t('account.change_password', { defaultValue: 'Ubah Password' })} onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm, backgroundColor: Colors.info }} />
           </View>
 
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
 
       {/* Modal Verifikasi OTP */}
       {otpVisible && (
@@ -426,20 +504,98 @@ export default function AccountSettingScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  container: { padding: Spacing.xl, paddingBottom: 100 },
-  avatarSection: { alignItems: 'center', marginBottom: Spacing.xl },
-  avatarOuter: { padding: 4, borderRadius: 50 },
-  avatar: { width: 90, height: 90, borderRadius: 45, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 36, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
+  container: { paddingHorizontal: Spacing.xl, paddingBottom: 100, paddingTop: 40 },
+  
+  // Unified Profile Card
+  profileCard: {
+    borderRadius: BorderRadius['2xl'],
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: isDark ? colors.surface : Colors.green[50],
+    borderWidth: 1,
+    borderColor: isDark ? colors.border : 'rgba(16, 185, 129, 0.3)',
+    marginBottom: Spacing['2xl'],
+    marginTop: 20,
+    ...Shadows.md,
+  },
+  profileCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.xl,
+    paddingTop: 45, // Space for the top right button
+  },
+  editCoverBtn: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+    zIndex: 10,
+  },
+  editCoverText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.white,
+  },
+  
+  avatarOuter: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    overflow: 'hidden',
+    backgroundColor: Colors.white,
+    borderWidth: 2,
+    borderColor: Colors.white,
+    ...Shadows.lg,
+  },
+  avatar: { width: '100%', height: '100%', borderRadius: 40, alignItems: 'center', justifyContent: 'center' },
+  avatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: Colors.green[500],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: { fontSize: 32, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
+  userInfoCol: {
+    flex: 1,
+    marginLeft: Spacing.lg,
+  },
+  userName: { fontSize: 20, fontWeight: '900', color: Colors.white, letterSpacing: -0.5 },
+  idBorderWrap: {
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.4)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userIdText: {
+    fontSize: 12,
+    color: Colors.white,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  userHelpText: { fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
+  
   cameraBadge: { 
     position: 'absolute', 
-    bottom: 2, 
-    right: 2, 
+    bottom: 0, 
+    right: 0, 
     backgroundColor: Colors.green[500], 
-    padding: 8, 
-    borderRadius: 20, 
+    padding: 6, 
+    borderRadius: 15, 
     borderWidth: 2, 
-    borderColor: colors.bg,
+    borderColor: Colors.white,
   },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: Spacing.md },
   card: { backgroundColor: colors.surface, padding: Spacing.lg, borderRadius: BorderRadius['2xl'], borderWidth: isDark ? 1 : 0, borderColor: colors.border },

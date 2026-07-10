@@ -19,14 +19,10 @@ const statsKeys = [
 ];
 
 const featuresKeys = [
-  { icon: 'heart', titleKey: 'Ziswaf', color: Colors.gold[400], route: '/(tabs)/ziswaf' },
   { icon: 'refresh-circle', titleKey: 'Sampah', color: Colors.green[500], route: '/bank-sampah' },
-  { icon: 'storefront', titleKey: 'Pasar', color: Colors.info, route: '/(tabs)/marketplace' },
-  { icon: 'leaf', titleKey: 'G-Point', color: Colors.green[400], route: '/(tabs)/green-point' },
+  { icon: 'gift', titleKey: 'Reward', color: Colors.gold[500], route: '/reward' },
   { icon: 'bar-chart', titleKey: 'Dampak', color: Colors.purple, route: '/dashboard-dampak' },
   { icon: 'document-text', titleKey: 'Paspor', color: Colors.pink, route: '/impact-passport' },
-  { icon: 'gift', titleKey: 'Reward', color: Colors.gold[500], route: '/reward' },
-  { icon: 'trophy', titleKey: 'Peringkat', color: Colors.gold[400], route: '/leaderboard' },
 ];
 
 const dummyCampaigns = [
@@ -103,8 +99,19 @@ export default function HomeScreen() {
 
           {!isAuthenticated && (
             <View style={{ flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.lg }}>
-              <Button title={t('home.start_now')} onPress={() => router.push('/(auth)/register')} style={{ flex: 1, backgroundColor: Colors.white }} textStyle={{ color: Colors.green[700] }} />
-              <Button title={t('home.login')} variant="outline" onPress={() => router.push('/(auth)/login')} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.15)', borderColor: 'transparent' }} textStyle={{ color: Colors.white }} />
+              <TouchableOpacity 
+                style={{ flex: 1, backgroundColor: Colors.white, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => router.push('/(auth)/register')}
+              >
+                <Text style={{ color: Colors.green[700], fontSize: 15, fontWeight: '700' }}>{t('home.start_now')}</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.15)', paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => router.push('/(auth)/login')}
+              >
+                <Text style={{ color: Colors.white, fontSize: 15, fontWeight: '700' }}>{t('home.login')}</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -195,7 +202,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   
   // Header
   header: {
-    paddingTop: Platform.OS === 'ios' ? 50 : 40,
+    paddingTop: Platform.OS === 'ios' ? 70 : 60,
     paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing.lg,
     zIndex: 10,
@@ -259,10 +266,10 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 20,
     padding: Spacing.lg,
+    paddingRight: Spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    width: width * 0.42, // show slightly more than 2 items
     borderWidth: isDark ? 1 : 0,
     borderColor: colors.border,
   },

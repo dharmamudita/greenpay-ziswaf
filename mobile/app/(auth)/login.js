@@ -109,7 +109,7 @@ export default function LoginScreen() {
     setError('');
     setLoading(true);
     try {
-      const data = await authService.login(email, password);
+      const data = await authService.login(email.trim().toLowerCase(), password);
       await setAuthState(data.token, data.user);
       router.replace('/(tabs)');
     } catch (err) {
@@ -256,11 +256,11 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     flexGrow: 1,
     padding: Spacing.xl,
     paddingTop: height * 0.1,
-    paddingBottom: 100,
+    paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: Spacing['2xl'],
+    marginBottom: Spacing.xl,
   },
   logoGlow: {
     padding: 10,
@@ -414,7 +414,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   
   footer: {
     alignItems: 'center',
-    marginTop: Spacing['3xl'],
+    marginTop: Spacing.xl,
   },
   footerText: {
     color: colors.textMuted,

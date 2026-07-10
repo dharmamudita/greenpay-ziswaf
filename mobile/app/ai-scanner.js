@@ -97,8 +97,9 @@ export default function AiScannerScreen() {
         <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={dynamicStyles.title}>{t('ai_scanner.title')}</Text>
-        <View style={{ width: 24 }} />
+        <View style={dynamicStyles.headerTextWrap}>
+          <Text style={dynamicStyles.title}>{t('ai_scanner.title')}</Text>
+        </View>
       </View>
 
       <Text style={dynamicStyles.subtitle}>
@@ -178,9 +179,32 @@ export default function AiScannerScreen() {
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   container: { padding: Spacing.xl, paddingTop: Spacing['3xl'], paddingBottom: 100 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.xl },
-  backBtn: { padding: Spacing.sm },
-  title: { fontSize: 22, fontWeight: '800', color: colors.text },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: Spacing.lg,
+    backgroundColor: colors.bg,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  headerTextWrap: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.text,
+    letterSpacing: -0.5,
+  },
   subtitle: { fontSize: 14, color: colors.textMuted, lineHeight: 22, textAlign: 'center', marginBottom: Spacing.xl },
   
   imageBox: { width: '100%', height: width * 0.8, backgroundColor: isDark ? colors.surface : Colors.gray[100], borderRadius: BorderRadius['2xl'], overflow: 'hidden', borderWidth: 2, borderColor: isDark ? colors.border : Colors.gray[200], borderStyle: 'dashed' },

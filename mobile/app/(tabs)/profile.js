@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Modal, TouchableWithoutFeedback, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Modal, TouchableWithoutFeedback, SafeAreaView, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,18 +8,26 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
+import authService from '../../services/authService';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import * as Clipboard from 'expo-clipboard';
 
 const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
-  const { user, isAuthenticated, logout, isAdmin, isDistrik } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin, isDistrik, refreshProfile } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   
   const [isPhotoViewerVisible, setPhotoViewerVisible] = useState(false);
-
   const dynamicStyles = getStyles(colors, isDark);
+
+  const passportIdStr = user?.passport_id ? String(user.passport_id).padStart(8, '0') : '00000000';
+
+  const copyPassportId = async () => {
+    await Clipboard.setStringAsync(passportIdStr);
+    Alert.alert('Disalin!', `ID ${passportIdStr} berhasil disalin ke clipboard.`);
+  };
 
   // --- UNAUTHENTICATED STATE (Hero Onboarding Style) ---
   if (!isAuthenticated) {
@@ -76,25 +84,35 @@ export default function ProfileScreen() {
   menuItems.push({ icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[400] : Colors.gray[500] });
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
-      
-      {/* Premium Header Background (Seamless) */}
-      <View style={dynamicStyles.headerBackground}>
-        <LinearGradient 
-          colors={[isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50], colors.bg]} 
-          style={StyleSheet.absoluteFillObject}
-        />
-      </View>
+    <SafeAreaView style={dynamicStyles.screen}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        
+        <View style={dynamicStyles.container}>
+          {/* Unified Profile Card with Cover Background */}
+          <View style={dynamicStyles.profileCard}>
+            {/* Background Image / Gradient */}
+            {user?.cover_photo_url ? (
+              <Image source={{ uri: user.cover_photo_url }} style={StyleSheet.absoluteFillObject} />
+            ) : (
+              <LinearGradient 
+                colors={[isDark ? 'rgba(16, 185, 129, 0.2)' : Colors.green[100], isDark ? colors.surface : Colors.green[50]]} 
+                style={StyleSheet.absoluteFillObject}
+              />
+            )}
+            
+            {/* Overlay for readability */}
+            <LinearGradient 
+              colors={['rgba(0,0,0,0.4)', 'rgba(0,0,0,0.7)']} 
+              style={StyleSheet.absoluteFillObject}
+            />
 
-      <View style={dynamicStyles.container}>
-        {/* Avatar Section (Glowing) */}
-        <View style={dynamicStyles.avatarSection}>
-          <TouchableOpacity 
-            style={dynamicStyles.avatarGlowContainer}
-            onPress={() => setPhotoViewerVisible(true)}
-            activeOpacity={0.8}
-          >
-            <View style={dynamicStyles.avatarOuter}>
+          {/* Profile Content inside the Card */}
+          <View style={dynamicStyles.profileCardContent}>
+            <TouchableOpacity 
+              style={dynamicStyles.avatarOuter}
+              onPress={() => setPhotoViewerVisible(true)}
+              activeOpacity={0.8}
+            >
               {user?.photo_url ? (
                 <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
               ) : (
@@ -102,17 +120,29 @@ export default function ProfileScreen() {
                   <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
                 </View>
               )}
+            </TouchableOpacity>
+            
+            <View style={dynamicStyles.userInfoCol}>
+              <Text style={dynamicStyles.userName} numberOfLines={1}>{user?.display_name || 'Pengguna'}</Text>
+              
+              <TouchableOpacity 
+                style={dynamicStyles.idBorderWrap}
+                onPress={copyPassportId}
+                activeOpacity={0.7}
+              >
+                <Text style={dynamicStyles.userIdText}>
+                  ID: {passportIdStr}
+                </Text>
+                <Ionicons name="copy-outline" size={14} color={Colors.white} style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
+              
+              <View style={{ marginTop: 8, alignSelf: 'flex-start' }}>
+                <Badge 
+                  text={user?.role === 'admin' ? 'Administrator' : user?.role === 'distrik' ? 'Akun Distrik' : 'Pengguna Aktif'} 
+                  variant={user?.role === 'admin' ? 'gold' : 'primary'}
+                />
+              </View>
             </View>
-          </TouchableOpacity>
-          
-          <Text style={dynamicStyles.userName}>{user?.display_name || 'Pengguna'}</Text>
-          <Text style={dynamicStyles.userEmail}>{user?.email}</Text>
-          
-          <View style={{ marginTop: 12 }}>
-            <Badge 
-              text={user?.role === 'admin' ? 'Administrator' : user?.role === 'distrik' ? 'Akun Distrik' : 'Pengguna Aktif'} 
-              variant={user?.role === 'admin' ? 'gold' : 'primary'}
-            />
           </View>
         </View>
 
@@ -186,101 +216,41 @@ export default function ProfileScreen() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
+  container: { paddingHorizontal: Spacing.xl, paddingBottom: 100, paddingTop: 40 },
   
-  // Header Background
-  headerBackground: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0,
-    height: 250,
-  },
-  
-  container: { padding: Spacing.xl, paddingTop: Spacing['3xl'] },
-  
-  // Unauthenticated State (Hero Onboarding)
-  unauthScreen: { flex: 1, backgroundColor: colors.bg, justifyContent: 'space-between' },
-  unauthContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: Spacing['2xl'],
-  },
-  unauthIconGlow: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : Colors.green[50],
-    alignItems: 'center',
-    justifyContent: 'center',
+  // Unified Profile Card
+  profileCard: {
+    borderRadius: BorderRadius['2xl'],
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: isDark ? colors.surface : Colors.green[50],
+    borderWidth: 1,
+    borderColor: isDark ? colors.border : 'rgba(16, 185, 129, 0.3)',
     marginBottom: Spacing['2xl'],
-  },
-  unauthIconCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: Colors.green[500],
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Shadows.lg,
-    shadowColor: Colors.green[500],
-  },
-  unauthTitle: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: Spacing.md,
-    letterSpacing: -0.5,
-  },
-  unauthDesc: {
-    fontSize: 15,
-    color: colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  unauthFooter: {
-    padding: Spacing['2xl'],
-    paddingBottom: Spacing['3xl'],
-  },
-  unauthLoginBtn: {
-    flexDirection: 'row',
-    backgroundColor: Colors.green[500],
-    paddingVertical: 18,
-    borderRadius: BorderRadius.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 20,
     ...Shadows.md,
-    shadowColor: Colors.green[500],
   },
-  unauthLoginText: {
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-
-  // Authenticated State - Avatar
-  avatarSection: { alignItems: 'center', marginBottom: Spacing['2xl'], zIndex: 10 },
-  avatarGlowContainer: {
-    borderRadius: 60,
-    backgroundColor: colors.bg,
-    padding: 6,
-    marginBottom: Spacing.md,
-    ...Shadows.lg,
-    shadowColor: Colors.green[500],
-    shadowOpacity: isDark ? 0.2 : 0.15,
-    shadowRadius: 15,
+  profileCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.xl,
   },
   avatarOuter: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     overflow: 'hidden',
-    backgroundColor: isDark ? colors.surface2 : Colors.gray[100],
+    backgroundColor: Colors.white,
+    borderWidth: 2,
+    borderColor: Colors.white,
+    ...Shadows.lg,
   },
   avatar: { width: '100%', height: '100%' },
   avatarPlaceholder: {
@@ -290,9 +260,30 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontSize: 40, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
-  userName: { fontSize: 24, fontWeight: '900', color: colors.text, letterSpacing: -0.5 },
-  userEmail: { fontSize: 14, color: colors.textMuted, fontWeight: '500', marginTop: 2 },
+  avatarText: { fontSize: 32, fontWeight: '900', color: Colors.white, letterSpacing: -1 },
+  userInfoCol: {
+    flex: 1,
+    marginLeft: Spacing.lg,
+  },
+  userName: { fontSize: 20, fontWeight: '900', color: Colors.white, letterSpacing: -0.5 },
+  idBorderWrap: {
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.4)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userIdText: {
+    fontSize: 12,
+    color: Colors.white,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
   
   // Stats Row
   statsRow: { 

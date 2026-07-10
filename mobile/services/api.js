@@ -1,9 +1,18 @@
 import { getItemAsync, deleteItemAsync } from '../utils/storage';
 import { Platform } from 'react-native';
 
-const API_BASE_URL = Platform.OS === 'web' 
-  ? 'http://localhost:5000/api' 
-  : 'http://192.168.1.8:5000/api';
+import Constants from 'expo-constants';
+
+let API_BASE_URL = 'http://localhost:5000/api';
+if (Platform.OS !== 'web') {
+  const hostUri = Constants?.expoConfig?.hostUri;
+  if (hostUri) {
+    const ip = hostUri.split(':')[0];
+    API_BASE_URL = `http://${ip}:5000/api`;
+  } else {
+    API_BASE_URL = 'http://192.168.1.8:5000/api';
+  }
+}
 
 class ApiService {
   constructor() {

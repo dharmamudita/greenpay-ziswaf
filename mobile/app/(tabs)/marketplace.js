@@ -195,7 +195,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   container: { paddingBottom: Spacing.xl },
   
-  headerContainer: { paddingHorizontal: Spacing.xl, paddingTop: Spacing['2xl'], paddingBottom: Spacing.md },
+  headerContainer: { paddingHorizontal: Spacing.xl, paddingTop: 70, paddingBottom: Spacing.md },
   pageTitle: { fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.5 },
   pageDesc: { fontSize: 14, color: colors.textMuted, marginTop: 4 },
   

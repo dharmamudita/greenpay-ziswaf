@@ -174,7 +174,7 @@ export default function GreenPointScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  headerContainer: { paddingHorizontal: Spacing.xl, paddingTop: Spacing['2xl'], paddingBottom: Spacing.sm },
+  headerContainer: { paddingHorizontal: Spacing.xl, paddingTop: 70, paddingBottom: Spacing.sm },
   pageTitle: { fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.5 },
   pageDesc: { fontSize: 15, color: colors.textMuted, marginTop: 4, lineHeight: 22 },
   

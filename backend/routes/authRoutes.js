@@ -131,7 +131,7 @@ router.post('/register', async (req, res) => {
     // Insert user
     const result = await pool.query(
       `INSERT INTO users (email, password, display_name, role, phone, address) 
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, display_name, role, green_points, created_at`,
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, passport_id, email, display_name, role, photo_url, cover_photo_url, green_points, created_at`,
       [email, hashedPassword, display_name, role, phone || null, address || null]
     );
 
@@ -318,7 +318,7 @@ router.post('/social-register', async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO users (email, password, display_name, role) 
-       VALUES ($1, $2, $3, $4) RETURNING id, email, display_name, role, green_points, created_at`,
+       VALUES ($1, $2, $3, $4) RETURNING id, passport_id, email, display_name, role, photo_url, cover_photo_url, green_points, created_at`,
       [email, hashedPassword, name, role]
     );
 
