@@ -55,6 +55,7 @@ function AppContent() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
         <Stack.Screen name="bank-sampah" options={{ title: t('bank_sampah.title') + ' ' + t('bank_sampah.title_highlight') }} />
