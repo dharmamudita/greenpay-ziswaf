@@ -37,7 +37,7 @@ const greenPointRoutes = require('./routes/greenPointRoutes');
 const impactRoutes = require('./routes/impactRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const districtRoutes = require('./routes/districtRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/ziswaf', ziswafRoutes);
@@ -47,7 +47,7 @@ app.use('/api/green-points', greenPointRoutes);
 app.use('/api/impact', impactRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/distrik', districtRoutes);
-
+app.use('/api/admin', adminRoutes);
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'GreenPay ZISWAF API is running 🌿' });

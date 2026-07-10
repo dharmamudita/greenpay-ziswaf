@@ -1,18 +1,44 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import api from '../../services/api';
 
 export default function AdminDashboardScreen() {
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
-  
+  const [stats, setStats] = useState({
+    pendingDeposits: 0,
+    productsCount: 0,
+    successfulDonations: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
   const dynamicStyles = getStyles(colors, isDark);
+
+  const fetchStats = async () => {
+    try {
+      const response = await api.get('/admin/stats');
+      setStats(response.data);
+    } catch (error) {
+      console.log('Error fetching admin stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchStats();
+      const interval = setInterval(fetchStats, 5000); // Polling every 5s for realtime updates
+      return () => clearInterval(interval);
+    }, [])
+  );
 
   const adminMenu = [
     {
@@ -23,6 +49,15 @@ export default function AdminDashboardScreen() {
       color: Colors.green[500],
       bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50],
       ring: isDark ? 'rgba(16, 185, 129, 0.3)' : Colors.green[100]
+    },
+    {
+      title: 'Data Pengguna',
+      desc: 'Pantau aktivitas, blokir, atau ubah peran akun.',
+      icon: 'people',
+      route: '/admin/users',
+      color: Colors.info,
+      bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
+      ring: isDark ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE'
     },
     {
       title: 'Kelola ZISWAF',
@@ -41,15 +76,6 @@ export default function AdminDashboardScreen() {
       color: Colors.purple,
       bg: isDark ? 'rgba(168, 85, 247, 0.15)' : '#F3E8FF',
       ring: isDark ? 'rgba(168, 85, 247, 0.3)' : '#E9D5FF'
-    },
-    {
-      title: 'Data Pengguna',
-      desc: 'Pantau aktivitas, blokir, atau ubah peran akun.',
-      icon: 'people',
-      route: 'coming_soon',
-      color: Colors.info,
-      bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
-      ring: isDark ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE'
     },
   ];
 
@@ -86,7 +112,7 @@ export default function AdminDashboardScreen() {
           </View>
         </View>
         
-        {/* VIP Summary Card */}
+        {/* VIP Summary Card (Realtime) */}
         <View style={[dynamicStyles.summaryCardWrapper, Shadows.lg]}>
           <LinearGradient 
             colors={isDark ? ['#064E3B', '#022C22'] : [Colors.green[700], Colors.green[900]]} 
@@ -94,26 +120,33 @@ export default function AdminDashboardScreen() {
             style={dynamicStyles.summaryCard}
           >
             <View style={dynamicStyles.summaryHeader}>
-              <Text style={dynamicStyles.summaryTitle}>LALU LINTAS SISTEM</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <View style={dynamicStyles.liveIndicator} />
+                <Text style={dynamicStyles.summaryTitle}>LALU LINTAS SISTEM (REALTIME)</Text>
+              </View>
               <Ionicons name="stats-chart" size={18} color={Colors.gold[400]} />
             </View>
             
-            <View style={dynamicStyles.statsRow}>
-              <View style={dynamicStyles.statBox}>
-                <Text style={dynamicStyles.statVal}>12</Text>
-                <Text style={dynamicStyles.statLbl}>Setoran{'\n'}Antre</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color={Colors.white} style={{ marginVertical: 20 }} />
+            ) : (
+              <View style={dynamicStyles.statsRow}>
+                <View style={dynamicStyles.statBox}>
+                  <Text style={dynamicStyles.statVal}>{stats.pendingDeposits}</Text>
+                  <Text style={dynamicStyles.statLbl}>Setoran{'\n'}Antre</Text>
+                </View>
+                <View style={dynamicStyles.statDivider} />
+                <View style={dynamicStyles.statBox}>
+                  <Text style={dynamicStyles.statVal}>{stats.productsCount}</Text>
+                  <Text style={dynamicStyles.statLbl}>Produk{'\n'}UMKM</Text>
+                </View>
+                <View style={dynamicStyles.statDivider} />
+                <View style={dynamicStyles.statBox}>
+                  <Text style={dynamicStyles.statVal}>{stats.successfulDonations}</Text>
+                  <Text style={dynamicStyles.statLbl}>ZISWAF{'\n'}Berhasil</Text>
+                </View>
               </View>
-              <View style={dynamicStyles.statDivider} />
-              <View style={dynamicStyles.statBox}>
-                <Text style={dynamicStyles.statVal}>4</Text>
-                <Text style={dynamicStyles.statLbl}>Produk{'\n'}Baru</Text>
-              </View>
-              <View style={dynamicStyles.statDivider} />
-              <View style={dynamicStyles.statBox}>
-                <Text style={dynamicStyles.statVal}>8</Text>
-                <Text style={dynamicStyles.statLbl}>Laporan{'\n'}ZISWAF</Text>
-              </View>
-            </View>
+            )}
           </LinearGradient>
         </View>
 
@@ -150,160 +183,31 @@ export default function AdminDashboardScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  
-  headerBackground: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0,
-    height: 250,
-  },
-  
+  headerBackground: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   container: { padding: Spacing.xl },
-  
-  welcomeSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing['2xl'],
-    marginTop: Spacing.md,
-  },
-  greeting: {
-    fontSize: 14,
-    color: colors.textMuted,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  adminName: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  adminBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(250, 204, 21, 0.15)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: BorderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(250, 204, 21, 0.3)',
-    gap: 6,
-  },
-  adminBadgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: Colors.gold[500],
-    letterSpacing: 1,
-  },
+  welcomeSection: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing['2xl'], marginTop: Spacing.md },
+  greeting: { fontSize: 14, color: colors.textMuted, fontWeight: '600', marginBottom: 4 },
+  adminName: { fontSize: 24, fontWeight: '900', color: colors.text, letterSpacing: -0.5 },
+  adminBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(250, 204, 21, 0.15)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: BorderRadius.full, borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.3)', gap: 6 },
+  adminBadgeText: { fontSize: 10, fontWeight: '800', color: Colors.gold[500], letterSpacing: 1 },
 
-  // VIP Summary Card
-  summaryCardWrapper: {
-    marginBottom: Spacing['2xl'],
-    borderRadius: BorderRadius['2xl'],
-    shadowColor: Colors.green[800],
-    shadowOpacity: isDark ? 0.3 : 0.4,
-    shadowRadius: 15,
-    shadowOffset: { width: 0, height: 8 },
-  },
-  summaryCard: {
-    borderRadius: BorderRadius['2xl'],
-    padding: Spacing.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  summaryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing['xl'],
-  },
-  summaryTitle: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: Colors.gold[400],
-    letterSpacing: 2,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statBox: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statVal: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: Colors.white,
-    marginBottom: 6,
-    letterSpacing: -1,
-  },
-  statLbl: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  statDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-  },
+  summaryCardWrapper: { marginBottom: Spacing['2xl'], borderRadius: BorderRadius['2xl'], shadowColor: Colors.green[800], shadowOpacity: isDark ? 0.3 : 0.4, shadowRadius: 15, shadowOffset: { width: 0, height: 8 } },
+  summaryCard: { borderRadius: BorderRadius['2xl'], padding: Spacing.xl, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  summaryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing['xl'] },
+  liveIndicator: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.danger },
+  summaryTitle: { fontSize: 11, fontWeight: '800', color: Colors.gold[400], letterSpacing: 1 },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  statBox: { flex: 1, alignItems: 'center' },
+  statVal: { fontSize: 32, fontWeight: '900', color: Colors.white, marginBottom: 6, letterSpacing: -1 },
+  statLbl: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.7)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 },
+  statDivider: { width: 1, height: 40, backgroundColor: 'rgba(255,255,255,0.15)' },
 
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: Spacing.lg,
-    letterSpacing: -0.5,
-  },
-  
-  menuGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  menuCard: {
-    width: '47.5%',
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius['2xl'],
-    padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...Shadows.sm,
-    shadowOpacity: 0.05,
-  },
-  menuIconHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: Spacing.lg,
-  },
-  iconRing: {
-    padding: 6,
-    borderRadius: 30,
-  },
-  iconWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: 6,
-    lineHeight: 20,
-    letterSpacing: -0.3,
-  },
-  menuDesc: {
-    fontSize: 12,
-    color: colors.textMuted,
-    lineHeight: 18,
-  }
+  sectionTitle: { fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: Spacing.lg, letterSpacing: -0.5 },
+  menuGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
+  menuCard: { width: '47.5%', backgroundColor: colors.surface, borderRadius: BorderRadius['2xl'], padding: Spacing.lg, borderWidth: 1, borderColor: colors.border, ...Shadows.sm, shadowOpacity: 0.05 },
+  menuIconHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.lg },
+  iconRing: { padding: 6, borderRadius: 30 },
+  iconWrapper: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  menuTitle: { fontSize: 15, fontWeight: '800', color: colors.text, marginBottom: 6, lineHeight: 20, letterSpacing: -0.3 },
+  menuDesc: { fontSize: 12, color: colors.textMuted, lineHeight: 18 }
 });
