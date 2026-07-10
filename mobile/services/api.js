@@ -11,7 +11,7 @@ const API_BASE_URL = Platform.OS === 'web'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: { 
     'Content-Type': 'application/json',
     'Bypass-Tunnel-Reminder': 'true' // Mengizinkan localtunnel tanpa halaman peringatan
