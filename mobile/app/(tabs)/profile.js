@@ -32,13 +32,22 @@ export default function ProfileScreen() {
     );
   }
 
-  const menuItems = [
+  let menuItems = [
     { icon: 'document-text', label: t('profile.impact_passport', { defaultValue: 'Impact Passport' }), route: '/impact-passport', color: Colors.pink },
     { icon: 'bar-chart', label: t('profile.impact_dashboard', { defaultValue: 'Dashboard Dampak' }), route: '/dashboard-dampak', color: Colors.purple },
     { icon: 'gift', label: t('profile.my_rewards', { defaultValue: 'Reward Saya' }), route: '/reward', color: Colors.gold[400] },
     { icon: 'refresh-circle', label: t('profile.waste_bank', { defaultValue: 'Bank Sampah' }), route: '/bank-sampah', color: Colors.green[500] },
-    { icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[300] : Colors.gray[600] },
   ];
+
+  if (user?.role === 'user') {
+    menuItems.push({ icon: 'business', label: 'Daftar Jadi Distrik', route: '/profile/register-distrik', color: Colors.info });
+  }
+
+  if (user?.role === 'admin') {
+    menuItems.push({ icon: 'shield-checkmark', label: 'Verifikasi Distrik', route: '/admin/verify-distrik', color: Colors.error });
+  }
+
+  menuItems.push({ icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[300] : Colors.gray[600] });
 
   return (
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>

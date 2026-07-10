@@ -67,6 +67,8 @@ function AppContent() {
         <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('ai_scanner.title'), headerShown: false }} />
         <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('eco_ustadz.title'), headerShown: false }} />
         <Stack.Screen name="settings/language" options={{ title: t('settings.language') }} />
+        <Stack.Screen name="profile/register-distrik" options={{ title: 'Daftar Distrik' }} />
+        <Stack.Screen name="admin/verify-distrik" options={{ title: 'Verifikasi Distrik' }} />
       </Stack>
     </NavThemeProvider>
   );
