@@ -7,10 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth, ROLES } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import * as Google from 'expo-auth-session/providers/google';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+import * as WebBrowser from 'expo-web-browser';
+import api from '../../services/api';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
-import api from '../../services/api';
 
 const { width, height } = Dimensions.get('window');
 
@@ -31,11 +34,70 @@ export default function RegisterScreen() {
   const [otp, setOtp] = useState('');
   const [loadingOtp, setLoadingOtp] = useState(false);
   
-  const recaptchaRef = useRef(null);
-  
-  const { register } = useAuth();
+  const { setAuthState, register } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
+  
+  const recaptchaRef = useRef(null);
+  
+  const GOOGLE_CLIENT_ID = '863588088837-9t2av69r05o3dg1f02gfenrf2htu5j4h.apps.googleusercontent.com';
+  const FB_CLIENT_ID = 'MASUKKAN_FB_CLIENT_ID_ANDA_DISINI';
+
+  const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
+    clientId: GOOGLE_CLIENT_ID,
+  });
+
+  const [fbRequest, fbResponse, fbPromptAsync] = Facebook.useAuthRequest({
+    clientId: FB_CLIENT_ID,
+  });
+
+  React.useEffect(() => {
+    if (googleResponse?.type === 'success') {
+      handleSocialLogin('google', googleResponse.authentication.accessToken);
+    }
+  }, [googleResponse]);
+
+  React.useEffect(() => {
+    if (fbResponse?.type === 'success') {
+      handleSocialLogin('facebook', fbResponse.authentication.accessToken);
+    }
+  }, [fbResponse]);
+
+  const handleSocialLogin = async (provider, token) => {
+    setLoading(true);
+    setError('');
+    try {
+      let email = '';
+      let name = '';
+      
+      if (provider === 'google') {
+        const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', { headers: { Authorization: `Bearer ${token}` } });
+        const userInfo = await userInfoResponse.json();
+        email = userInfo.email;
+        name = userInfo.name;
+      } else if (provider === 'facebook') {
+        const userInfoResponse = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`);
+        const userInfo = await userInfoResponse.json();
+        email = userInfo.email;
+        name = userInfo.name;
+      }
+
+      const res = await api.post('/auth/social-login', { provider, token, email, name });
+      if (res.data.isNewUser) {
+        router.push({
+          pathname: '/(auth)/complete-profile',
+          params: { email: res.data.email, name: res.data.name }
+        });
+      } else {
+        await setAuthState(res.data.token, res.data.user);
+        router.replace('/(tabs)');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || `Gagal login dengan ${provider}.`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -69,13 +131,12 @@ export default function RegisterScreen() {
     if (Platform.OS === 'web') {
       executeRegister('bypass-for-web');
     } else {
-      // Tunggu modal S&K tertutup sepenuhnya sebelum membuka modal CAPTCHA
-      // Jika tidak, React Native akan memblokir modal kedua
+      // Tunggu modal S&K tertutup sepenuhnya (1 detik) sebelum membuka modal CAPTCHA
       setTimeout(() => {
         if (recaptchaRef.current) {
           recaptchaRef.current.open();
         }
-      }, 500);
+      }, 1000);
     }
   };
 
@@ -208,6 +269,42 @@ export default function RegisterScreen() {
                 loading={loading} 
                 style={{ marginTop: Spacing.sm }} 
               />
+              
+              <View style={dynamicStyles.dividerContainer}>
+                <View style={dynamicStyles.dividerLine} />
+                <Text style={dynamicStyles.dividerText}>atau</Text>
+                <View style={dynamicStyles.dividerLine} />
+              </View>
+
+              <TouchableOpacity 
+                style={dynamicStyles.socialBtn} 
+                onPress={() => {
+                  if (GOOGLE_CLIENT_ID.includes('MASUKKAN')) {
+                    setError('Google Client ID belum diatur di kode.');
+                    return;
+                  }
+                  googlePromptAsync();
+                }}
+                disabled={!googleRequest || loading}
+              >
+                <Ionicons name="logo-google" size={20} color="#EA4335" />
+                <Text style={dynamicStyles.socialBtnText}>Daftar dengan Google</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={dynamicStyles.socialBtn} 
+                onPress={() => {
+                  if (FB_CLIENT_ID.includes('MASUKKAN')) {
+                    setError('Facebook Client ID belum diatur di kode.');
+                    return;
+                  }
+                  fbPromptAsync();
+                }}
+                disabled={!fbRequest || loading}
+              >
+                <Ionicons name="logo-facebook" size={20} color="#1877F2" />
+                <Text style={dynamicStyles.socialBtnText}>Daftar dengan Facebook</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -296,7 +393,7 @@ export default function RegisterScreen() {
         <Recaptcha
           ref={recaptchaRef}
           siteKey="6LfRukwtAAAAAO5s5EuQ7ZcVrfpdQICSfC-JTUCs"
-          baseUrl="https://127.0.0.1"
+          baseUrl="https://google.com"
           onVerify={executeRegister}
           onExpire={() => setError('CAPTCHA kedaluwarsa. Silakan coba lagi.')}
           size="normal"
@@ -388,8 +485,48 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   captchaText: { fontSize: 18, fontWeight: '900', color: colors.text, letterSpacing: 1 },
   captchaRefresh: { padding: Spacing.sm, backgroundColor: isDark ? colors.bg : Colors.gray[100], borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
   
-  skText: { fontSize: 14, color: colors.textMuted, lineHeight: 22, textAlign: 'justify' },
-  skBold: { fontWeight: '800', color: colors.text },
+  skText: {
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 24,
+    marginBottom: Spacing.md,
+  },
+  skBold: {
+    fontWeight: '800',
+    color: colors.text,
+    fontSize: 16,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: Spacing.md,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  dividerText: {
+    marginHorizontal: Spacing.md,
+    color: colors.textMuted,
+    fontSize: 14,
+  },
+  socialBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
+  },
+  socialBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
   skBtn: { padding: Spacing.md + 4, borderRadius: BorderRadius.xl, alignItems: 'center', justifyContent: 'center' },
   skBtnText: { fontSize: 16, fontWeight: '800' }
 });

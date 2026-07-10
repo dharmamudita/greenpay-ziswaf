@@ -63,6 +63,12 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const setAuthState = async (newToken, newUser) => {
+    await setItemAsync('token', newToken);
+    setToken(newToken);
+    setUser(newUser);
+  };
+
   const register = async (email, password, displayName, role) => {
     const data = await authService.register(email, password, displayName, role);
     await setItemAsync('token', data.token);
@@ -94,7 +100,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{
       user, token, loading,
-      login, register, logout, refreshProfile,
+      login, register, logout, refreshProfile, setAuthState,
       hasRole, isAdmin, isDistrik,
       isAuthenticated: !!token,
     }}>

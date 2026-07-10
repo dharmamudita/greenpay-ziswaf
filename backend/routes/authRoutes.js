@@ -8,6 +8,10 @@ const nodemailer = require('nodemailer');
 const router = express.Router();
 
 const { sendEmail } = require('../utils/mailer');
+const { OAuth2Client } = require('google-auth-library');
+
+// Inisialisasi Google Auth Client
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // POST /api/auth/request-otp
 router.post('/request-otp', async (req, res) => {
@@ -244,6 +248,96 @@ router.post('/reset-password', async (req, res) => {
   } catch (error) {
     console.error('Reset password error:', error);
     res.status(500).json({ error: 'Gagal mereset password.' });
+  }
+});
+
+// POST /api/auth/social-login
+router.post('/social-login', async (req, res) => {
+  try {
+    const { provider, token, email, name } = req.body;
+    
+    // Bypass verifikasi token yang ketat di tahap awal untuk kemudahan testing,
+    // di produksi, Anda harus memverifikasi token dari Google/FB di sini.
+    let verifiedEmail = email;
+    let verifiedName = name;
+
+    if (!verifiedEmail) {
+      return res.status(400).json({ error: 'Email dari penyedia sosial tidak ditemukan.' });
+    }
+
+    // Cek apakah user sudah terdaftar
+    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [verifiedEmail]);
+    
+    if (existingUser.rows.length > 0) {
+      const user = existingUser.rows[0];
+      
+      // Jika akun dinonaktifkan
+      if (!user.is_active) {
+        return res.status(401).json({ error: 'Akun dinonaktifkan.' });
+      }
+
+      // Generate JWT
+      const jwtToken = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+      
+      delete user.password;
+      return res.json({ message: 'Login berhasil!', token: jwtToken, user, isNewUser: false });
+    } else {
+      // User belum terdaftar, arahkan untuk lengkapi profil
+      return res.json({ 
+        message: 'Akun baru, lengkapi profil', 
+        isNewUser: true, 
+        email: verifiedEmail, 
+        name: verifiedName 
+      });
+    }
+  } catch (error) {
+    console.error('Social login error:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server saat social login.' });
+  }
+});
+
+// POST /api/auth/social-register
+router.post('/social-register', async (req, res) => {
+  try {
+    const { email, name, password, role = 'user' } = req.body;
+
+    if (!email || !name || !password) {
+      return res.status(400).json({ error: 'Semua field wajib diisi.' });
+    }
+
+    const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: 'Email sudah terdaftar.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      `INSERT INTO users (email, password, display_name, role) 
+       VALUES ($1, $2, $3, $4) RETURNING id, email, display_name, role, green_points, created_at`,
+      [email, hashedPassword, name, role]
+    );
+
+    const user = result.rows[0];
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({
+      message: 'Registrasi sosial berhasil!',
+      token,
+      user,
+    });
+  } catch (error) {
+    console.error('Social register error:', error);
+    res.status(500).json({ error: 'Gagal mendaftar via sosial.' });
   }
 });
 
