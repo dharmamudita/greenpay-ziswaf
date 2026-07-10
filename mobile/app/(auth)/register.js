@@ -9,6 +9,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import * as Google from 'expo-auth-session/providers/google';
 import * as Facebook from 'expo-auth-session/providers/facebook';
+import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import api from '../../services/api';
 import { Button } from '../../components/ui';
@@ -16,6 +17,8 @@ import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 const { width, height } = Dimensions.get('window');
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -43,12 +46,16 @@ export default function RegisterScreen() {
   const GOOGLE_CLIENT_ID = '863588088837-9t2av69r05o3dg1f02gfenrf2htu5j4h.apps.googleusercontent.com';
   const FB_CLIENT_ID = 'MASUKKAN_FB_CLIENT_ID_ANDA_DISINI';
 
+  const redirectUri = makeRedirectUri({ preferLocalhost: true });
+
   const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
     clientId: GOOGLE_CLIENT_ID,
+    redirectUri,
   });
 
   const [fbRequest, fbResponse, fbPromptAsync] = Facebook.useAuthRequest({
     clientId: FB_CLIENT_ID,
+    redirectUri,
   });
 
   React.useEffect(() => {
