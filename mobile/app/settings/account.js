@@ -18,12 +18,15 @@ export default function AccountSettingScreen() {
 
   // Profile Form State
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const { t } = useTranslation();
+
+  // Email Form State
+  const [email, setEmail] = useState('');
+  const [loadingEmail, setLoadingEmail] = useState(false);
 
   // Password Form State
   const [oldPassword, setOldPassword] = useState('');
@@ -117,19 +120,36 @@ export default function AccountSettingScreen() {
   };
 
   const handleUpdateProfile = async () => {
-    if (!name || !email) {
-      Alert.alert('Gagal', 'Nama dan Email tidak boleh kosong.');
+    if (!name) {
+      Alert.alert('Gagal', 'Nama tidak boleh kosong.');
       return;
     }
     setLoadingProfile(true);
     try {
-      await api.put('/users/me', { display_name: name, email, phone, address });
+      await api.put('/users/me', { display_name: name, phone, address });
       await refreshProfile();
-      Alert.alert('Sukses', 'Data profil berhasil diperbarui.');
+      Alert.alert('Sukses', 'Data diri berhasil diperbarui.');
     } catch (err) {
       Alert.alert('Gagal', err.response?.data?.error || 'Gagal memperbarui profil.');
     } finally {
       setLoadingProfile(false);
+    }
+  };
+
+  const handleUpdateEmail = async () => {
+    if (!email) {
+      Alert.alert('Gagal', 'Email tidak boleh kosong.');
+      return;
+    }
+    setLoadingEmail(true);
+    try {
+      await api.put('/users/me', { email });
+      await refreshProfile();
+      Alert.alert('Sukses', 'Email berhasil diperbarui.');
+    } catch (err) {
+      Alert.alert('Gagal', err.response?.data?.error || 'Gagal memperbarui email.');
+    } finally {
+      setLoadingEmail(false);
     }
   };
 
@@ -179,34 +199,42 @@ export default function AccountSettingScreen() {
                 <Ionicons name="camera" size={14} color={Colors.white} />
               </View>
             </TouchableOpacity>
-            <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>{t('account.tap_to_change_photo')}</Text>
+            <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>{t('account.tap_to_change_photo', { defaultValue: 'Ketuk untuk ubah foto' })}</Text>
           </View>
 
-          <Text style={dynamicStyles.sectionTitle}>{t('account.personal_data')}</Text>
+          {/* Data Diri Section */}
+          <Text style={dynamicStyles.sectionTitle}>{t('account.personal_data', { defaultValue: 'Data Diri' })}</Text>
           <View style={[dynamicStyles.card, Shadows.sm]}>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>{t('account.full_name')}</Text>
+              <Text style={dynamicStyles.label}>{t('account.full_name', { defaultValue: 'Nama Lengkap' })}</Text>
               <TextInput style={dynamicStyles.input} value={name} onChangeText={setName} placeholder={t('account.name_placeholder')} placeholderTextColor={colors.textMuted} />
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>{t('account.email')}</Text>
-              <TextInput style={dynamicStyles.input} value={email} onChangeText={setEmail} keyboardType="email-address" placeholder="email@contoh.com" placeholderTextColor={colors.textMuted} autoCapitalize="none" />
-            </View>
-            <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>{t('account.phone')}</Text>
+              <Text style={dynamicStyles.label}>{t('account.phone', { defaultValue: 'Nomor HP' })}</Text>
               <TextInput style={dynamicStyles.input} value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="08xxxxxxxxxx" placeholderTextColor={colors.textMuted} />
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>{t('account.address')}</Text>
+              <Text style={dynamicStyles.label}>{t('account.address', { defaultValue: 'Alamat' })}</Text>
               <TextInput style={[dynamicStyles.input, { height: 80, textAlignVertical: 'top' }]} value={address} onChangeText={setAddress} placeholder={t('account.address')} placeholderTextColor={colors.textMuted} multiline />
             </View>
-            <Button title={t('account.save')} onPress={handleUpdateProfile} loading={loadingProfile} style={{ marginTop: Spacing.sm }} />
+            <Button title={t('account.save_personal_data', { defaultValue: 'Simpan Data Diri' })} onPress={handleUpdateProfile} loading={loadingProfile} style={{ marginTop: Spacing.sm }} />
           </View>
 
-          <Text style={[dynamicStyles.sectionTitle, { marginTop: Spacing.xl }]}>{t('account.security')}</Text>
+          {/* Email Section */}
+          <Text style={[dynamicStyles.sectionTitle, { marginTop: Spacing.xl }]}>{t('account.email_settings', { defaultValue: 'Pengaturan Email' })}</Text>
+          <View style={[dynamicStyles.card, Shadows.sm]}>
+            <View style={dynamicStyles.inputGroup}>
+              <Text style={dynamicStyles.label}>{t('account.email', { defaultValue: 'Email' })}</Text>
+              <TextInput style={dynamicStyles.input} value={email} onChangeText={setEmail} keyboardType="email-address" placeholder="email@contoh.com" placeholderTextColor={colors.textMuted} autoCapitalize="none" />
+            </View>
+            <Button title={t('account.save_email', { defaultValue: 'Simpan Email' })} onPress={handleUpdateEmail} loading={loadingEmail} style={{ marginTop: Spacing.sm, backgroundColor: Colors.purple }} />
+          </View>
+
+          {/* Security / Password Section */}
+          <Text style={[dynamicStyles.sectionTitle, { marginTop: Spacing.xl }]}>{t('account.security', { defaultValue: 'Keamanan' })}</Text>
           <View style={[dynamicStyles.card, Shadows.sm, { marginBottom: Spacing['3xl'] }]}>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>{t('account.old_password')}</Text>
+              <Text style={dynamicStyles.label}>{t('account.old_password', { defaultValue: 'Password Lama' })}</Text>
               <View style={dynamicStyles.passwordWrap}>
                 <TextInput style={[dynamicStyles.input, { flex: 1, borderWidth: 0 }]} value={oldPassword} onChangeText={setOldPassword} secureTextEntry={!showPassword} placeholder={t('account.old_password')} placeholderTextColor={colors.textMuted} />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={dynamicStyles.eyeBtn}>
@@ -215,10 +243,10 @@ export default function AccountSettingScreen() {
               </View>
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>{t('account.new_password')}</Text>
+              <Text style={dynamicStyles.label}>{t('account.new_password', { defaultValue: 'Password Baru' })}</Text>
               <TextInput style={dynamicStyles.input} value={newPassword} onChangeText={setNewPassword} secureTextEntry={!showPassword} placeholder={t('account.new_password')} placeholderTextColor={colors.textMuted} />
             </View>
-            <Button title={t('account.change_password')} onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm, backgroundColor: Colors.info }} />
+            <Button title={t('account.change_password', { defaultValue: 'Ubah Password' })} onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm, backgroundColor: Colors.info }} />
           </View>
 
         </View>
