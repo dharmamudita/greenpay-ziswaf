@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
+import { ThemeProvider as NavThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
@@ -26,8 +27,17 @@ function AppContent() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   
+  const navTheme = {
+    ...(isDark ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(isDark ? DarkTheme.colors : DefaultTheme.colors),
+      background: colors.bg,
+      card: colors.bg,
+    },
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <NavThemeProvider value={navTheme}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <GlobalToast />
       <Stack
@@ -37,6 +47,7 @@ function AppContent() {
           headerTitleStyle: { fontWeight: '700' },
           contentStyle: { backgroundColor: colors.bg },
           headerShadowVisible: false,
+          animation: 'fade_from_bottom', // Kita bisa kembalikan animasi premium yang aman sekarang!
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -49,11 +60,11 @@ function AppContent() {
         <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
         <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
         <Stack.Screen name="settings/theme" options={{ title: t('settings.theme') }} />
-        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', title: t('ai_scanner.title'), headerShown: false }} />
-        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', title: t('eco_ustadz.title'), headerShown: false }} />
+        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('ai_scanner.title'), headerShown: false }} />
+        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('eco_ustadz.title'), headerShown: false }} />
         <Stack.Screen name="settings/language" options={{ title: t('settings.language') }} />
       </Stack>
-    </View>
+    </NavThemeProvider>
   );
 }
 
