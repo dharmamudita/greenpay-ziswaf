@@ -23,6 +23,7 @@ export default function AccountSettingScreen() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUri, setPreviewUri] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const { t } = useTranslation();
 
   // Email Form State
@@ -244,27 +245,84 @@ export default function AccountSettingScreen() {
             <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>{t('account.tap_to_change_photo', { defaultValue: 'Ketuk untuk ubah foto' })}</Text>
           </View>
 
-          {/* Photo Preview Modal */}
+          {/* Photo Preview Modal - Professional Crop Editor */}
           <Modal visible={!!previewUri} transparent animationType="fade">
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-              <View style={{ backgroundColor: colors.surface, borderRadius: 24, padding: 24, width: '100%', maxWidth: 360, alignItems: 'center' }}>
-                <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 16 }}>Pratinjau Foto Profil</Text>
-                {previewUri && (
-                  <Image source={{ uri: previewUri }} style={{ width: 180, height: 180, borderRadius: 90, marginBottom: 20 }} />
-                )}
-                <Text style={{ fontSize: 13, color: colors.textMuted, marginBottom: 20, textAlign: 'center' }}>Apakah Anda yakin ingin menggunakan foto ini?</Text>
-                <View style={{ flexDirection: 'row', gap: 12, width: '100%' }}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ backgroundColor: colors.surface, borderRadius: 28, padding: 0, width: '92%', maxWidth: 380, alignItems: 'center', overflow: 'hidden' }}>
+                {/* Header */}
+                <View style={{ width: '100%', paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+                  <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, textAlign: 'center' }}>Sesuaikan Foto</Text>
+                  <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center', marginTop: 4 }}>Geser zoom untuk menyesuaikan</Text>
+                </View>
+
+                {/* Crop Area with Grid */}
+                <View style={{ width: 260, height: 260, margin: 20, borderRadius: 130, overflow: 'hidden', position: 'relative', borderWidth: 3, borderColor: Colors.green[500] }}>
+                  {previewUri && (
+                    <Image 
+                      source={{ uri: previewUri }} 
+                      style={{ 
+                        width: 260, 
+                        height: 260, 
+                        transform: [{ scale: zoomLevel }],
+                      }} 
+                      resizeMode="cover"
+                    />
+                  )}
+                  {/* Grid Overlay - Rule of Thirds */}
+                  <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                    {/* Vertical lines */}
+                    <View style={{ position: 'absolute', left: '33.33%', top: 0, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
+                    <View style={{ position: 'absolute', left: '66.66%', top: 0, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
+                    {/* Horizontal lines */}
+                    <View style={{ position: 'absolute', top: '33.33%', left: 0, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
+                    <View style={{ position: 'absolute', top: '66.66%', left: 0, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
+                    {/* Center crosshair */}
+                    <View style={{ position: 'absolute', top: '50%', left: '50%', marginTop: -8, marginLeft: -8, width: 16, height: 16, borderRadius: 8, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)' }} />
+                  </View>
+                </View>
+
+                {/* Zoom Controls */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, width: '100%', marginBottom: 8 }}>
+                  <TouchableOpacity onPress={() => setZoomLevel(Math.max(1, zoomLevel - 0.1))} style={{ padding: 8 }}>
+                    <Ionicons name="remove-circle-outline" size={26} color={colors.textMuted} />
+                  </TouchableOpacity>
+                  <View style={{ flex: 1, height: 36, justifyContent: 'center', marginHorizontal: 8 }}>
+                    {/* Zoom track */}
+                    <View style={{ height: 4, backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)', borderRadius: 2, position: 'relative' }}>
+                      <View style={{ height: 4, backgroundColor: Colors.green[500], borderRadius: 2, width: `${((zoomLevel - 1) / 1.5) * 100}%` }} />
+                      <View style={{ 
+                        position: 'absolute', 
+                        top: -8, 
+                        left: `${((zoomLevel - 1) / 1.5) * 100}%`, 
+                        marginLeft: -10,
+                        width: 20, height: 20, 
+                        borderRadius: 10, 
+                        backgroundColor: Colors.green[500], 
+                        borderWidth: 3, 
+                        borderColor: colors.surface,
+                        ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
+                      }} />
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={() => setZoomLevel(Math.min(2.5, zoomLevel + 0.1))} style={{ padding: 8 }}>
+                    <Ionicons name="add-circle-outline" size={26} color={colors.textMuted} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={{ fontSize: 11, color: colors.textMuted, marginBottom: 16 }}>{Math.round(zoomLevel * 100)}%</Text>
+
+                {/* Action Buttons */}
+                <View style={{ flexDirection: 'row', width: '100%', borderTopWidth: 1, borderTopColor: colors.border }}>
                   <TouchableOpacity 
-                    onPress={() => setPreviewUri(null)} 
-                    style={{ flex: 1, padding: 14, borderRadius: 16, borderWidth: 1, borderColor: colors.border, alignItems: 'center' }}
+                    onPress={() => { setPreviewUri(null); setZoomLevel(1); }} 
+                    style={{ flex: 1, padding: 16, alignItems: 'center', borderRightWidth: 1, borderRightColor: colors.border }}
                   >
                     <Text style={{ fontSize: 15, fontWeight: '600', color: colors.textMuted }}>Batal</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
                     onPress={confirmUpload} 
-                    style={{ flex: 1, padding: 14, borderRadius: 16, backgroundColor: Colors.green[500], alignItems: 'center' }}
+                    style={{ flex: 1, padding: 16, alignItems: 'center' }}
                   >
-                    <Text style={{ fontSize: 15, fontWeight: '700', color: Colors.white }}>Simpan</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '700', color: Colors.green[500] }}>Gunakan Foto</Text>
                   </TouchableOpacity>
                 </View>
               </View>
