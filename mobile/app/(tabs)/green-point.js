@@ -9,12 +9,14 @@ import { Spacing, BorderRadius } from '../../theme/spacing';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 export default function GreenPointScreen() {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -56,18 +58,18 @@ export default function GreenPointScreen() {
           <LinearGradient colors={[Colors.green[700], Colors.green[900]]} style={StyleSheet.absoluteFillObject} />
           <View style={dynamicStyles.balanceContent}>
             <Ionicons name="leaf" size={36} color={Colors.green[300]} />
-            <Text style={dynamicStyles.balanceLabel}>Saldo Green Point</Text>
+            <Text style={dynamicStyles.balanceLabel}>{t('green_point.balance')}</Text>
             <Text style={dynamicStyles.balanceValue}>{user?.green_points?.toLocaleString() || 0}</Text>
-            <Text style={dynamicStyles.balanceSub}>Ayo kumpulkan lebih banyak poin!</Text>
+            <Text style={dynamicStyles.balanceSub}>{t('green_point.subtitle')}</Text>
             <View style={dynamicStyles.balanceBtns}>
-              <Button title="Tukar Reward" variant="gold" onPress={() => router.push('/reward')} />
+              <Button title={t('green_point.redeem')} variant="gold" onPress={() => router.push('/reward')} />
             </View>
           </View>
         </View>
 
         {/* Recent Activities */}
         <Text style={dynamicStyles.sectionTitle}>
-          <Ionicons name="flame" size={18} color={Colors.gold[400]} /> Aktivitas Terbaru
+          <Ionicons name="flame" size={18} color={Colors.gold[400]} /> {t('green_point.history')}
         </Text>
         
         {loading ? (
