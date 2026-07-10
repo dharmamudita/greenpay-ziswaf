@@ -118,34 +118,6 @@ export default function RegisterScreen() {
             </View>
           ) : null}
 
-          {/* Role Selector */}
-          <View style={dynamicStyles.roleWrap}>
-            {[
-              { value: ROLES.USER, label: 'Pengguna', icon: 'person', desc: 'Setor sampah & donasi' },
-              { value: ROLES.DISTRIK, label: 'Distrik', icon: 'business', desc: 'Kelola bank sampah' },
-            ].map((r) => (
-              <TouchableOpacity
-                key={r.value}
-                style={[
-                  dynamicStyles.roleBtn, 
-                  role === r.value && dynamicStyles.roleBtnActive,
-                  role !== r.value && Shadows.sm
-                ]}
-                onPress={() => setRole(r.value)}
-                activeOpacity={0.8}
-              >
-                <View style={[dynamicStyles.roleIconWrap, role === r.value && { backgroundColor: Colors.green[500] }]}>
-                  <Ionicons name={r.icon} size={22} color={role === r.value ? Colors.white : colors.textMuted} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[dynamicStyles.roleName, role === r.value && { color: role === r.value && isDark ? Colors.white : Colors.green[700] }]}>{r.label}</Text>
-                  <Text style={dynamicStyles.roleDesc}>{r.desc}</Text>
-                </View>
-                {role === r.value && <Ionicons name="checkmark-circle" size={24} color={Colors.green[500]} />}
-              </TouchableOpacity>
-            ))}
-          </View>
-
           <View style={[dynamicStyles.formCard, Shadows.md]}>
             <View style={dynamicStyles.form}>
               <View style={dynamicStyles.inputGroup}>
