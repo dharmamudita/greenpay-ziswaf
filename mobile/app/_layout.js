@@ -27,7 +27,7 @@ function AppContent() {
   const { t } = useTranslation();
   
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <GlobalToast />
       <Stack
@@ -37,9 +37,7 @@ function AppContent() {
           headerTitleStyle: { fontWeight: '700' },
           contentStyle: { backgroundColor: colors.bg },
           headerShadowVisible: false,
-          animation: 'slide_from_right', // Animasi slide premium saat pindah halaman
-          gestureEnabled: true, // Memungkinkan swipe untuk kembali
-          gestureDirection: 'horizontal',
+          animation: 'fade_from_bottom', // Animasi premium yang lebih aman dari glitch putih
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -56,7 +54,7 @@ function AppContent() {
         <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('eco_ustadz.title'), headerShown: false }} />
         <Stack.Screen name="settings/language" options={{ title: t('settings.language') }} />
       </Stack>
-    </>
+    </View>
   );
 }
 
