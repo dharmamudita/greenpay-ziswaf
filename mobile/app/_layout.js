@@ -17,7 +17,7 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
     input:-webkit-autofill:focus, 
     input:-webkit-autofill:active {
       transition: background-color 5000s ease-in-out 0s;
-      -webkit-text-fill-color: inherit !important;
+      -webkit-text-fill-color: var(--input-text-color, inherit) !important;
     }
   `;
   document.head.appendChild(style);
@@ -26,6 +26,10 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 function AppContent() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
+  
+  if (Platform.OS === 'web' && typeof document !== 'undefined') {
+    document.documentElement.style.setProperty('--input-text-color', colors.text);
+  }
   
   const navTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),
