@@ -6,31 +6,33 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Card, Badge, Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
-const stats = [
-  { icon: 'refresh-circle', value: '12.5K', unit: 'Kg', label: 'Sampah Didaur Ulang', color: Colors.green[500] },
-  { icon: 'leaf', value: '1,247', unit: '', label: 'Pohon Ditanam', color: Colors.green[400] },
-  { icon: 'heart', value: '2.8M', unit: 'Rp', label: 'Dana ZISWAF', color: Colors.gold[400] },
-  { icon: 'storefront', value: '156', unit: '', label: 'UMKM Diberdayakan', color: Colors.info },
+const statsKeys = [
+  { icon: 'refresh-circle', value: '12.5K', unit: 'Kg', labelKey: 'home.stat_waste', color: Colors.green[500] },
+  { icon: 'leaf', value: '1,247', unit: '', labelKey: 'home.stat_trees', color: Colors.green[400] },
+  { icon: 'heart', value: '2.8M', unit: 'Rp', labelKey: 'home.stat_fund', color: Colors.gold[400] },
+  { icon: 'storefront', value: '156', unit: '', labelKey: 'home.stat_sme', color: Colors.info },
 ];
 
-const features = [
-  { icon: 'heart', title: 'Program ZISWAF', desc: 'Bayar zakat, infak, sedekah & wakaf', color: Colors.gold[400], route: '/(tabs)/ziswaf' },
-  { icon: 'refresh-circle', title: 'Bank Sampah', desc: 'Setor sampah & dapatkan poin', color: Colors.green[500], route: '/bank-sampah' },
-  { icon: 'storefront', title: 'Marketplace', desc: 'Belanja produk ramah lingkungan', color: Colors.info, route: '/(tabs)/marketplace' },
-  { icon: 'leaf', title: 'Green Point', desc: 'Kumpulkan & tukar poin', color: Colors.green[400], route: '/(tabs)/green-point' },
-  { icon: 'bar-chart', title: 'Dashboard', desc: 'Pantau dampak kontribusi', color: Colors.purple, route: '/dashboard-dampak' },
-  { icon: 'document-text', title: 'Impact Passport', desc: 'Paspor digital kontribusi', color: Colors.pink, route: '/impact-passport' },
-  { icon: 'gift', title: 'Reward', desc: 'Tukarkan poin dengan hadiah', color: Colors.gold[500], route: '/reward' },
-  { icon: 'trophy', title: 'Peringkat', desc: 'Top 10 Pejuang Lingkungan', color: Colors.gold[400], route: '/leaderboard' },
+const featuresKeys = [
+  { icon: 'heart', titleKey: 'home.feat_ziswaf', descKey: 'home.feat_ziswaf_desc', color: Colors.gold[400], route: '/(tabs)/ziswaf' },
+  { icon: 'refresh-circle', titleKey: 'home.feat_bank', descKey: 'home.feat_bank_desc', color: Colors.green[500], route: '/bank-sampah' },
+  { icon: 'storefront', titleKey: 'home.feat_market', descKey: 'home.feat_market_desc', color: Colors.info, route: '/(tabs)/marketplace' },
+  { icon: 'leaf', titleKey: 'home.feat_gp', descKey: 'home.feat_gp_desc', color: Colors.green[400], route: '/(tabs)/green-point' },
+  { icon: 'bar-chart', titleKey: 'home.feat_dash', descKey: 'home.feat_dash_desc', color: Colors.purple, route: '/dashboard-dampak' },
+  { icon: 'document-text', titleKey: 'home.feat_pass', descKey: 'home.feat_pass_desc', color: Colors.pink, route: '/impact-passport' },
+  { icon: 'gift', titleKey: 'home.feat_reward', descKey: 'home.feat_reward_desc', color: Colors.gold[500], route: '/reward' },
+  { icon: 'trophy', titleKey: 'home.feat_rank', descKey: 'home.feat_rank_desc', color: Colors.gold[400], route: '/leaderboard' },
 ];
 
 export default function HomeScreen() {
   const { user, isAuthenticated } = useAuth();
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const dynamicStyles = getStyles(colors, isDark);
 
   return (
@@ -43,21 +45,21 @@ export default function HomeScreen() {
           style={StyleSheet.absoluteFillObject}
         />
         <View style={dynamicStyles.heroContent}>
-          <Badge text="🌿 Platform Green Economy" variant="gold" />
+          <Badge text={`🌿 ${t('home.badge')}`} variant="gold" />
           <Text style={dynamicStyles.heroTitle}>
-            Bersama Wujudkan{'\n'}
-            <Text style={{ color: Colors.green[300] }}>Indonesia Hijau</Text>
+            {t('home.title1')}{'\n'}
+            <Text style={{ color: Colors.green[300] }}>{t('home.title2')}</Text>
           </Text>
           <Text style={dynamicStyles.heroSubtitle}>
-            Gabungkan kekuatan ZISWAF dan aksi lingkungan untuk dampak nyata.
+            {t('home.subtitle')}
           </Text>
           <View style={dynamicStyles.heroBtns}>
             {isAuthenticated ? (
-              <Button title="Dashboard Saya" onPress={() => router.push('/dashboard-dampak')} style={{ flex: 1 }} />
+              <Button title={t('home.my_dashboard')} onPress={() => router.push('/dashboard-dampak')} style={{ flex: 1 }} />
             ) : (
               <>
-                <Button title="Mulai Sekarang" onPress={() => router.push('/(auth)/register')} style={{ flex: 1 }} />
-                <Button title="Masuk" variant="outline" onPress={() => router.push('/(auth)/login')} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} textStyle={{ color: Colors.white }} />
+                <Button title={t('home.start_now')} onPress={() => router.push('/(auth)/register')} style={{ flex: 1 }} />
+                <Button title={t('home.login')} variant="outline" onPress={() => router.push('/(auth)/login')} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} textStyle={{ color: Colors.white }} />
               </>
             )}
           </View>
@@ -66,29 +68,29 @@ export default function HomeScreen() {
 
       {/* Stats - Overlapping the Hero */}
       <View style={dynamicStyles.statsRow}>
-        {stats.map((s, i) => (
+        {statsKeys.map((s, i) => (
           <Card key={i} style={dynamicStyles.statCard}>
             <View style={[dynamicStyles.statIconBox, { backgroundColor: s.color + '15' }]}>
               <Ionicons name={s.icon} size={24} color={s.color} />
             </View>
             <Text style={[dynamicStyles.statValue, { color: isDark ? Colors.white : Colors.light.text }]}>{s.value}<Text style={dynamicStyles.statUnit}> {s.unit}</Text></Text>
-            <Text style={dynamicStyles.statLabel}>{s.label}</Text>
+            <Text style={dynamicStyles.statLabel}>{t(s.labelKey)}</Text>
           </Card>
         ))}
       </View>
 
       {/* Features Grid */}
       <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>Fitur <Text style={{ color: Colors.green[500] }}>Unggulan</Text></Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('home.feat_title')} <Text style={{ color: Colors.green[500] }}>{t('home.feat_highlight')}</Text></Text>
           <View style={dynamicStyles.featGrid}>
-            {features.map((f, i) => (
+            {featuresKeys.map((f, i) => (
               <Card key={i} style={dynamicStyles.featCard} onPress={() => router.push(f.route)}>
                 <View style={[dynamicStyles.featIcon, { backgroundColor: f.color + '18' }]}>
                   <Ionicons name={f.icon} size={26} color={f.color} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={dynamicStyles.featTitle}>{f.title}</Text>
-                  <Text style={dynamicStyles.featDesc}>{f.desc}</Text>
+                  <Text style={dynamicStyles.featTitle}>{t(f.titleKey)}</Text>
+                  <Text style={dynamicStyles.featDesc}>{t(f.descKey)}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </Card>
@@ -104,9 +106,9 @@ export default function HomeScreen() {
               <View style={dynamicStyles.ctaIconBox}>
                 <Ionicons name="earth" size={40} color={Colors.white} />
               </View>
-              <Text style={dynamicStyles.ctaTitle}>Siap Membuat Perubahan?</Text>
-              <Text style={dynamicStyles.ctaDesc}>Daftar gratis dan dapatkan Impact Passport Anda hari ini.</Text>
-              <Button title="Daftar Gratis" variant="gold" onPress={() => router.push('/(auth)/register')} style={{ width: '100%', marginTop: Spacing.md }} />
+              <Text style={dynamicStyles.ctaTitle}>{t('home.cta_title')}</Text>
+              <Text style={dynamicStyles.ctaDesc}>{t('home.cta_desc')}</Text>
+              <Button title={t('home.cta_btn')} variant="gold" onPress={() => router.push('/(auth)/register')} style={{ width: '100%', marginTop: Spacing.md }} />
             </View>
           </Card>
         </View>
