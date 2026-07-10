@@ -207,13 +207,9 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   
   // Header
   header: {
-    backgroundColor: isDark ? colors.surface : Colors.white,
     paddingTop: Platform.OS === 'ios' ? 50 : 40,
     paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing.lg,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    ...Shadows.sm,
     zIndex: 10,
   },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
@@ -259,10 +255,11 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     marginBottom: 8,
   },
   menuTitle: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
+    marginTop: 4,
   },
 
   // Section
