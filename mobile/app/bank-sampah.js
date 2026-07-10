@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
@@ -28,6 +29,7 @@ export default function BankSampahScreen() {
   const [loading, setLoading] = useState(false);
   
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const dynamicStyles = getStyles(colors, isDark);
 
   const typeDetails = wasteTypes.find(t => t.id === selectedType);
@@ -109,7 +111,7 @@ export default function BankSampahScreen() {
           <TouchableOpacity activeOpacity={0.9} onPress={openGoogleMaps} style={{ width: '100%', height: 180 }}>
             <Map lat={lat} lng={lng} openGoogleMaps={openGoogleMaps} colors={colors} />
             <View style={dynamicStyles.mapOverlayHint}>
-              <Text style={dynamicStyles.mapOverlayText}>Buka di Google Maps</Text>
+              <Text style={dynamicStyles.mapOverlayText}>{t('bank_sampah.open_maps')}</Text>
             </View>
           </TouchableOpacity>
           <View style={dynamicStyles.locationInfo}>
@@ -139,8 +141,8 @@ export default function BankSampahScreen() {
               </View>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={dynamicStyles.aiBannerTitle}>AI Waste Scanner ✨</Text>
-              <Text style={dynamicStyles.aiBannerDesc}>Foto sampahmu & prediksi poinnya secara instan!</Text>
+              <Text style={dynamicStyles.aiBannerTitle}>{t('bank_sampah.ai_scanner')}</Text>
+              <Text style={dynamicStyles.aiBannerDesc}>{t('bank_sampah.ai_scanner_desc')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={Colors.white} />
           </View>
