@@ -253,9 +253,7 @@ export default function EcoUstadzScreen() {
             </View>
           </View>
 
-          <TouchableOpacity onPress={clearChat} style={dynamicStyles.clearBtn}>
-            <Ionicons name="trash-outline" size={20} color={Colors.white} />
-          </TouchableOpacity>
+          <View style={{ width: 38 }} />
         </View>
       </View>
 

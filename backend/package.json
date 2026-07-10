@@ -4,10 +4,11 @@
   "description": "GreenPay ZISWAF Backend API - Express.js + PostgreSQL",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "start": "node --dns-result-order=ipv4first server.js",
+    "dev": "node --watch --dns-result-order=ipv4first server.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
