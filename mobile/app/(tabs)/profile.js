@@ -54,19 +54,21 @@ export default function ProfileScreen() {
   }
 
   // --- AUTHENTICATED STATE ---
-  let menuItems = [
-    { icon: 'document-text', label: t('profile.impact_passport', { defaultValue: 'Impact Passport' }), route: '/impact-passport', color: Colors.pink },
-    { icon: 'bar-chart', label: t('profile.impact_dashboard', { defaultValue: 'Dashboard Dampak' }), route: '/dashboard-dampak', color: Colors.purple },
-    { icon: 'gift', label: t('profile.my_rewards', { defaultValue: 'Reward Saya' }), route: '/reward', color: Colors.gold[500] },
-    { icon: 'refresh', label: t('profile.waste_bank', { defaultValue: 'Bank Sampah' }), route: '/bank-sampah', color: Colors.green[500] },
-  ];
-
-  if (user?.role === 'user') {
-    menuItems.push({ icon: 'business', label: 'Daftar Jadi Distrik', route: '/profile/register-distrik', color: Colors.info });
-  }
+  let menuItems = [];
 
   if (isAdmin() || isDistrik()) {
     menuItems.push({ icon: 'briefcase', label: 'Dashboard Admin', route: '/admin', color: Colors.gold[500] });
+  }
+
+  menuItems.push(
+    { icon: 'document-text', label: t('profile.impact_passport', { defaultValue: 'Impact Passport' }), route: '/impact-passport', color: Colors.pink },
+    { icon: 'bar-chart', label: t('profile.impact_dashboard', { defaultValue: 'Dashboard Dampak' }), route: '/dashboard-dampak', color: Colors.purple },
+    { icon: 'gift', label: t('profile.my_rewards', { defaultValue: 'Reward Saya' }), route: '/reward', color: Colors.gold[500] },
+    { icon: 'refresh', label: t('profile.waste_bank', { defaultValue: 'Bank Sampah' }), route: '/bank-sampah', color: Colors.green[500] }
+  );
+
+  if (user?.role === 'user') {
+    menuItems.push({ icon: 'business', label: 'Daftar Jadi Distrik', route: '/profile/register-distrik', color: Colors.info });
   }
 
   menuItems.push({ icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[400] : Colors.gray[500] });
