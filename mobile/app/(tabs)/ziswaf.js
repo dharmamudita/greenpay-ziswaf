@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Button, Card } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius } from '../../theme/spacing';
@@ -32,6 +33,7 @@ export default function ZiswafScreen() {
   const [income, setIncome] = useState('');
   const [bonus, setBonus] = useState('');
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -124,8 +126,8 @@ export default function ZiswafScreen() {
   return (
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       <View style={dynamicStyles.container}>
-        <Text style={dynamicStyles.pageTitle}>Tunaikan <Text style={{ color: Colors.green[500] }}>ZISWAF</Text></Text>
-        <Text style={dynamicStyles.pageDesc}>Salurkan secara digital. Transparan dan berdampak.</Text>
+        <Text style={dynamicStyles.pageTitle}>{t('ziswaf.title')} <Text style={{ color: Colors.green[500] }}>{t('ziswaf.title_highlight')}</Text></Text>
+        <Text style={dynamicStyles.pageDesc}>{t('ziswaf.subtitle')}</Text>
 
         {/* Tabs */}
         <View style={dynamicStyles.tabs}>
@@ -217,7 +219,7 @@ export default function ZiswafScreen() {
                   <View style={[dynamicStyles.progressFill, { width: `${progress}%` }]} />
                 </View>
                 <View style={dynamicStyles.progressInfo}>
-                  <Text style={dynamicStyles.progressText}>Terkumpul: <Text style={{ color: Colors.green[500], fontWeight: '700' }}>{fmt(p.collected_amount)}</Text></Text>
+                  <Text style={dynamicStyles.progressText}>{t('ziswaf.collected')}: <Text style={{ color: Colors.green[500], fontWeight: '700' }}>{fmt(p.collected_amount)}</Text></Text>
                   <Text style={dynamicStyles.progressText}>Target: {fmt(p.target_amount)}</Text>
                 </View>
                 <View style={dynamicStyles.quickGrid}>
@@ -234,14 +236,14 @@ export default function ZiswafScreen() {
                 
                 <View style={{ flexDirection: 'row', gap: Spacing.sm }}>
                   <Button 
-                    title={forecasting ? "Memproses..." : "Prediksi AI ✨"} 
+                    title={forecasting ? t('ziswaf.ai_processing') : t('ziswaf.ai_predict')} 
                     variant="outline"
                     onPress={() => predictImpact(p.title)} 
                     disabled={donating === p.id || forecasting}
                     style={{ flex: 1 }}
                   />
                   <Button 
-                    title={donating === p.id ? "Memproses..." : "Donasi"} 
+                    title={donating === p.id ? t('ziswaf.ai_processing') : t('ziswaf.donate')} 
                     onPress={() => handleDonate(p.id, p.title)} 
                     disabled={donating === p.id || forecasting}
                     style={{ flex: 1 }}
