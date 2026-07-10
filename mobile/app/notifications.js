@@ -143,8 +143,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
     paddingTop: 50,
-    paddingBottom: Spacing.lg,
-    backgroundColor: colors.surface,
+    paddingBottom: Spacing.sm,
   },
   backBtn: {
     padding: 4,
