@@ -7,7 +7,7 @@ import { Platform } from 'react-native';
 // Jika berjalan di HP (Android/iOS), gunakan Localtunnel.
 const API_BASE_URL = Platform.OS === 'web' 
   ? 'http://localhost:5000/api' 
-  : 'https://greenpay-api-2026.loca.lt/api';
+  : 'http://192.168.1.8:5000/api'; // Menggunakan IP Lokal WiFi agar bisa diakses dari HP
 
 const api = axios.create({
   baseURL: API_BASE_URL,
