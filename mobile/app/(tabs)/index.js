@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
@@ -76,12 +75,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Hero Card / Balance */}
-        <LinearGradient
-          colors={isDark ? [Colors.green[700], Colors.green[900]] : [Colors.green[500], Colors.green[700]]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[dynamicStyles.heroCard, Shadows.lg]}
-        >
+        <View style={[dynamicStyles.heroCard, Shadows.lg, { backgroundColor: isDark ? Colors.green[700] : Colors.green[600] }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View>
               <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>
@@ -182,16 +176,10 @@ export default function HomeScreen() {
 
       {/* Floating Action Button untuk Eco-Ustadz AI */}
       <TouchableOpacity 
-        style={[dynamicStyles.fab, Shadows.md]} 
+        style={[dynamicStyles.fab, Shadows.md, { backgroundColor: Colors.green[600] }]} 
         activeOpacity={0.9}
         onPress={() => router.push('/eco-ustadz')}
       >
-        <LinearGradient 
-          colors={[Colors.green[500], Colors.green[700]]} 
-          style={StyleSheet.absoluteFillObject}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
         <Ionicons name="chatbubbles" size={28} color={Colors.white} />
         <View style={dynamicStyles.fabSparkle}>
           <Ionicons name="sparkles" size={14} color={Colors.gold[400]} />
