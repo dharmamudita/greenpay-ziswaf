@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../context/AuthContext';
@@ -22,6 +22,7 @@ export default function AccountSettingScreen() {
   const [address, setAddress] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [previewUri, setPreviewUri] = useState(null);
   const { t } = useTranslation();
 
   // Email Form State
@@ -111,18 +112,24 @@ export default function AccountSettingScreen() {
 
   const processImageResult = async (result) => {
     if (!result.canceled) {
-      setUploadingAvatar(true);
-      try {
-        const imageUrl = await uploadToCloudinary(result.assets[0].uri);
-        await api.put('/users/me', { photo_url: imageUrl });
-        await refreshProfile();
-        Alert.alert('Sukses', 'Foto profil berhasil diperbarui.');
-      } catch (error) {
-        console.error(error);
-        Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
-      } finally {
-        setUploadingAvatar(false);
-      }
+      setPreviewUri(result.assets[0].uri);
+    }
+  };
+
+  const confirmUpload = async () => {
+    if (!previewUri) return;
+    setUploadingAvatar(true);
+    setPreviewUri(null);
+    try {
+      const imageUrl = await uploadToCloudinary(previewUri);
+      await api.put('/users/me', { photo_url: imageUrl });
+      await refreshProfile();
+      Alert.alert('Sukses', 'Foto profil berhasil diperbarui.');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -236,6 +243,33 @@ export default function AccountSettingScreen() {
             </TouchableOpacity>
             <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>{t('account.tap_to_change_photo', { defaultValue: 'Ketuk untuk ubah foto' })}</Text>
           </View>
+
+          {/* Photo Preview Modal */}
+          <Modal visible={!!previewUri} transparent animationType="fade">
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+              <View style={{ backgroundColor: colors.surface, borderRadius: 24, padding: 24, width: '100%', maxWidth: 360, alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 16 }}>Pratinjau Foto Profil</Text>
+                {previewUri && (
+                  <Image source={{ uri: previewUri }} style={{ width: 180, height: 180, borderRadius: 90, marginBottom: 20 }} />
+                )}
+                <Text style={{ fontSize: 13, color: colors.textMuted, marginBottom: 20, textAlign: 'center' }}>Apakah Anda yakin ingin menggunakan foto ini?</Text>
+                <View style={{ flexDirection: 'row', gap: 12, width: '100%' }}>
+                  <TouchableOpacity 
+                    onPress={() => setPreviewUri(null)} 
+                    style={{ flex: 1, padding: 14, borderRadius: 16, borderWidth: 1, borderColor: colors.border, alignItems: 'center' }}
+                  >
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: colors.textMuted }}>Batal</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    onPress={confirmUpload} 
+                    style={{ flex: 1, padding: 14, borderRadius: 16, backgroundColor: Colors.green[500], alignItems: 'center' }}
+                  >
+                    <Text style={{ fontSize: 15, fontWeight: '700', color: Colors.white }}>Simpan</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
 
           {/* Data Diri Section */}
           <Text style={dynamicStyles.sectionTitle}>{t('account.personal_data', { defaultValue: 'Data Diri' })}</Text>
