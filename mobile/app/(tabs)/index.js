@@ -68,7 +68,7 @@ export default function HomeScreen() {
               </View>
             )}
           </View>
-          <TouchableOpacity style={dynamicStyles.notificationBtn}>
+          <TouchableOpacity style={dynamicStyles.notificationBtn} onPress={() => router.push('/notifications')}>
             <Ionicons name="notifications-outline" size={24} color={isDark ? Colors.white : Colors.gray[800]} />
             {isAuthenticated && <View style={dynamicStyles.notificationDot} />}
           </TouchableOpacity>
