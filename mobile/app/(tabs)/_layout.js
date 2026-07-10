@@ -59,14 +59,7 @@ export default function TabLayout() {
         }}
       />
       
-      <Tabs.Screen
-        name="distrik"
-        options={{
-          title: 'Distrik',
-          tabBarIcon: ({ color, size }) => <Ionicons name="scan" size={size} color={color} />,
-          href: (isDistrik() || isAdmin()) ? '/distrik' : null,
-        }}
-      />
+
 
       <Tabs.Screen
         name="profile"

@@ -13,7 +13,7 @@ import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin, isDistrik } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   
@@ -43,8 +43,8 @@ export default function ProfileScreen() {
     menuItems.push({ icon: 'business', label: 'Daftar Jadi Distrik', route: '/profile/register-distrik', color: Colors.info });
   }
 
-  if (user?.role === 'admin') {
-    menuItems.push({ icon: 'shield-checkmark', label: 'Verifikasi Distrik', route: '/admin/verify-distrik', color: Colors.gold[500] || Colors.warning });
+  if (isAdmin() || isDistrik()) {
+    menuItems.push({ icon: 'briefcase', label: 'Dashboard Admin', route: '/admin', color: Colors.gold[500] || Colors.warning });
   }
 
   menuItems.push({ icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[300] : Colors.gray[600] });
@@ -233,3 +233,4 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   modalImagePlaceholderText: { fontSize: 120, fontWeight: '900', color: Colors.white },
   closeModalBtn: { position: 'absolute', top: 40, right: 20, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' }
 });
+
