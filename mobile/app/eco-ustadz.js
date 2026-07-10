@@ -224,7 +224,11 @@ export default function EcoUstadzScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={dynamicStyles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView 
+      style={dynamicStyles.screen} 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+    >
       {/* Header */}
       <View style={dynamicStyles.header}>
         <LinearGradient 
