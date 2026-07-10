@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Button, Card, Badge } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
@@ -18,6 +19,7 @@ export default function AiScannerScreen() {
   const [imageUri, setImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -95,12 +97,12 @@ export default function AiScannerScreen() {
         <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={dynamicStyles.title}>AI Waste Scanner</Text>
+        <Text style={dynamicStyles.title}>{t('ai_scanner.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
       <Text style={dynamicStyles.subtitle}>
-        Biarkan kecerdasan buatan menilai potensi <Text style={{ color: Colors.green[500], fontWeight: 'bold' }}>Green Points</Text> dari sampahmu sebelum disetor ke Bank Sampah.
+        {t('ai_scanner.subtitle')}<Text style={{ color: Colors.green[500], fontWeight: 'bold' }}>{t('ai_scanner.subtitle_highlight')}</Text>{t('ai_scanner.subtitle2')}
       </Text>
 
       <View style={dynamicStyles.imageBox}>
@@ -109,7 +111,7 @@ export default function AiScannerScreen() {
         ) : (
           <View style={dynamicStyles.placeholderBox}>
             <Ionicons name="scan-outline" size={80} color={colors.textMuted} />
-            <Text style={dynamicStyles.placeholderText}>Belum ada foto sampah yang dipilih</Text>
+            <Text style={dynamicStyles.placeholderText}>{t('ai_scanner.no_image')}</Text>
           </View>
         )}
       </View>
@@ -117,17 +119,17 @@ export default function AiScannerScreen() {
       <View style={dynamicStyles.actionRow}>
         <TouchableOpacity style={dynamicStyles.actionBtn} onPress={() => pickImage(true)}>
           <Ionicons name="camera" size={24} color={Colors.white} />
-          <Text style={dynamicStyles.actionBtnText}>Kamera</Text>
+          <Text style={dynamicStyles.actionBtnText}>{t('ai_scanner.camera')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[dynamicStyles.actionBtn, { backgroundColor: isDark ? colors.surface2 : Colors.gray[200] }]} onPress={() => pickImage(false)}>
           <Ionicons name="images" size={24} color={isDark ? Colors.white : Colors.black} />
-          <Text style={[dynamicStyles.actionBtnText, { color: isDark ? Colors.white : Colors.black }]}>Galeri</Text>
+          <Text style={[dynamicStyles.actionBtnText, { color: isDark ? Colors.white : Colors.black }]}>{t('ai_scanner.gallery')}</Text>
         </TouchableOpacity>
       </View>
 
       {imageUri && !result && (
         <Button 
-          title={loading ? "AI Sedang Menganalisis..." : "Scan dengan AI ✨"} 
+          title={loading ? t('ai_scanner.scanning') : t('ai_scanner.scan_btn')} 
           onPress={analyzeWaste} 
           loading={loading}
           style={{ marginTop: Spacing.xl }}
@@ -139,25 +141,25 @@ export default function AiScannerScreen() {
         <View style={[dynamicStyles.resultCard, Shadows.md]}>
           <LinearGradient colors={[Colors.green[600], Colors.green[700]]} style={dynamicStyles.resultHeader}>
             <Ionicons name="sparkles" size={20} color={Colors.white} />
-            <Text style={dynamicStyles.resultTitle}>Hasil Analisis AI</Text>
+            <Text style={dynamicStyles.resultTitle}>{t('ai_scanner.result_title')}</Text>
           </LinearGradient>
           
           <View style={dynamicStyles.resultContent}>
             <View style={dynamicStyles.resultItem}>
-              <Text style={dynamicStyles.resultLabel}>Terdeteksi</Text>
+              <Text style={dynamicStyles.resultLabel}>{t('ai_scanner.detected')}</Text>
               <Text style={dynamicStyles.resultValue}>{result.detected_items}</Text>
             </View>
             <View style={dynamicStyles.resultItem}>
-              <Text style={dynamicStyles.resultLabel}>Kategori Sampah</Text>
+              <Text style={dynamicStyles.resultLabel}>{t('ai_scanner.category')}</Text>
               <Badge text={result.waste_category} variant="green" />
             </View>
             <View style={dynamicStyles.resultRow}>
               <View style={dynamicStyles.resultCol}>
-                <Text style={dynamicStyles.resultLabel}>Estimasi Berat</Text>
+                <Text style={dynamicStyles.resultLabel}>{t('ai_scanner.weight')}</Text>
                 <Text style={[dynamicStyles.resultValue, { fontSize: 20 }]}>{result.estimated_weight_kg} Kg</Text>
               </View>
               <View style={dynamicStyles.resultCol}>
-                <Text style={dynamicStyles.resultLabel}>Potensi Poin</Text>
+                <Text style={dynamicStyles.resultLabel}>{t('ai_scanner.points')}</Text>
                 <Text style={[dynamicStyles.resultValue, { fontSize: 20, color: Colors.gold[500] }]}>+{result.estimated_points} GP</Text>
               </View>
             </View>
