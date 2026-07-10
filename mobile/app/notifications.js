@@ -190,9 +190,9 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   notifCard: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
-    padding: Spacing.lg,
-    borderRadius: 20,
-    marginBottom: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: 16,
+    marginBottom: Spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
   },
