@@ -47,7 +47,7 @@ export default function VerifyDistrikScreen() {
     const actionText = status === 'approved' ? 'Setujui' : 'Tolak';
     Alert.alert(
       'Konfirmasi',
-      \`Apakah Anda yakin ingin \${actionText} pengajuan ini?\`,
+      `Apakah Anda yakin ingin ${actionText} pengajuan ini?`,
       [
         { text: 'Batal', style: 'cancel' },
         { 
@@ -55,8 +55,8 @@ export default function VerifyDistrikScreen() {
           style: status === 'approved' ? 'default' : 'destructive',
           onPress: async () => {
             try {
-              await api.put(\`/distrik/admin/requests/\${id}\`, { status });
-              Alert.alert('Sukses', \`Pengajuan berhasil di-\${status}.\`);
+              await api.put(`/distrik/admin/requests/${id}`, { status });
+              Alert.alert('Sukses', `Pengajuan berhasil di-${status}.`);
               fetchRequests();
             } catch (error) {
               Alert.alert('Error', 'Gagal memproses verifikasi.');

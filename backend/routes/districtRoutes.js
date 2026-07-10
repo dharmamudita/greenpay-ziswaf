@@ -120,7 +120,7 @@ router.put('/admin/requests/:id', authenticateToken, requireRole('admin'), async
     }
 
     await client.query('COMMIT');
-    res.json({ message: \`Pengajuan berhasil di-\${status}\` });
+    res.json({ message: `Pengajuan berhasil di-${status}` });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error updating district request:', error);
