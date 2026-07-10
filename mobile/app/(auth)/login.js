@@ -33,7 +33,7 @@ export default function LoginScreen() {
   // Konfigurasi Auth Session
   // Ganti dengan Client ID asli Anda dari Google/Meta Developer Console
   const GOOGLE_CLIENT_ID = '863588088837-9t2av69r05o3dg1f02gfenrf2htu5j4h.apps.googleusercontent.com';
-  const FB_CLIENT_ID = 'MASUKKAN_FB_CLIENT_ID_ANDA_DISINI';
+  const FB_CLIENT_ID = '1035461415601809';
 
   const redirectUri = makeRedirectUri({ preferLocalhost: true });
   console.log('REDIRECT_URI:', redirectUri);
