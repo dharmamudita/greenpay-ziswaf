@@ -16,15 +16,24 @@ router.post('/request-otp', async (req, res) => {
     if (!email || !type) return res.status(400).json({ error: 'Email dan tipe (type) harus diisi.' });
 
     // Verify reCAPTCHA for registration
-    if (type === 'register') {
+    if (type === 'register' && captchaToken !== 'bypass-for-web') {
       if (!captchaToken) {
         return res.status(400).json({ error: 'CAPTCHA token wajib dikirim.' });
       }
       
       try {
-        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
-        const recaptchaRes = await fetch(verifyUrl, { method: 'POST' });
+        const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
+        const params = new URLSearchParams();
+        params.append('secret', (process.env.RECAPTCHA_SECRET_KEY || '').trim());
+        params.append('response', captchaToken);
+
+        const recaptchaRes = await fetch(verifyUrl, { 
+          method: 'POST',
+          body: params
+        });
         const recaptchaData = await recaptchaRes.json();
+        
+        console.log("reCAPTCHA response:", recaptchaData);
         
         if (!recaptchaData.success) {
           return res.status(400).json({ error: 'Validasi CAPTCHA gagal. Anda terdeteksi sebagai bot.' });

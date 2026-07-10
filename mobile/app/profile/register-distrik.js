@@ -3,7 +3,6 @@ import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Keyboa
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
-import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 

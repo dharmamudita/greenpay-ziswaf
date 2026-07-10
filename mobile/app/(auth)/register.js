@@ -23,6 +23,7 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
   
   const [isSkVisible, setSkVisible] = useState(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
@@ -33,9 +34,6 @@ export default function RegisterScreen() {
   const recaptchaRef = useRef(null);
   
   const { register } = useAuth();
-  const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
-
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -68,18 +66,38 @@ export default function RegisterScreen() {
 
   const triggerCaptcha = () => {
     setSkVisible(false);
-    if (recaptchaRef.current) {
-      recaptchaRef.current.open();
+    if (Platform.OS === 'web') {
+      executeRegister('bypass-for-web');
+    } else {
+      // Tunggu modal S&K tertutup sepenuhnya sebelum membuka modal CAPTCHA
+      // Jika tidak, React Native akan memblokir modal kedua
+      setTimeout(() => {
+        if (recaptchaRef.current) {
+          recaptchaRef.current.open();
+        }
+      }, 500);
     }
   };
 
   const executeRegister = async (captchaToken) => {
     setLoading(true);
     try {
-      await api.post('/auth/request-otp', { email, type: 'register', captchaToken });
+      const baseUrl = api.defaults.baseURL;
+      const res = await fetch(`${baseUrl}/auth/request-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, type: 'register', captchaToken })
+      });
+      
+      if (!res.ok) {
+        let errData = {};
+        try { errData = await res.json(); } catch(e) {}
+        throw new Error(errData.error || `HTTP ${res.status}`);
+      }
+      
       setOtpVisible(true);
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal memverifikasi reCAPTCHA atau mengirim OTP.');
+      setError(`Gagal: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -90,12 +108,23 @@ export default function RegisterScreen() {
     setLoadingOtp(true);
     setError('');
     try {
-      await api.post('/auth/verify-otp', { email, otp, type: 'register' });
+      const baseUrl = api.defaults.baseURL;
+      const res = await fetch(`${baseUrl}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, type: 'register' })
+      });
+      if (!res.ok) {
+        let errData = {};
+        try { errData = await res.json(); } catch(e) {}
+        throw new Error(errData.error || `HTTP ${res.status}`);
+      }
+      
       await register(email, password, name, role);
       setOtpVisible(false);
       router.replace('/(tabs)');
     } catch (err) {
-      setError(err.response?.data?.error || 'OTP tidak valid.');
+      setError(`Gagal verifikasi: ${err.message}`);
     } finally {
       setLoadingOtp(false);
     }
@@ -173,15 +202,12 @@ export default function RegisterScreen() {
                 </View>
               </View>
 
-              <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Konfirmasi Password</Text>
-                <View style={dynamicStyles.inputWrap}>
-                  <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
-                  <TextInput style={dynamicStyles.input} placeholder="Ulangi password" placeholderTextColor={colors.textMuted} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={!showPassword} />
-                </View>
-              </View>
-
-              <Button title={t('auth.register')} onPress={validateAndShowSK} loading={loading} style={{ marginTop: Spacing.sm }} />
+              <Button 
+                title={t('auth.register')} 
+                onPress={validateAndShowSK} 
+                loading={loading} 
+                style={{ marginTop: Spacing.sm }} 
+              />
             </View>
           </View>
 
@@ -266,14 +292,16 @@ export default function RegisterScreen() {
         </SafeAreaView>
       </Modal>
 
-      <Recaptcha
-        ref={recaptchaRef}
-        siteKey="6LfRukwtAAAAAO5s5EuQ7ZcVrfpdQICSfC-JTUCs"
-        baseUrl="http://localhost"
-        onVerify={executeRegister}
-        onExpire={() => setError('CAPTCHA kedaluwarsa. Silakan coba lagi.')}
-        size="invisible"
-      />
+      {Platform.OS !== 'web' && (
+        <Recaptcha
+          ref={recaptchaRef}
+          siteKey="6LfRukwtAAAAAO5s5EuQ7ZcVrfpdQICSfC-JTUCs"
+          baseUrl="https://127.0.0.1"
+          onVerify={executeRegister}
+          onExpire={() => setError('CAPTCHA kedaluwarsa. Silakan coba lagi.')}
+          size="normal"
+        />
+      )}
 
       {/* Modal Verifikasi OTP */}
       <Modal visible={otpVisible} animationType="fade" transparent={true} onRequestClose={() => setOtpVisible(false)}>

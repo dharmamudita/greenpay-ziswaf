@@ -1,12 +1,12 @@
-import { io } from 'socket.io-client';
+// NOTE: socket.io-client dinonaktifkan sementara karena menyebabkan bug 'NONE' di React Native 0.76 (Expo SDK 54).
+// Jika bug dari pihak socket.io sudah diperbaiki, kode asli bisa dikembalikan.
 
-// Sesuaikan URL ini dengan alamat IP komputer Anda yang menjalankan backend
-// (Sama dengan IP yang ada di api.js tanpa tambahan /api)
-const SOCKET_URL = 'http://192.168.1.13:5000';
+const mockSocket = {
+  connect: () => {},
+  disconnect: () => {},
+  on: () => {},
+  off: () => {},
+  emit: () => {}
+};
 
-const socket = io(SOCKET_URL, {
-  autoConnect: false, // Jangan otomatis connect dulu, tunggu login
-  transports: ['websocket'], // Gunakan websocket agar lebih cepat
-});
-
-export default socket;
+export default mockSocket;

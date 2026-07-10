@@ -3,8 +3,7 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      ['@babel/plugin-transform-private-methods', { loose: true }],
-      ['@babel/plugin-transform-class-properties', { loose: true }]
+      // plugin yang loose: true dihilangkan karena menyebabkan bug NONE di React Native 0.76
     ],
   };
 };

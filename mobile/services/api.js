@@ -1,45 +1,74 @@
-import axios from 'axios';
 import { getItemAsync, deleteItemAsync } from '../utils/storage';
-
 import { Platform } from 'react-native';
 
-// Jika berjalan di Browser Web (Laptop), gunakan localhost.
-// Jika berjalan di HP (Android/iOS), gunakan Localtunnel.
 const API_BASE_URL = Platform.OS === 'web' 
   ? 'http://localhost:5000/api' 
-  : 'http://192.168.1.8:5000/api'; // Menggunakan IP Lokal WiFi agar bisa diakses dari HP
+  : 'http://192.168.1.8:5000/api';
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 60000,
-  headers: { 
-    'Content-Type': 'application/json',
-    'Bypass-Tunnel-Reminder': 'true' // Mengizinkan localtunnel tanpa halaman peringatan
-  },
-});
+class ApiService {
+  constructor() {
+    this.defaults = { baseURL: API_BASE_URL };
+  }
 
-// Interceptor: attach JWT token to every request
-api.interceptors.request.use(async (config) => {
-  try {
+  async request(endpoint, options = {}) {
     const token = await getItemAsync('token');
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      'Bypass-Tunnel-Reminder': 'true',
+      ...options.headers,
+    };
+
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      headers.Authorization = `Bearer ${token}`;
     }
-  } catch (e) {
-    // Storage not available
-  }
-  return config;
-});
 
-// Interceptor: handle 401 errors
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      await deleteItemAsync('token');
+    const url = `${this.defaults.baseURL}${endpoint}`;
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
+
+      if (response.status === 401) {
+        await deleteItemAsync('token');
+      }
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const error = new Error(data.error || `HTTP Error ${response.status}`);
+        error.response = { data, status: response.status };
+        throw error;
+      }
+
+      return { data, status: response.status };
+    } catch (error) {
+      if (!error.response) {
+        // Network error format matching axios
+        error.response = undefined;
+      }
+      throw error;
     }
-    return Promise.reject(error);
   }
-);
 
+  get(endpoint, options = {}) {
+    return this.request(endpoint, { ...options, method: 'GET' });
+  }
+
+  post(endpoint, body, options = {}) {
+    return this.request(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) });
+  }
+
+  put(endpoint, body, options = {}) {
+    return this.request(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) });
+  }
+
+  delete(endpoint, options = {}) {
+    return this.request(endpoint, { ...options, method: 'DELETE' });
+  }
+}
+
+const api = new ApiService();
 export default api;

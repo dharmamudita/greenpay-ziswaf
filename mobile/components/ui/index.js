@@ -5,7 +5,7 @@ import Colors from '../../theme/colors';
 import { BorderRadius, Spacing, Shadows } from '../../theme/spacing';
 import { useTheme } from '../../context/ThemeContext';
 
-export function Button({ title, onPress, variant = 'primary', loading = false, style, textStyle, icon }) {
+export function Button({ title, onPress, variant = 'primary', loading = false, disabled = false, style, textStyle, icon }) {
   const { colors, isDark } = useTheme();
   const dynamicStyles = getStyles(colors, isDark);
   
@@ -35,8 +35,8 @@ export function Button({ title, onPress, variant = 'primary', loading = false, s
         onPress={onPress} 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        disabled={loading} 
-        style={({ pressed }) => [style, { opacity: pressed ? 0.9 : 1 }]}
+        disabled={loading || disabled} 
+        style={({ pressed }) => [style, { opacity: (pressed || loading || disabled) ? 0.7 : 1 }]}
       >
         {btnColors ? (
           <LinearGradient
