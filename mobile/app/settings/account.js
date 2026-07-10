@@ -10,6 +10,7 @@ import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 export default function AccountSettingScreen() {
   const { user, refreshProfile } = useAuth();
@@ -22,6 +23,7 @@ export default function AccountSettingScreen() {
   const [address, setAddress] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const { t } = useTranslation();
 
   // Password Form State
   const [oldPassword, setOldPassword] = useState('');
@@ -177,46 +179,46 @@ export default function AccountSettingScreen() {
                 <Ionicons name="camera" size={14} color={Colors.white} />
               </View>
             </TouchableOpacity>
-            <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>Ketuk untuk mengubah foto</Text>
+            <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: '500' }}>{t('account.tap_to_change_photo')}</Text>
           </View>
 
-          <Text style={dynamicStyles.sectionTitle}>Data Pribadi</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('account.personal_data')}</Text>
           <View style={[dynamicStyles.card, Shadows.sm]}>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>Nama Lengkap</Text>
-              <TextInput style={dynamicStyles.input} value={name} onChangeText={setName} placeholder="Nama Anda" placeholderTextColor={colors.textMuted} />
+              <Text style={dynamicStyles.label}>{t('account.full_name')}</Text>
+              <TextInput style={dynamicStyles.input} value={name} onChangeText={setName} placeholder={t('account.name_placeholder')} placeholderTextColor={colors.textMuted} />
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>Email</Text>
+              <Text style={dynamicStyles.label}>{t('account.email')}</Text>
               <TextInput style={dynamicStyles.input} value={email} onChangeText={setEmail} keyboardType="email-address" placeholder="email@contoh.com" placeholderTextColor={colors.textMuted} autoCapitalize="none" />
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>Nomor Telepon</Text>
+              <Text style={dynamicStyles.label}>{t('account.phone')}</Text>
               <TextInput style={dynamicStyles.input} value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="08xxxxxxxxxx" placeholderTextColor={colors.textMuted} />
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>Alamat</Text>
-              <TextInput style={[dynamicStyles.input, { height: 80, textAlignVertical: 'top' }]} value={address} onChangeText={setAddress} placeholder="Alamat lengkap" placeholderTextColor={colors.textMuted} multiline />
+              <Text style={dynamicStyles.label}>{t('account.address')}</Text>
+              <TextInput style={[dynamicStyles.input, { height: 80, textAlignVertical: 'top' }]} value={address} onChangeText={setAddress} placeholder={t('account.address')} placeholderTextColor={colors.textMuted} multiline />
             </View>
-            <Button title="Simpan Perubahan" onPress={handleUpdateProfile} loading={loadingProfile} style={{ marginTop: Spacing.sm }} />
+            <Button title={t('account.save')} onPress={handleUpdateProfile} loading={loadingProfile} style={{ marginTop: Spacing.sm }} />
           </View>
 
-          <Text style={[dynamicStyles.sectionTitle, { marginTop: Spacing.xl }]}>Keamanan (Ubah Password)</Text>
+          <Text style={[dynamicStyles.sectionTitle, { marginTop: Spacing.xl }]}>{t('account.security')}</Text>
           <View style={[dynamicStyles.card, Shadows.sm, { marginBottom: Spacing['3xl'] }]}>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>Password Lama</Text>
+              <Text style={dynamicStyles.label}>{t('account.old_password')}</Text>
               <View style={dynamicStyles.passwordWrap}>
-                <TextInput style={[dynamicStyles.input, { flex: 1, borderWidth: 0 }]} value={oldPassword} onChangeText={setOldPassword} secureTextEntry={!showPassword} placeholder="Masukkan password lama" placeholderTextColor={colors.textMuted} />
+                <TextInput style={[dynamicStyles.input, { flex: 1, borderWidth: 0 }]} value={oldPassword} onChangeText={setOldPassword} secureTextEntry={!showPassword} placeholder={t('account.old_password')} placeholderTextColor={colors.textMuted} />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={dynamicStyles.eyeBtn}>
                   <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
             </View>
             <View style={dynamicStyles.inputGroup}>
-              <Text style={dynamicStyles.label}>Password Baru</Text>
-              <TextInput style={dynamicStyles.input} value={newPassword} onChangeText={setNewPassword} secureTextEntry={!showPassword} placeholder="Minimal 6 karakter" placeholderTextColor={colors.textMuted} />
+              <Text style={dynamicStyles.label}>{t('account.new_password')}</Text>
+              <TextInput style={dynamicStyles.input} value={newPassword} onChangeText={setNewPassword} secureTextEntry={!showPassword} placeholder={t('account.new_password')} placeholderTextColor={colors.textMuted} />
             </View>
-            <Button title="Ubah Password" onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm, backgroundColor: Colors.info }} />
+            <Button title={t('account.change_password')} onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm, backgroundColor: Colors.info }} />
           </View>
 
         </View>
