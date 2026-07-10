@@ -145,8 +145,6 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     paddingTop: 50,
     paddingBottom: Spacing.lg,
     backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   backBtn: {
     padding: 4,
