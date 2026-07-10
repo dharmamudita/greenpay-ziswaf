@@ -56,8 +56,10 @@ export default function ProfileScreen() {
   // --- AUTHENTICATED STATE ---
   let menuItems = [];
 
-  if (isAdmin() || isDistrik()) {
+  if (isAdmin()) {
     menuItems.push({ icon: 'briefcase', label: 'Dashboard Admin', route: '/admin', color: Colors.gold[500] });
+  } else if (isDistrik()) {
+    menuItems.push({ icon: 'business', label: 'Panel Distrik', route: '/distrik', color: Colors.info });
   }
 
   menuItems.push(
