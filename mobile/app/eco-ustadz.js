@@ -4,16 +4,18 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import api from '../services/api';
 
 export default function EcoUstadzScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const dynamicStyles = getStyles(colors, isDark);
   
   const [messages, setMessages] = useState([
-    { id: '1', role: 'model', content: 'Assalamu’alaikum! Saya Eco-Ustadz, asisten AI Anda untuk urusan ZISWAF dan panduan hidup ramah lingkungan Islami. Ada yang bisa saya bantu hari ini?' }
+    { id: '1', role: 'model', content: t('eco_ustadz.welcome') }
   ]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,7 +48,7 @@ export default function EcoUstadzScreen() {
       
     } catch (error) {
       console.error('Chat error:', error);
-      const errorMsg = { id: (Date.now() + 1).toString(), role: 'model', content: 'Mohon maaf, saya sedang mengalami kendala koneksi atau API Key belum dikonfigurasi di server.' };
+      const errorMsg = { id: (Date.now() + 1).toString(), role: 'model', content: t('eco_ustadz.error_msg') };
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setLoading(false);
@@ -84,8 +86,8 @@ export default function EcoUstadzScreen() {
             <Ionicons name="arrow-back" size={24} color={Colors.white} />
           </TouchableOpacity>
           <View style={dynamicStyles.headerTitleWrap}>
-            <Text style={dynamicStyles.headerTitle}>Eco-Ustadz AI ✨</Text>
-            <Text style={dynamicStyles.headerSubtitle}>Tanya seputar ZISWAF & Lingkungan</Text>
+            <Text style={dynamicStyles.headerTitle}>{t('eco_ustadz.title')}</Text>
+            <Text style={dynamicStyles.headerSubtitle}>{t('eco_ustadz.subtitle')}</Text>
           </View>
           <View style={{ width: 40 }} />
         </View>
@@ -105,7 +107,7 @@ export default function EcoUstadzScreen() {
       {loading && (
         <View style={dynamicStyles.loadingIndicator}>
           <ActivityIndicator size="small" color={Colors.green[500]} />
-          <Text style={dynamicStyles.loadingText}>Eco-Ustadz sedang mengetik...</Text>
+          <Text style={dynamicStyles.loadingText}>{t('eco_ustadz.typing')}</Text>
         </View>
       )}
 
@@ -113,7 +115,7 @@ export default function EcoUstadzScreen() {
       <View style={dynamicStyles.inputArea}>
         <TextInput
           style={dynamicStyles.input}
-          placeholder="Tanyakan sesuatu..."
+          placeholder={t('eco_ustadz.placeholder')}
           placeholderTextColor={colors.textMuted}
           value={inputText}
           onChangeText={setInputText}
