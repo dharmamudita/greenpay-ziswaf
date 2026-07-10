@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { Card, Badge, Button } from '../components/ui';
+import { Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import Map from '../components/Map';
@@ -74,13 +74,9 @@ export default function BankSampahScreen() {
 
     setLoading(true);
     try {
-      // 1. Upload ke Cloudinary
       const rawUrl = await uploadToCloudinary(photoUri);
-      
-      // 2. Tambahkan watermark waktu secara dinamis
       const watermarkedUrl = getWatermarkedUrl(rawUrl);
 
-      // 3. Simpan ke database via API
       await api.post('/waste/deposit', {
         location_id: locationId,
         waste_type: selectedType,
@@ -89,7 +85,7 @@ export default function BankSampahScreen() {
         notes: 'Diunggah via aplikasi',
       });
 
-      Alert.alert('Berhasil!', `Setoran sampah berhasil diajukan dan sedang menunggu verifikasi. Bukti foto Anda telah diberi watermark waktu untuk keamanan.`, [
+      Alert.alert('Berhasil!', `Setoran sampah berhasil diajukan dan sedang menunggu verifikasi.`, [
         { text: 'OK', onPress: () => router.replace('/(tabs)') }
       ]);
       
@@ -105,110 +101,176 @@ export default function BankSampahScreen() {
 
   return (
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
-      <View style={dynamicStyles.container}>
-        {/* Map */}
-        <Card style={dynamicStyles.mapCard}>
-          <TouchableOpacity activeOpacity={0.9} onPress={openGoogleMaps} style={{ width: '100%', height: 180 }}>
-            <Map lat={lat} lng={lng} openGoogleMaps={openGoogleMaps} colors={colors} />
-            <View style={dynamicStyles.mapOverlayHint}>
-              <Text style={dynamicStyles.mapOverlayText}>{t('bank_sampah.open_maps')}</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={dynamicStyles.locationInfo}>
-            <Text style={dynamicStyles.locName}>Bank Sampah Hijau Lestari</Text>
-            <Text style={dynamicStyles.locAddress}>Jl. ZA Pagar Alam No. 45, Rajabasa, Bandar Lampung</Text>
-            <Text style={dynamicStyles.locDistance}>📍 1.2 km dari lokasi Anda</Text>
-          </View>
-        </Card>
+      
+      {/* Soft Background Gradient */}
+      <View style={dynamicStyles.headerBackground}>
+        <LinearGradient 
+          colors={[isDark ? 'rgba(16, 185, 129, 0.1)' : Colors.green[50], colors.bg]} 
+          style={StyleSheet.absoluteFillObject}
+        />
+      </View>
 
-        {/* AI Scanner Banner */}
+      <View style={dynamicStyles.container}>
+        
+        {/* Smart GPS Location Card */}
+        <View style={dynamicStyles.mapWrapper}>
+          <View style={dynamicStyles.mapCard}>
+            <TouchableOpacity activeOpacity={0.9} onPress={openGoogleMaps} style={dynamicStyles.mapTouchArea}>
+              <Map lat={lat} lng={lng} openGoogleMaps={openGoogleMaps} colors={colors} />
+              
+              {/* Floating Distance Badge */}
+              <View style={dynamicStyles.mapDistanceBadge}>
+                <Ionicons name="navigate-circle" size={16} color={Colors.white} />
+                <Text style={dynamicStyles.mapDistanceText}>1.2 km</Text>
+              </View>
+
+              <View style={dynamicStyles.mapOverlayHint}>
+                <Text style={dynamicStyles.mapOverlayText}>{t('bank_sampah.open_maps')}</Text>
+                <Ionicons name="open-outline" size={12} color={Colors.white} style={{ marginLeft: 4 }} />
+              </View>
+            </TouchableOpacity>
+            
+            <View style={dynamicStyles.locationInfo}>
+              <View style={dynamicStyles.locIconWrap}>
+                <Ionicons name="location" size={20} color={Colors.green[500]} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={dynamicStyles.locName}>Bank Sampah Hijau Lestari</Text>
+                <Text style={dynamicStyles.locAddress} numberOfLines={1}>Jl. ZA Pagar Alam No. 45, Rajabasa</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Magical AI Scanner Banner */}
         <TouchableOpacity 
-          style={[dynamicStyles.aiBanner, Shadows.sm]} 
+          style={dynamicStyles.aiBannerWrap} 
           activeOpacity={0.9}
           onPress={() => router.push('/ai-scanner')}
         >
+          {/* Ambient Glow */}
+          <View style={dynamicStyles.aiBannerGlow} />
+          
           <LinearGradient 
-            colors={[Colors.green[500], Colors.green[700]]} 
-            style={StyleSheet.absoluteFillObject}
+            colors={[Colors.green[600], Colors.green[800]]} 
+            style={dynamicStyles.aiBannerCard}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-          />
-          <View style={dynamicStyles.aiBannerContent}>
+          >
+            {/* Sci-Fi Background Pattern */}
+            <Ionicons name="planet" size={120} color="rgba(255,255,255,0.03)" style={{ position: 'absolute', right: -20, top: -20 }} />
+            
             <View style={dynamicStyles.aiIconWrap}>
-              <Ionicons name="scan" size={24} color={Colors.green[600]} />
+              <Ionicons name="scan" size={24} color={Colors.green[700]} />
               <View style={dynamicStyles.aiSparkle}>
-                <Ionicons name="sparkles" size={12} color={Colors.gold[400]} />
+                <Ionicons name="sparkles" size={14} color={Colors.gold[400]} />
               </View>
             </View>
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, marginLeft: Spacing.md }}>
               <Text style={dynamicStyles.aiBannerTitle}>{t('bank_sampah.ai_scanner')}</Text>
               <Text style={dynamicStyles.aiBannerDesc}>{t('bank_sampah.ai_scanner_desc')}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={Colors.white} />
-          </View>
+            <View style={dynamicStyles.aiArrowBtn}>
+              <Ionicons name="chevron-forward" size={20} color={Colors.white} />
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
-        {/* Setor Sampah Form */}
-        <Text style={dynamicStyles.sectionTitle}>Formulir Setoran Manual</Text>
-        <Card style={dynamicStyles.formCard}>
-          <Text style={dynamicStyles.label}>Pilih Jenis Sampah</Text>
+        <Text style={dynamicStyles.sectionTitle}>Setoran Manual</Text>
+        
+        {/* Interactive Form */}
+        <View style={dynamicStyles.formContainer}>
+          
+          {/* Waste Types Grid */}
+          <Text style={dynamicStyles.label}>Kategori Sampah</Text>
           <View style={dynamicStyles.typeGrid}>
-            {wasteTypes.map((type) => (
-              <TouchableOpacity
-                key={type.id}
-                style={[
-                  dynamicStyles.typeBtn, 
-                  selectedType === type.id && dynamicStyles.typeBtnActive, 
-                  { borderColor: selectedType === type.id ? type.color : colors.border }
-                ]}
-                onPress={() => setSelectedType(type.id)}
-              >
-                <Ionicons name={type.icon} size={24} color={selectedType === type.id ? type.color : colors.textMuted} />
-                <Text style={[dynamicStyles.typeText, selectedType === type.id && { color: isDark ? Colors.white : type.color }]}>{type.name}</Text>
-                <Text style={dynamicStyles.typePoints}>{type.points} GP/kg</Text>
-              </TouchableOpacity>
-            ))}
+            {wasteTypes.map((type) => {
+              const isActive = selectedType === type.id;
+              return (
+                <TouchableOpacity
+                  key={type.id}
+                  style={[
+                    dynamicStyles.typeBtn, 
+                    isActive && dynamicStyles.typeBtnActive,
+                    isActive && { borderColor: type.color, shadowColor: type.color }
+                  ]}
+                  onPress={() => setSelectedType(type.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[dynamicStyles.typeIconBg, isActive && { backgroundColor: type.color + '20' }]}>
+                    <Ionicons name={type.icon} size={28} color={isActive ? type.color : colors.textMuted} />
+                  </View>
+                  <Text style={[dynamicStyles.typeText, isActive && { color: colors.text, fontWeight: '800' }]}>{type.name}</Text>
+                  <Text style={[dynamicStyles.typePoints, isActive && { color: type.color, fontWeight: '700' }]}>{type.points} GP/kg</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
-          <Text style={[dynamicStyles.label, { marginTop: Spacing.lg }]}>Berat (Kg)</Text>
-          <View style={dynamicStyles.inputWrap}>
+          {/* Weight Input */}
+          <Text style={[dynamicStyles.label, { marginTop: Spacing.xl }]}>Berat Estimasi (Kg)</Text>
+          <View style={[dynamicStyles.inputWrap, isDark && { backgroundColor: 'rgba(0,0,0,0.2)' }]}>
+            <View style={dynamicStyles.inputIcon}>
+              <Ionicons name="scale-outline" size={20} color={colors.textMuted} />
+            </View>
             <TextInput
               style={dynamicStyles.input}
-              placeholder="Contoh: 2.5"
+              placeholder="0.0"
               placeholderTextColor={colors.textMuted}
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
               value={weight}
               onChangeText={setWeight}
             />
-            <Text style={dynamicStyles.inputUnit}>Kg</Text>
+            <View style={dynamicStyles.inputUnitTag}>
+              <Text style={dynamicStyles.inputUnitText}>Kg</Text>
+            </View>
           </View>
 
-          <Text style={[dynamicStyles.label, { marginTop: Spacing.lg }]}>Bukti Foto (Wajib)</Text>
-          <TouchableOpacity style={dynamicStyles.photoBox} onPress={handlePickPhoto} activeOpacity={0.7}>
+          {/* Photo Upload */}
+          <Text style={[dynamicStyles.label, { marginTop: Spacing.xl }]}>Foto Bukti (Wajib)</Text>
+          <TouchableOpacity style={dynamicStyles.photoBox} onPress={handlePickPhoto} activeOpacity={0.8}>
             {photoUri ? (
-              <Image source={{ uri: photoUri }} style={dynamicStyles.photoPreview} />
+              <View style={dynamicStyles.photoPreviewWrap}>
+                <Image source={{ uri: photoUri }} style={dynamicStyles.photoPreview} />
+                <View style={dynamicStyles.photoRetakeBtn}>
+                  <Ionicons name="camera-reverse" size={20} color={Colors.white} />
+                  <Text style={dynamicStyles.photoRetakeText}>Ganti Foto</Text>
+                </View>
+              </View>
             ) : (
               <View style={dynamicStyles.photoPlaceholder}>
-                <Ionicons name="camera" size={32} color={colors.textMuted} />
-                <Text style={dynamicStyles.photoHint}>Ketuk untuk mengambil foto</Text>
-                <Text style={dynamicStyles.photoHintSmall}>Watermark waktu akan otomatis ditambahkan</Text>
+                <View style={dynamicStyles.photoIconCircle}>
+                  <Ionicons name="camera" size={32} color={Colors.green[500]} />
+                </View>
+                <Text style={dynamicStyles.photoHint}>Ketuk untuk potret sampah</Text>
+                <Text style={dynamicStyles.photoHintSmall}>Sistem akan mencatat lokasi & waktu</Text>
               </View>
             )}
           </TouchableOpacity>
 
-          <View style={dynamicStyles.estimateBox}>
-            <Text style={dynamicStyles.estimateLabel}>Estimasi Green Point:</Text>
-            <Text style={dynamicStyles.estimateValue}>+ {Math.floor(estimatedPoints)} GP</Text>
+          {/* Digital Receipt (Estimate) */}
+          <View style={dynamicStyles.receiptBox}>
+            <View style={dynamicStyles.receiptHeader}>
+              <Ionicons name="receipt-outline" size={16} color={Colors.green[600]} />
+              <Text style={dynamicStyles.receiptTitle}>ESTIMASI PENDAPATAN</Text>
+            </View>
+            <View style={dynamicStyles.receiptDivider} />
+            <View style={dynamicStyles.receiptRow}>
+              <Text style={dynamicStyles.receiptLabel}>{typeDetails.name} ({weight || '0'} kg x {typeDetails.points} GP)</Text>
+              <Text style={dynamicStyles.receiptValue}>+{Math.floor(estimatedPoints)} <Text style={dynamicStyles.receiptUnit}>GP</Text></Text>
+            </View>
           </View>
 
           <Button 
-            title={photoUri ? "Ajukan Setoran" : "Ambil Foto Dulu"} 
-            icon={<Ionicons name="cloud-upload-outline" size={18} color={isDark ? Colors.white : Colors.black} />} 
+            title={photoUri ? "Kirim Setoran Sekarang" : "Lengkapi Bukti Foto"} 
+            icon={<Ionicons name={photoUri ? "paper-plane" : "camera"} size={18} color={isDark ? Colors.white : Colors.black} />} 
             onPress={handleSubmit} 
             loading={loading}
-            disabled={!photoUri}
+            disabled={!photoUri || !weight}
+            style={{ marginTop: Spacing.xl }}
           />
-        </Card>
+        </View>
+
       </View>
       <View style={{ height: Spacing['3xl'] }} />
     </ScrollView>
@@ -217,52 +279,264 @@ export default function BankSampahScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
+  headerBackground: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    height: 300,
+  },
   container: { padding: Spacing.xl },
-  mapCard: { padding: 0, overflow: 'hidden', marginBottom: Spacing.xl },
-  mapOverlayHint: { position: 'absolute', bottom: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: BorderRadius.sm },
+  
+  // Smart Location Card
+  mapWrapper: {
+    marginBottom: Spacing['2xl'],
+    ...Shadows.lg,
+    shadowOpacity: isDark ? 0.3 : 0.1,
+  },
+  mapCard: { 
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius['2xl'], 
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(255,255,255,0.05)' : colors.border,
+  },
+  mapTouchArea: { width: '100%', height: 160, position: 'relative' },
+  mapDistanceBadge: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.green[600],
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: BorderRadius.full,
+    gap: 4,
+    ...Shadows.md,
+  },
+  mapDistanceText: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  mapOverlayHint: { 
+    position: 'absolute', 
+    bottom: 12, 
+    right: 12, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)', 
+    paddingHorizontal: 10, 
+    paddingVertical: 6, 
+    borderRadius: BorderRadius.full 
+  },
   mapOverlayText: { color: Colors.white, fontSize: 10, fontWeight: '700' },
-  locationInfo: { padding: Spacing.base },
-  locName: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 4 },
-  locAddress: { fontSize: 12, color: colors.textMuted, marginBottom: Spacing.xs },
-  locDistance: { fontSize: 12, fontWeight: '600', color: Colors.green[500] },
+  locationInfo: { 
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    gap: Spacing.md,
+  },
+  locIconWrap: {
+    width: 40, height: 40,
+    borderRadius: 20,
+    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locName: { fontSize: 15, fontWeight: '800', color: colors.text, marginBottom: 2, letterSpacing: -0.3 },
+  locAddress: { fontSize: 12, color: colors.textMuted, fontWeight: '500' },
   
-  aiBanner: { borderRadius: BorderRadius.xl, overflow: 'hidden', marginBottom: Spacing.xl },
-  aiBannerContent: { flexDirection: 'row', alignItems: 'center', padding: Spacing.lg, gap: Spacing.md },
-  aiIconWrap: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center' },
-  aiSparkle: { position: 'absolute', top: -2, right: -4 },
-  aiBannerTitle: { color: Colors.white, fontSize: 16, fontWeight: '800', marginBottom: 2 },
-  aiBannerDesc: { color: Colors.green[100], fontSize: 12, lineHeight: 16 },
+  // Magical AI Banner
+  aiBannerWrap: {
+    position: 'relative',
+    marginBottom: Spacing['2xl'],
+  },
+  aiBannerGlow: {
+    position: 'absolute',
+    top: 10, left: 10, right: 10, bottom: -5,
+    backgroundColor: Colors.green[500],
+    borderRadius: BorderRadius['2xl'],
+    opacity: isDark ? 0.4 : 0.5,
+    filter: 'blur(20px)', // Web support
+  },
+  aiBannerCard: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: Spacing.lg, 
+    borderRadius: BorderRadius['2xl'],
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    overflow: 'hidden',
+  },
+  aiIconWrap: { 
+    width: 48, 
+    height: 48, 
+    borderRadius: 24, 
+    backgroundColor: Colors.white, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    ...Shadows.md,
+  },
+  aiSparkle: { position: 'absolute', top: -4, right: -4 },
+  aiBannerTitle: { color: Colors.white, fontSize: 18, fontWeight: '900', marginBottom: 2, letterSpacing: -0.5 },
+  aiBannerDesc: { color: 'rgba(255,255,255,0.8)', fontSize: 12, lineHeight: 18, fontWeight: '500' },
+  aiArrowBtn: {
+    width: 36, height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: Spacing.md },
-  formCard: { gap: Spacing.sm },
-  label: { fontSize: 13, fontWeight: '600', color: colors.text, marginBottom: Spacing.xs },
-  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  typeBtn: { width: '31%', aspectRatio: 1, backgroundColor: colors.surface2, borderRadius: BorderRadius.lg, borderWidth: 1.5, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', gap: 4 },
-  typeBtnActive: { backgroundColor: colors.surface },
-  typeText: { fontSize: 11, fontWeight: '600', color: colors.textMuted },
-  typePoints: { fontSize: 10, color: colors.textMuted },
-  inputWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface2, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: colors.border, paddingHorizontal: Spacing.md },
-  input: { flex: 1, color: colors.text, fontSize: 16, paddingVertical: Spacing.md },
-  inputUnit: { color: colors.textMuted, fontWeight: '600' },
+  sectionTitle: { fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: Spacing.lg, letterSpacing: -0.5 },
   
+  formContainer: {
+    backgroundColor: colors.surface,
+    padding: Spacing.xl,
+    borderRadius: BorderRadius['2xl'],
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(255,255,255,0.05)' : colors.border,
+    ...Shadows.sm,
+  },
+  label: { fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: Spacing.md },
+  
+  // Waste Types (Glowing active state)
+  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  typeBtn: { 
+    width: '31%', 
+    aspectRatio: 0.9, 
+    backgroundColor: colors.bg, 
+    borderRadius: BorderRadius.xl, 
+    borderWidth: 1, 
+    borderColor: isDark ? 'rgba(255,255,255,0.05)' : colors.border, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: Spacing.sm,
+  },
+  typeBtnActive: { 
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    ...Shadows.md, // Glow is simulated via shadowColor assigned inline
+    shadowOpacity: isDark ? 0.6 : 0.3,
+    shadowRadius: 8,
+  },
+  typeIconBg: {
+    width: 44, height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  typeText: { fontSize: 11, fontWeight: '600', color: colors.textMuted, marginBottom: 2 },
+  typePoints: { fontSize: 10, color: colors.textMuted, fontWeight: '500' },
+  
+  // Premium Input
+  inputWrap: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: colors.bg, 
+    borderRadius: BorderRadius.xl, 
+    borderWidth: 1, 
+    borderColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border,
+    overflow: 'hidden',
+  },
+  inputIcon: {
+    paddingHorizontal: Spacing.md,
+  },
+  input: { 
+    flex: 1, 
+    color: colors.text, 
+    fontSize: 20, 
+    fontWeight: '800',
+    paddingVertical: Spacing.md,
+  },
+  inputUnitTag: {
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 8,
+    borderRadius: BorderRadius.md,
+    marginRight: Spacing.sm,
+  },
+  inputUnitText: { color: colors.textMuted, fontWeight: '800', fontSize: 12 },
+  
+  // Photo Upload
   photoBox: { 
-    backgroundColor: colors.surface2, 
-    borderRadius: BorderRadius.lg, 
+    backgroundColor: colors.bg, 
+    borderRadius: BorderRadius.xl, 
     borderWidth: 1.5, 
-    borderColor: colors.border, 
+    borderColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border, 
     borderStyle: 'dashed',
     height: 180, 
     overflow: 'hidden',
+  },
+  photoPlaceholder: { 
+    flex: 1,
     alignItems: 'center', 
     justifyContent: 'center',
-    marginBottom: Spacing.sm,
+    gap: 8,
   },
-  photoPlaceholder: { alignItems: 'center', gap: 8 },
-  photoHint: { color: colors.text, fontSize: 14, fontWeight: '600' },
-  photoHintSmall: { color: colors.textMuted, fontSize: 11 },
+  photoIconCircle: {
+    width: 56, height: 56,
+    borderRadius: 28,
+    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : Colors.green[50],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  photoHint: { color: colors.text, fontSize: 15, fontWeight: '700' },
+  photoHintSmall: { color: colors.textMuted, fontSize: 11, fontWeight: '500' },
+  photoPreviewWrap: { flex: 1, position: 'relative' },
   photoPreview: { width: '100%', height: '100%', resizeMode: 'cover' },
+  photoRetakeBtn: {
+    position: 'absolute',
+    bottom: Spacing.md,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: 10,
+    borderRadius: BorderRadius.full,
+    gap: Spacing.sm,
+  },
+  photoRetakeText: { color: Colors.white, fontWeight: '700', fontSize: 13 },
   
-  estimateBox: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: isDark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)', padding: Spacing.md, borderRadius: BorderRadius.lg, marginVertical: Spacing.md },
-  estimateLabel: { color: Colors.green[500], fontSize: 13 },
-  estimateValue: { color: Colors.green[500], fontSize: 18, fontWeight: '800' },
+  // Glassmorphism Receipt
+  receiptBox: { 
+    marginTop: Spacing['2xl'],
+    backgroundColor: isDark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)', 
+    padding: Spacing.lg, 
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.1)',
+  },
+  receiptHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: Spacing.md,
+  },
+  receiptTitle: {
+    color: Colors.green[600],
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+  },
+  receiptDivider: {
+    height: 1,
+    width: '100%',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.green[500],
+    borderStyle: 'dashed',
+    opacity: 0.3,
+    marginBottom: Spacing.md,
+  },
+  receiptRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  receiptLabel: { color: colors.text, fontSize: 13, fontWeight: '600' },
+  receiptValue: { color: Colors.green[600], fontSize: 24, fontWeight: '900', letterSpacing: -1 },
+  receiptUnit: { fontSize: 14, fontWeight: '800' },
 });
