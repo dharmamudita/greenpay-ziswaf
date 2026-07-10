@@ -3,6 +3,8 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const server = http.createServer(app);
@@ -33,6 +35,7 @@ const wasteRoutes = require('./routes/wasteRoutes');
 const marketplaceRoutes = require('./routes/marketplaceRoutes');
 const greenPointRoutes = require('./routes/greenPointRoutes');
 const impactRoutes = require('./routes/impactRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -41,6 +44,7 @@ app.use('/api/waste', wasteRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/green-points', greenPointRoutes);
 app.use('/api/impact', impactRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
