@@ -1,61 +1,66 @@
-// GreenPay ZISWAF Premium Color Palette
+// GreenPay ZISWAF Premium Color Palette (Professional Fintech Style)
 export const Colors = {
-  // Primary Green (Slightly more vivid and emerald-like)
+  // Premium Pine/Teal Green (More sophisticated and professional than standard emerald)
   green: {
-    50: '#ECFDF5',
-    100: '#D1FAE5',
-    200: '#A7F3D0',
-    300: '#6EE7B7',
-    400: '#34D399',
-    500: '#0EA5E9', // Wait, this is blue! Let's use Emerald
-    500: '#10B981',
-    600: '#059669',
-    700: '#047857',
-    800: '#065F46',
-    900: '#064E3B',
+    50: '#E6F6F1',
+    100: '#C1E9D9',
+    200: '#97DBC0',
+    300: '#69CDA5',
+    400: '#42BFA0',
+    500: '#009F75', // Primary Brand Color: Elegant, trustworthy green
+    600: '#008761',
+    700: '#006C4E',
+    800: '#00543D',
+    900: '#004230',
   },
-  // We'll stick to the original emerald greens but refine Dark/Light theme colors.
+  
+  // Premium Accent (Subtle, elegant gold/bronze for highlights, not too bright yellow)
   gold: {
-    300: '#FCD34D',
-    400: '#FBBF24',
-    500: '#F59E0B',
-    600: '#D97706',
+    300: '#F3D27E',
+    400: '#EBC159',
+    500: '#D4A333',
+    600: '#B08422',
   },
-  // Dark Theme (More OLED friendly, deeper contrast)
+  
+  // Dark Theme (Very deep slate/navy, much more premium than pure black #000)
   dark: {
-    bg: '#000000',
-    surface: '#0F1713',
-    surface2: '#16231D',
-    surface3: '#20332B',
-    border: '#1F2F28',
+    bg: '#0F1319', // Very deep, rich dark background
+    surface: '#1A1F26', // Slightly lighter for cards
+    surface2: '#232A33',
+    surface3: '#2D3540',
+    border: '#2A313C',
     text: '#F3F4F6',
-    textMuted: '#9CA3AF',
+    textMuted: '#94A3B8',
   },
-  // Light Theme (Softer, cleaner, modern)
+  
+  // Light Theme (Clean, clinical, modern)
   light: {
-    bg: '#F8FAFC',
+    bg: '#F4F7F9', // Very subtle cool gray, not pure white
     surface: '#FFFFFF',
-    surface2: '#F1F5F9',
-    surface3: '#E2E8F0',
+    surface2: '#F8FAFC',
+    surface3: '#F1F5F9',
     border: '#E2E8F0',
-    text: '#0F172A',
+    text: '#1E293B',
     textMuted: '#64748B',
   },
+  
+  // Neutral Grays (Cool grays for better professional look)
   gray: {
-    100: '#F3F4F6',
-    200: '#E5E7EB',
-    300: '#D1D5DB',
-    400: '#9CA3AF',
-    500: '#6B7280',
-    600: '#4B5563',
-    700: '#374151',
+    100: '#F1F5F9',
+    200: '#E2E8F0',
+    300: '#CBD5E1',
+    400: '#94A3B8',
+    500: '#64748B',
+    600: '#475569',
+    700: '#334155',
   },
+  
   white: '#FFFFFF',
   black: '#000000',
-  error: '#EF4444',
-  warning: '#F59E0B',
-  info: '#3B82F6',
-  purple: '#8B5CF6',
+  error: '#EF4444',     // Standard error red
+  warning: '#F59E0B',   // Standard warning amber
+  info: '#3B82F6',      // Professional blue
+  purple: '#6366F1',    // Indigo for secondary accents
   pink: '#EC4899',
 };
 
