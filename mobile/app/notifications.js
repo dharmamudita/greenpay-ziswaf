@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
@@ -65,6 +65,7 @@ export default function NotificationsScreen() {
 
   return (
     <View style={dynamicStyles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity style={dynamicStyles.backBtn} onPress={() => router.back()}>
