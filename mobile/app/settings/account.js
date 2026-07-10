@@ -229,7 +229,7 @@ export default function AccountSettingScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  container: { padding: Spacing.xl },
+  container: { padding: Spacing.xl, paddingBottom: 100 },
   avatarSection: { alignItems: 'center', marginBottom: Spacing.xl },
   avatarOuter: { padding: 4, borderRadius: 50 },
   avatar: { width: 90, height: 90, borderRadius: 45, alignItems: 'center', justifyContent: 'center' },

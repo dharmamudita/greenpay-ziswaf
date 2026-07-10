@@ -294,7 +294,12 @@ export default function RegisterScreen() {
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
-  container: { flexGrow: 1, padding: Spacing.xl, paddingTop: height * 0.08 },
+  container: {
+    flexGrow: 1,
+    padding: Spacing.xl,
+    paddingTop: height * 0.08,
+    paddingBottom: 100,
+  },
   header: { alignItems: 'center', marginBottom: Spacing['2xl'] },
   logoWrap: { borderRadius: BorderRadius['2xl'], marginBottom: Spacing.lg },
   logo: { width: 72, height: 72, borderRadius: BorderRadius['2xl'], alignItems: 'center', justifyContent: 'center' },

@@ -135,9 +135,9 @@ export default function LoginScreen() {
 const getStyles = (colors, isDark) => StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
     padding: Spacing.xl,
     paddingTop: height * 0.1,
+    paddingBottom: 100, // Memberikan ruang scroll ekstra saat keyboard terbuka
   },
   header: {
     alignItems: 'center',
