@@ -1,17 +1,17 @@
-// GreenPay ZISWAF Premium Color Palette (Professional Matcha / Earthy Tone)
+// GreenPay ZISWAF Premium Color Palette (Forest Green / Deep Emerald)
 export const Colors = {
-  // Matcha Green (Earthy, solid, and highly professional)
+  // Premium Deep Forest Green (Based on #165E2E)
   green: {
-    50: '#F4F7F0',
-    100: '#E3EBD3',
-    200: '#C8D7AD',
-    300: '#A7BE80',
-    400: '#89A35E',
-    500: '#6B8943', // Primary Brand Color: Solid Matcha Green
-    600: '#526A33',
-    700: '#3D5025', // Deep Matcha for strong contrast elements
-    800: '#2A3819',
-    900: '#19230E',
+    50: '#E1F5E8',
+    100: '#A4DFB9',
+    200: '#5AC17B',
+    300: '#269D4D',
+    400: '#1D7A3C',
+    500: '#165E2E', // Primary Brand Color (Deep, solid, highly professional)
+    600: '#125027',
+    700: '#0E3F1F',
+    800: '#0A2B15',
+    900: '#071C0E',
   },
   
   // Premium Accent (Subtle, elegant gold/bronze for highlights, not too bright yellow)
@@ -24,23 +24,23 @@ export const Colors = {
   
   // Dark Theme (Very deep slate/navy, much more premium than pure black #000)
   dark: {
-    bg: '#161814', // Very deep, rich dark background with slight green undertone
-    surface: '#20231D', // Slightly lighter for cards
-    surface2: '#2C3028',
-    surface3: '#383D33',
-    border: '#2C3028',
+    bg: '#0F1210', // Deep dark green-tinted black
+    surface: '#151A17', // Slightly lighter for cards
+    surface2: '#1C231F',
+    surface3: '#26302A',
+    border: '#26302A',
     text: '#F3F4F6',
     textMuted: '#9CA3AF',
   },
   
   // Light Theme (Clean, clinical, modern)
   light: {
-    bg: '#F8FAF7', // Very subtle warm/greenish off-white
+    bg: '#F6F8F7', // Very subtle off-white with hint of green
     surface: '#FFFFFF',
-    surface2: '#F4F7F0',
-    surface3: '#E3EBD3',
+    surface2: '#F0F4F2',
+    surface3: '#E1F5E8',
     border: '#E5E7EB',
-    text: '#1F2937',
+    text: '#111827',
     textMuted: '#6B7280',
   },
   
