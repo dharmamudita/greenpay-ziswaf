@@ -44,7 +44,7 @@ export default function ProfileScreen() {
   }
 
   if (user?.role === 'admin') {
-    menuItems.push({ icon: 'shield-checkmark', label: 'Verifikasi Distrik', route: '/admin/verify-distrik', color: Colors.error });
+    menuItems.push({ icon: 'shield-checkmark', label: 'Verifikasi Distrik', route: '/admin/verify-distrik', color: Colors.gold[500] || Colors.warning });
   }
 
   menuItems.push({ icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[300] : Colors.gray[600] });

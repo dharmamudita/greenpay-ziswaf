@@ -27,7 +27,7 @@ export default function MarketplaceScreen() {
 
   const fetchProducts = async () => {
     try {
-      const res = await api.get('/marketplace');
+      const res = await api.get('/marketplace/products');
       setProducts(res.data);
     } catch (error) {
       console.log('Error fetching products:', error);

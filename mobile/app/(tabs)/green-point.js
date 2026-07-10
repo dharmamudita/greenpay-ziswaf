@@ -25,6 +25,10 @@ export default function GreenPointScreen() {
   }, []);
 
   const fetchHistory = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     try {
       const res = await api.get('/green-points/history');
       setHistory(res.data);
