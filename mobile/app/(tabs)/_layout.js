@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,6 @@ export default function TabLayout() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   
-  return (
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <Tabs
