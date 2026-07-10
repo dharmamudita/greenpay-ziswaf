@@ -30,8 +30,6 @@ export default function LoginScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
-  // Konfigurasi Auth Session
-  // Ganti dengan Client ID asli Anda dari Google/Meta Developer Console
   const GOOGLE_CLIENT_ID = '863588088837-9t2av69r05o3dg1f02gfenrf2htu5j4h.apps.googleusercontent.com';
   const FB_CLIENT_ID = '1035461415601809';
 
@@ -48,7 +46,6 @@ export default function LoginScreen() {
     redirectUri,
   });
 
-  // Effect untuk mendengarkan hasil dari Google Login
   React.useEffect(() => {
     if (googleResponse?.type === 'success') {
       const { authentication } = googleResponse;
@@ -56,7 +53,6 @@ export default function LoginScreen() {
     }
   }, [googleResponse]);
 
-  // Effect untuk mendengarkan hasil dari Facebook Login
   React.useEffect(() => {
     if (fbResponse?.type === 'success') {
       const { authentication } = fbResponse;
@@ -70,7 +66,6 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
     try {
-      // 1. Ambil data profil dari provider
       let email = '';
       let name = '';
       
@@ -88,17 +83,14 @@ export default function LoginScreen() {
         name = userInfo.name;
       }
 
-      // 2. Kirim ke backend
       const res = await api.post('/auth/social-login', { provider, token, email, name });
       
       if (res.data.isNewUser) {
-        // Arahkan ke halaman lengkapi profil
         router.push({
           pathname: '/(auth)/complete-profile',
           params: { email: res.data.email, name: res.data.name }
         });
       } else {
-        // Langsung login
         await setAuthState(res.data.token, res.data.user);
         router.replace('/(tabs)');
       }
@@ -130,22 +122,24 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}>
       <LinearGradient 
-        colors={[isDark ? Colors.dark.surface2 : Colors.green[50], colors.bg]} 
+        colors={[isDark ? Colors.green[900] : Colors.green[50], colors.bg]} 
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={dynamicStyles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={dynamicStyles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           
           {/* Header */}
           <View style={dynamicStyles.header}>
-            <View style={[dynamicStyles.logoWrap, Shadows.md]}>
-              <Image 
-                source={require('../../assets/images/logo.png')} 
-                style={dynamicStyles.logo}
-                resizeMode="cover"
-              />
+            <View style={dynamicStyles.logoGlow}>
+              <View style={[dynamicStyles.logoWrap, Shadows.md]}>
+                <Image 
+                  source={require('../../assets/images/logo.png')} 
+                  style={dynamicStyles.logo}
+                  resizeMode="cover"
+                />
+              </View>
             </View>
             <Text style={dynamicStyles.title}>{t('auth.welcome_back')}</Text>
-            <Text style={dynamicStyles.subtitle}>{t('auth.login_desc')} <Text style={{ color: Colors.green[500], fontWeight: '700' }}>GreenPay ZISWAF</Text></Text>
+            <Text style={dynamicStyles.subtitle}>{t('auth.login_desc')} <Text style={{ color: Colors.green[500], fontWeight: '800' }}>GreenPay ZISWAF</Text></Text>
           </View>
 
           {/* Error */}
@@ -156,8 +150,8 @@ export default function LoginScreen() {
             </View>
           ) : null}
 
-          {/* Form Card */}
-          <View style={[dynamicStyles.formCard, Shadows.md]}>
+          {/* Form Card (Glassmorphism look) */}
+          <View style={[dynamicStyles.formCard, Shadows.lg]}>
             <View style={dynamicStyles.form}>
               <View style={dynamicStyles.inputGroup}>
                 <Text style={dynamicStyles.label}>{t('auth.email')}</Text>
@@ -193,51 +187,56 @@ export default function LoginScreen() {
                 </View>
               </View>
 
-              <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={{ marginTop: Spacing.md }} />
+              <View style={dynamicStyles.forgotPwdWrap}>
+                <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
+                  <Text style={dynamicStyles.forgotPwdText}>{t('auth.forgot_pwd')}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={dynamicStyles.loginBtn} />
               
               <View style={dynamicStyles.dividerContainer}>
                 <View style={dynamicStyles.dividerLine} />
-                <Text style={dynamicStyles.dividerText}>atau</Text>
+                <Text style={dynamicStyles.dividerText}>ATAU MASUK DENGAN</Text>
                 <View style={dynamicStyles.dividerLine} />
               </View>
 
-              <TouchableOpacity 
-                style={dynamicStyles.socialBtn} 
-                onPress={() => {
-                  if (GOOGLE_CLIENT_ID.includes('MASUKKAN')) {
-                    setError('Google Client ID belum diatur di kode.');
-                    return;
-                  }
-                  googlePromptAsync();
-                }}
-                disabled={!googleRequest || loading}
-              >
-                <Ionicons name="logo-google" size={20} color="#EA4335" />
-                <Text style={dynamicStyles.socialBtnText}>Lanjutkan dengan Google</Text>
-              </TouchableOpacity>
+              <View style={dynamicStyles.socialContainer}>
+                <TouchableOpacity 
+                  style={dynamicStyles.socialBtnPill} 
+                  onPress={() => {
+                    if (GOOGLE_CLIENT_ID.includes('MASUKKAN')) {
+                      setError('Google Client ID belum diatur di kode.');
+                      return;
+                    }
+                    googlePromptAsync();
+                  }}
+                  disabled={!googleRequest || loading}
+                >
+                  <Ionicons name="logo-google" size={20} color="#EA4335" />
+                  <Text style={dynamicStyles.socialBtnText}>Google</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={dynamicStyles.socialBtn} 
-                onPress={() => {
-                  if (FB_CLIENT_ID.includes('MASUKKAN')) {
-                    setError('Facebook Client ID belum diatur di kode.');
-                    return;
-                  }
-                  fbPromptAsync();
-                }}
-                disabled={!fbRequest || loading}
-              >
-                <Ionicons name="logo-facebook" size={20} color="#1877F2" />
-                <Text style={dynamicStyles.socialBtnText}>Lanjutkan dengan Facebook</Text>
-              </TouchableOpacity>
+                <TouchableOpacity 
+                  style={dynamicStyles.socialBtnPill} 
+                  onPress={() => {
+                    if (FB_CLIENT_ID.includes('MASUKKAN')) {
+                      setError('Facebook Client ID belum diatur di kode.');
+                      return;
+                    }
+                    fbPromptAsync();
+                  }}
+                  disabled={!fbRequest || loading}
+                >
+                  <Ionicons name="logo-facebook" size={20} color="#1877F2" />
+                  <Text style={dynamicStyles.socialBtnText}>Facebook</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
           </View>
 
-          <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.md }]}>
-            <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
-              <Text style={[dynamicStyles.footerText, { color: Colors.green[500] }]}>{t('auth.forgot_pwd')}</Text>
-            </TouchableOpacity>
-            
+          <View style={dynamicStyles.footer}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={dynamicStyles.footerText}>{t('auth.no_account').split('?')[0]}? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
@@ -257,35 +256,40 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     flexGrow: 1,
     padding: Spacing.xl,
     paddingTop: height * 0.1,
-    paddingBottom: 100, // Memberikan ruang scroll ekstra saat keyboard terbuka
+    paddingBottom: 100,
   },
   header: {
     alignItems: 'center',
-    marginBottom: Spacing['3xl'],
+    marginBottom: Spacing['2xl'],
+  },
+  logoGlow: {
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
+    marginBottom: Spacing.xl,
   },
   logoWrap: {
     borderRadius: BorderRadius['2xl'],
-    marginBottom: Spacing.xl,
   },
   logo: {
     width: 80,
     height: 80,
     borderRadius: BorderRadius['2xl'],
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   title: {
     fontSize: 32,
     fontWeight: '900',
     color: colors.text,
-    marginBottom: Spacing.sm,
+    marginBottom: 6,
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textMuted,
     fontWeight: '500',
+    textAlign: 'center',
   },
+  
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -300,15 +304,16 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   errorText: {
     color: isDark ? '#FCA5A5' : '#EF4444',
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
     flex: 1,
   },
+  
   formCard: {
-    backgroundColor: colors.surface,
+    backgroundColor: isDark ? 'rgba(30,41,59,0.7)' : colors.surface,
     padding: Spacing.xl,
     borderRadius: BorderRadius['2xl'],
-    borderWidth: isDark ? 1 : 0,
-    borderColor: colors.border,
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(255,255,255,0.05)' : colors.border,
   },
   form: {
     gap: Spacing.lg,
@@ -317,36 +322,98 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
     color: colors.text,
     marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    opacity: 0.8,
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: isDark ? colors.bg : Colors.gray[50],
+    backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : Colors.gray[100],
     borderRadius: BorderRadius.xl,
-    borderWidth: 1.5,
-    borderColor: isDark ? colors.border : Colors.gray[200],
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'transparent',
   },
   inputIcon: {
     paddingLeft: Spacing.md,
+    opacity: 0.7,
   },
   input: {
     flex: 1,
     color: colors.text,
     fontSize: 16,
-    paddingVertical: Spacing.md + 2,
+    paddingVertical: Spacing.md + 4,
     paddingHorizontal: Spacing.md,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   eyeBtn: {
     padding: Spacing.md,
   },
-  footer: {
+  
+  forgotPwdWrap: {
+    alignItems: 'flex-end',
+    marginTop: -8,
+  },
+  forgotPwdText: {
+    color: Colors.green[500],
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  
+  loginBtn: {
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.md + 2,
+  },
+  
+  dividerContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: Spacing.md,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border,
+  },
+  dividerText: {
+    marginHorizontal: Spacing.md,
+    color: colors.textMuted,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  
+  socialContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  socialBtnPill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : Colors.white,
+    borderWidth: 1,
+    borderColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border,
+    borderRadius: BorderRadius.full,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
+    ...Shadows.sm,
+    shadowOpacity: isDark ? 0 : 0.05,
+  },
+  socialBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: colors.text,
+  },
+  
+  footer: {
+    alignItems: 'center',
     marginTop: Spacing['3xl'],
   },
   footerText: {
@@ -358,36 +425,5 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     color: Colors.green[500],
     fontSize: 15,
     fontWeight: '800',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.md,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  dividerText: {
-    marginHorizontal: Spacing.md,
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  socialBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: BorderRadius.xl,
-    paddingVertical: Spacing.md,
-    gap: Spacing.sm,
-  },
-  socialBtnText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
   }
 });

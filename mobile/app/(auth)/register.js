@@ -122,13 +122,7 @@ export default function RegisterScreen() {
       return;
     }
     
-    if (password.length < 6) {
-      setError('Password minimal 6 karakter.');
-      return;
-    }
-    
     setError('');
-    // Buka modal S&K
     setSkVisible(true);
     setIsScrolledToBottom(false);
   };
@@ -138,7 +132,6 @@ export default function RegisterScreen() {
     if (Platform.OS === 'web') {
       executeRegister('bypass-for-web');
     } else {
-      // Tunggu modal S&K tertutup sepenuhnya (1 detik) sebelum membuka modal CAPTCHA
       setTimeout(() => {
         if (recaptchaRef.current) {
           recaptchaRef.current.open();
@@ -209,18 +202,20 @@ export default function RegisterScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}>
       <LinearGradient 
-        colors={[isDark ? Colors.dark.surface2 : Colors.green[50], colors.bg]} 
+        colors={[isDark ? Colors.green[900] : Colors.green[50], colors.bg]} 
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={dynamicStyles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={dynamicStyles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           
           <View style={dynamicStyles.header}>
-            <View style={[dynamicStyles.logoWrap, Shadows.md]}>
-              <Image 
-                source={require('../../assets/images/logo.png')} 
-                style={dynamicStyles.logo}
-                resizeMode="cover"
-              />
+            <View style={dynamicStyles.logoGlow}>
+              <View style={[dynamicStyles.logoWrap, Shadows.md]}>
+                <Image 
+                  source={require('../../assets/images/logo.png')} 
+                  style={dynamicStyles.logo}
+                  resizeMode="cover"
+                />
+              </View>
             </View>
             <Text style={dynamicStyles.title}>{t('auth.join_us')}</Text>
             <Text style={dynamicStyles.subtitle}>{t('auth.register_desc')}</Text>
@@ -233,7 +228,7 @@ export default function RegisterScreen() {
             </View>
           ) : null}
 
-          <View style={[dynamicStyles.formCard, Shadows.md]}>
+          <View style={[dynamicStyles.formCard, Shadows.lg]}>
             <View style={dynamicStyles.form}>
               <View style={dynamicStyles.inputGroup}>
                 <Text style={dynamicStyles.label}>{t('auth.fullname')}</Text>
@@ -274,49 +269,52 @@ export default function RegisterScreen() {
                 title={t('auth.register')} 
                 onPress={validateAndShowSK} 
                 loading={loading} 
-                style={{ marginTop: Spacing.sm }} 
+                style={dynamicStyles.loginBtn} 
               />
               
               <View style={dynamicStyles.dividerContainer}>
                 <View style={dynamicStyles.dividerLine} />
-                <Text style={dynamicStyles.dividerText}>atau</Text>
+                <Text style={dynamicStyles.dividerText}>ATAU DAFTAR DENGAN</Text>
                 <View style={dynamicStyles.dividerLine} />
               </View>
 
-              <TouchableOpacity 
-                style={dynamicStyles.socialBtn} 
-                onPress={() => {
-                  if (GOOGLE_CLIENT_ID.includes('MASUKKAN')) {
-                    setError('Google Client ID belum diatur di kode.');
-                    return;
-                  }
-                  googlePromptAsync();
-                }}
-                disabled={!googleRequest || loading}
-              >
-                <Ionicons name="logo-google" size={20} color="#EA4335" />
-                <Text style={dynamicStyles.socialBtnText}>Daftar dengan Google</Text>
-              </TouchableOpacity>
+              <View style={dynamicStyles.socialContainer}>
+                <TouchableOpacity 
+                  style={dynamicStyles.socialBtnPill} 
+                  onPress={() => {
+                    if (GOOGLE_CLIENT_ID.includes('MASUKKAN')) {
+                      setError('Google Client ID belum diatur di kode.');
+                      return;
+                    }
+                    googlePromptAsync();
+                  }}
+                  disabled={!googleRequest || loading}
+                >
+                  <Ionicons name="logo-google" size={20} color="#EA4335" />
+                  <Text style={dynamicStyles.socialBtnText}>Google</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={dynamicStyles.socialBtn} 
-                onPress={() => {
-                  if (FB_CLIENT_ID.includes('MASUKKAN')) {
-                    setError('Facebook Client ID belum diatur di kode.');
-                    return;
-                  }
-                  fbPromptAsync();
-                }}
-                disabled={!fbRequest || loading}
-              >
-                <Ionicons name="logo-facebook" size={20} color="#1877F2" />
-                <Text style={dynamicStyles.socialBtnText}>Daftar dengan Facebook</Text>
-              </TouchableOpacity>
+                <TouchableOpacity 
+                  style={dynamicStyles.socialBtnPill} 
+                  onPress={() => {
+                    if (FB_CLIENT_ID.includes('MASUKKAN')) {
+                      setError('Facebook Client ID belum diatur di kode.');
+                      return;
+                    }
+                    fbPromptAsync();
+                  }}
+                  disabled={!fbRequest || loading}
+                >
+                  <Ionicons name="logo-facebook" size={20} color="#1877F2" />
+                  <Text style={dynamicStyles.socialBtnText}>Facebook</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
           </View>
 
-          <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.sm }]}>
-            <Text style={[dynamicStyles.footerText, { fontSize: 13, textAlign: 'center' }]}>Mendaftar berarti setuju S&K.</Text>
+          <View style={dynamicStyles.footer}>
+            <Text style={dynamicStyles.footerPolicy}>Dengan mendaftar Anda setuju dengan S&K.</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={dynamicStyles.footerText}>{t('auth.have_account').split('?')[0]}? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
@@ -328,25 +326,25 @@ export default function RegisterScreen() {
         </ScrollView>
       </LinearGradient>
 
-      {/* Modal Syarat & Ketentuan */}
+      {/* Modal Syarat & Ketentuan - Polished UI */}
       <Modal visible={isSkVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setSkVisible(false)}>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-          {/* Header Modal */}
-          <View style={{ padding: Spacing.xl, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity onPress={() => setSkVisible(false)} style={{ padding: 4 }}>
-              <Ionicons name="close" size={28} color={colors.text} />
+          
+          <View style={dynamicStyles.modalHeader}>
+            <TouchableOpacity onPress={() => setSkVisible(false)} style={dynamicStyles.modalCloseBtn}>
+              <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, marginLeft: Spacing.md }}>Syarat & Ketentuan</Text>
+            <Text style={dynamicStyles.modalTitle}>Syarat & Ketentuan</Text>
           </View>
 
-          {/* Konten S&K (Wajib Scroll) */}
           <ScrollView 
             style={{ flex: 1, padding: Spacing.xl }} 
             onScroll={handleScrollSK} 
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={true}
           >
-            <Text style={{ fontSize: 22, fontWeight: '900', color: colors.text, marginBottom: Spacing.lg }}>Perjanjian Pengguna GreenPay ZISWAF</Text>
+            <Text style={dynamicStyles.skHeroTitle}>Perjanjian Pengguna</Text>
+            <Text style={dynamicStyles.skSubTitle}>GreenPay ZISWAF</Text>
             
             <Text style={dynamicStyles.skText}>
               Selamat datang di GreenPay ZISWAF. Dengan mendaftar dan menggunakan aplikasi ini, Anda setuju untuk terikat dengan syarat dan ketentuan berikut:
@@ -372,17 +370,18 @@ export default function RegisterScreen() {
               <Text style={dynamicStyles.skBold}>7. Hukum yang Berlaku</Text>{'\n'}
               Semua sengketa yang berkaitan dengan aplikasi ini akan diselesaikan berdasarkan asas musyawarah dan hukum yang berlaku di Republik Indonesia.
               {'\n\n'}
-              (Silakan terus *scroll* hingga ke bagian paling bawah untuk mengaktifkan tombol persetujuan).
+              <Text style={{ color: Colors.green[500], fontStyle: 'italic', fontWeight: 'bold' }}>
+                (Silakan terus scroll hingga ke bagian paling bawah untuk mengaktifkan tombol persetujuan).
+              </Text>
               {'\n\n\n\n'}
             </Text>
           </ScrollView>
 
-          {/* Footer Modal (Tombol Setuju) */}
-          <View style={{ padding: Spacing.xl, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.surface }}>
+          <View style={dynamicStyles.modalFooter}>
             <TouchableOpacity 
               style={[
                 dynamicStyles.skBtn, 
-                { backgroundColor: isScrolledToBottom ? Colors.green[600] : (isDark ? colors.border : Colors.gray[200]) }
+                { backgroundColor: isScrolledToBottom ? Colors.green[600] : (isDark ? 'rgba(255,255,255,0.05)' : Colors.gray[200]) }
               ]} 
               onPress={triggerCaptcha} 
               disabled={!isScrolledToBottom}
@@ -407,29 +406,31 @@ export default function RegisterScreen() {
         />
       )}
 
-      {/* Modal Verifikasi OTP */}
+      {/* Modal Verifikasi OTP - Premium Vault Style */}
       <Modal visible={otpVisible} animationType="fade" transparent={true} onRequestClose={() => setOtpVisible(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: Spacing.xl }}>
+        <View style={dynamicStyles.otpOverlay}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ width: '100%' }}>
-            <View style={{ backgroundColor: colors.surface, padding: Spacing.xl, borderRadius: BorderRadius['2xl'], width: '100%', alignItems: 'center' }}>
-              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: isDark ? 'rgba(16,185,129,0.2)' : Colors.green[50], alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.lg }}>
-                <Ionicons name="mail-open" size={32} color={Colors.green[500]} />
+            
+            <View style={[dynamicStyles.otpCard, Shadows.lg]}>
+              <View style={dynamicStyles.otpIconRing}>
+                <Ionicons name="shield-checkmark" size={32} color={Colors.green[500]} />
               </View>
               
-              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: Spacing.xs }}>Cek Email Anda</Text>
-              <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: Spacing.xl, lineHeight: 22 }}>
-                Kami telah mengirimkan 6-digit kode OTP ke <Text style={{ fontWeight: '700', color: colors.text }}>{email}</Text>. Masukkan kode tersebut di bawah ini.
+              <Text style={dynamicStyles.otpTitle}>Verifikasi Keamanan</Text>
+              <Text style={dynamicStyles.otpDesc}>
+                Masukkan 6-digit kode unik yang telah dikirim ke{'\n'}
+                <Text style={dynamicStyles.otpEmail}>{email}</Text>
               </Text>
 
               {error ? (
-                <Text style={{ color: Colors.error, marginBottom: Spacing.md, textAlign: 'center' }}>{error}</Text>
+                <Text style={dynamicStyles.otpError}>{error}</Text>
               ) : null}
 
-              <View style={[dynamicStyles.inputWrap, { width: '100%', marginBottom: Spacing.lg, paddingHorizontal: 0, justifyContent: 'center' }]}>
+              <View style={dynamicStyles.otpVaultInputWrap}>
                 <TextInput 
-                  style={[dynamicStyles.input, { textAlign: 'center', fontWeight: '900', fontSize: 24, letterSpacing: 10 }]} 
+                  style={dynamicStyles.otpVaultInput} 
                   placeholder="------" 
-                  placeholderTextColor={colors.textMuted} 
+                  placeholderTextColor={isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} 
                   value={otp} 
                   onChangeText={setOtp} 
                   keyboardType="number-pad" 
@@ -437,12 +438,13 @@ export default function RegisterScreen() {
                 />
               </View>
 
-              <Button title="Verifikasi & Daftar" onPress={handleVerifyOtp} loading={loadingOtp} style={{ width: '100%', marginBottom: Spacing.md }} />
+              <Button title="Buka & Daftar" onPress={handleVerifyOtp} loading={loadingOtp} style={{ width: '100%', marginBottom: Spacing.lg }} />
               
               <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
-                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>Batal</Text>
+                <Text style={dynamicStyles.otpCancelText}>Batal</Text>
               </TouchableOpacity>
             </View>
+
           </KeyboardAvoidingView>
         </View>
       </Modal>
@@ -459,81 +461,60 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     paddingBottom: 100,
   },
   header: { alignItems: 'center', marginBottom: Spacing['2xl'] },
-  logoWrap: { borderRadius: BorderRadius['2xl'], marginBottom: Spacing.lg },
-  logo: { width: 72, height: 72, borderRadius: BorderRadius['2xl'], alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 30, fontWeight: '900', color: colors.text, marginBottom: 4, letterSpacing: -0.5 },
-  subtitle: { fontSize: 16, color: colors.textMuted, fontWeight: '500' },
+  logoGlow: { padding: 10, borderRadius: 50, backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)', marginBottom: Spacing.xl },
+  logoWrap: { borderRadius: BorderRadius['2xl'] },
+  logo: { width: 72, height: 72, borderRadius: BorderRadius['2xl'] },
+  title: { fontSize: 32, fontWeight: '900', color: colors.text, marginBottom: 6, letterSpacing: -0.5 },
+  subtitle: { fontSize: 15, color: colors.textMuted, fontWeight: '500', textAlign: 'center' },
   
   errorBox: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : '#FEF2F2', borderRadius: BorderRadius.xl, padding: Spacing.md, marginBottom: Spacing.lg, borderWidth: 1, borderColor: isDark ? 'rgba(239,68,68,0.3)' : '#FECACA' },
-  errorText: { color: isDark ? '#FCA5A5' : '#EF4444', fontSize: 13, fontWeight: '500', flex: 1 },
+  errorText: { color: isDark ? '#FCA5A5' : '#EF4444', fontSize: 13, fontWeight: '600', flex: 1 },
   
-  roleWrap: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.xl },
-  roleBtn: { flex: 1, padding: Spacing.md, backgroundColor: colors.surface, borderRadius: BorderRadius['2xl'], borderWidth: 2, borderColor: isDark ? colors.border : 'transparent', alignItems: 'flex-start' },
-  roleBtnActive: { borderColor: Colors.green[500], backgroundColor: isDark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)' },
-  roleIconWrap: { width: 44, height: 44, borderRadius: BorderRadius.xl, backgroundColor: isDark ? colors.bg : Colors.gray[100], alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md },
-  roleName: { fontSize: 15, fontWeight: '800', color: colors.text, marginBottom: 2 },
-  roleDesc: { fontSize: 11, color: colors.textMuted, lineHeight: 16 },
-
-  formCard: { backgroundColor: colors.surface, padding: Spacing.xl, borderRadius: BorderRadius['2xl'], borderWidth: isDark ? 1 : 0, borderColor: colors.border },
+  formCard: { backgroundColor: isDark ? 'rgba(30,41,59,0.7)' : colors.surface, padding: Spacing.xl, borderRadius: BorderRadius['2xl'], borderWidth: 1, borderColor: isDark ? 'rgba(255,255,255,0.05)' : colors.border },
   form: { gap: Spacing.lg },
   inputGroup: { gap: Spacing.sm },
-  label: { fontSize: 14, fontWeight: '700', color: colors.text, marginLeft: 4 },
-  inputWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? colors.bg : Colors.gray[50], borderRadius: BorderRadius.xl, borderWidth: 1.5, borderColor: isDark ? colors.border : Colors.gray[200] },
-  inputIcon: { paddingLeft: Spacing.md },
-  input: { flex: 1, color: colors.text, fontSize: 16, paddingVertical: Spacing.md + 2, paddingHorizontal: Spacing.md, fontWeight: '500' },
+  label: { fontSize: 13, fontWeight: '800', color: colors.text, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, opacity: 0.8 },
+  inputWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : Colors.gray[100], borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'transparent' },
+  inputIcon: { paddingLeft: Spacing.md, opacity: 0.7 },
+  input: { flex: 1, color: colors.text, fontSize: 16, paddingVertical: Spacing.md + 4, paddingHorizontal: Spacing.md, fontWeight: '600' },
   eyeBtn: { padding: Spacing.md },
   
-  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: Spacing['3xl'] },
+  loginBtn: { marginTop: Spacing.sm, paddingVertical: Spacing.md + 2 },
+  
+  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: Spacing.md },
+  dividerLine: { flex: 1, height: 1, backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border },
+  dividerText: { marginHorizontal: Spacing.md, color: colors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 1 },
+  
+  socialContainer: { flexDirection: 'row', justifyContent: 'space-between', gap: Spacing.md },
+  socialBtnPill: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : Colors.white, borderWidth: 1, borderColor: isDark ? 'rgba(255,255,255,0.1)' : colors.border, borderRadius: BorderRadius.full, paddingVertical: Spacing.md, gap: Spacing.sm, ...Shadows.sm, shadowOpacity: isDark ? 0 : 0.05 },
+  socialBtnText: { fontSize: 14, fontWeight: '800', color: colors.text },
+  
+  footer: { alignItems: 'center', marginTop: Spacing['3xl'], gap: Spacing.md },
+  footerPolicy: { color: colors.textMuted, fontSize: 13, fontWeight: '500' },
   footerText: { color: colors.textMuted, fontSize: 15, fontWeight: '500' },
   linkText: { color: Colors.green[500], fontSize: 15, fontWeight: '800' },
   
-  captchaWrap: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  captchaQuestion: { backgroundColor: isDark ? colors.bg : Colors.gray[200], paddingHorizontal: Spacing.md, paddingVertical: Spacing.md + 2, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
-  captchaText: { fontSize: 18, fontWeight: '900', color: colors.text, letterSpacing: 1 },
-  captchaRefresh: { padding: Spacing.sm, backgroundColor: isDark ? colors.bg : Colors.gray[100], borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
-  
-  skText: {
-    fontSize: 15,
-    color: colors.text,
-    lineHeight: 24,
-    marginBottom: Spacing.md,
-  },
-  skBold: {
-    fontWeight: '800',
-    color: colors.text,
-    fontSize: 16,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.md,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  dividerText: {
-    marginHorizontal: Spacing.md,
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  socialBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: BorderRadius.xl,
-    paddingVertical: Spacing.md,
-    gap: Spacing.sm,
-  },
-  socialBtnText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  skBtn: { padding: Spacing.md + 4, borderRadius: BorderRadius.xl, alignItems: 'center', justifyContent: 'center' },
-  skBtnText: { fontSize: 16, fontWeight: '800' }
+  /* S&K Modal Styles */
+  modalHeader: { padding: Spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', alignItems: 'center' },
+  modalCloseBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface2, alignItems: 'center', justifyContent: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: '900', color: colors.text, marginLeft: Spacing.md },
+  skHeroTitle: { fontSize: 28, fontWeight: '900', color: colors.text, letterSpacing: -0.5 },
+  skSubTitle: { fontSize: 20, fontWeight: '700', color: Colors.green[500], marginBottom: Spacing.xl },
+  skText: { fontSize: 15, color: colors.text, lineHeight: 24 },
+  skBold: { fontWeight: '900', color: colors.text, fontSize: 16 },
+  modalFooter: { padding: Spacing.xl, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.surface },
+  skBtn: { paddingVertical: 18, borderRadius: BorderRadius.full, alignItems: 'center', justifyContent: 'center' },
+  skBtnText: { fontSize: 15, fontWeight: '800', letterSpacing: 0.5 },
+
+  /* OTP Vault Styles */
+  otpOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
+  otpCard: { backgroundColor: colors.surface, padding: Spacing.xl, borderRadius: BorderRadius['2xl'], width: '100%', alignItems: 'center', borderWidth: 1, borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'transparent' },
+  otpIconRing: { width: 64, height: 64, borderRadius: 32, backgroundColor: isDark ? 'rgba(16,185,129,0.1)' : Colors.green[50], alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.lg, borderWidth: 1, borderColor: 'rgba(16,185,129,0.2)' },
+  otpTitle: { fontSize: 24, fontWeight: '900', color: colors.text, marginBottom: 8 },
+  otpDesc: { fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: Spacing.xl, lineHeight: 22 },
+  otpEmail: { fontWeight: '800', color: colors.text },
+  otpError: { color: Colors.danger, marginBottom: Spacing.md, textAlign: 'center', fontWeight: '600' },
+  otpVaultInputWrap: { width: '100%', backgroundColor: isDark ? 'rgba(0,0,0,0.3)' : Colors.gray[100], borderRadius: BorderRadius.xl, marginBottom: Spacing.xl, borderWidth: 1, borderColor: isDark ? 'rgba(255,255,255,0.05)' : colors.border },
+  otpVaultInput: { textAlign: 'center', fontWeight: '900', fontSize: 32, letterSpacing: 16, color: colors.text, paddingVertical: Spacing.lg },
+  otpCancelText: { fontSize: 14, color: colors.textMuted, fontWeight: '700' },
 });
