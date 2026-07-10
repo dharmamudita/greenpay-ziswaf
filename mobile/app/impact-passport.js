@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, ImageBackground,
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Card, Badge } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
@@ -14,6 +15,7 @@ export default function ImpactPassportScreen() {
   const [passportData, setPassportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -61,7 +63,7 @@ export default function ImpactPassportScreen() {
           >
             <View style={dynamicStyles.passHeader}>
               <View>
-                <Text style={dynamicStyles.passTitle}>IMPACT PASSPORT</Text>
+                <Text style={dynamicStyles.passTitle}>{t('screens.passport_title').toUpperCase()}</Text>
                 <Text style={{ color: Colors.green[200], fontSize: 10, letterSpacing: 1 }}>GLOBAL CITIZEN</Text>
               </View>
               <Ionicons name="finger-print" size={32} color="rgba(255,255,255,0.2)" />
