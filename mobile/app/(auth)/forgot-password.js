@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Keyboa
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
@@ -21,18 +22,19 @@ export default function ForgotPasswordScreen() {
   const [loading, setLoading] = useState(false);
   
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const dynamicStyles = getStyles(colors, isDark);
 
   const handleSendOtp = async () => {
     if (!email) {
-      setError('Masukkan alamat email Anda.');
+      setError(t('forgot_password.error_empty_email'));
       return;
     }
     setError('');
     setLoading(true);
     try {
       await api.post('/auth/forgot-password', { email });
-      Alert.alert('Sukses', 'Jika email terdaftar, kami telah mengirimkan kode OTP ke email Anda.');
+      Alert.alert('Sukses', t('forgot_password.success_otp_sent'));
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.error || 'Gagal mengirim email reset password.');
@@ -43,18 +45,18 @@ export default function ForgotPasswordScreen() {
 
   const handleResetPassword = async () => {
     if (!otp || !newPassword) {
-      setError('Lengkapi semua data.');
+      setError(t('forgot_password.error_empty_data'));
       return;
     }
     if (newPassword.length < 6) {
-      setError('Password minimal 6 karakter.');
+      setError(t('forgot_password.error_short_password'));
       return;
     }
     setError('');
     setLoading(true);
     try {
       await api.post('/auth/reset-password', { email, otp, newPassword });
-      Alert.alert('Berhasil', 'Password Anda telah berhasil diubah!', [
+      Alert.alert('Berhasil', t('forgot_password.success_reset'), [
         { text: 'OK', onPress: () => router.replace('/(auth)/login') }
       ]);
     } catch (err) {
@@ -80,9 +82,9 @@ export default function ForgotPasswordScreen() {
                 <Ionicons name={step === 1 ? 'mail' : 'key'} size={32} color={Colors.white} />
               </LinearGradient>
             </View>
-            <Text style={dynamicStyles.title}>Lupa Password?</Text>
+            <Text style={dynamicStyles.title}>{t('forgot_password.title')}</Text>
             <Text style={dynamicStyles.subtitle}>
-              {step === 1 ? 'Masukkan email untuk menerima kode reset.' : 'Masukkan kode OTP dan password baru.'}
+              {step === 1 ? t('forgot_password.subtitle_step1') : t('forgot_password.subtitle_step2')}
             </Text>
           </View>
 
@@ -99,12 +101,12 @@ export default function ForgotPasswordScreen() {
               {step === 1 ? (
                 <>
                   <View style={dynamicStyles.inputGroup}>
-                    <Text style={dynamicStyles.label}>Alamat Email</Text>
+                    <Text style={dynamicStyles.label}>{t('forgot_password.email_label')}</Text>
                     <View style={dynamicStyles.inputWrap}>
                       <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                       <TextInput 
                         style={dynamicStyles.input} 
-                        placeholder="nama@email.com" 
+                        placeholder={t('forgot_password.email_placeholder')} 
                         placeholderTextColor={colors.textMuted} 
                         value={email} 
                         onChangeText={setEmail} 
@@ -113,17 +115,17 @@ export default function ForgotPasswordScreen() {
                       />
                     </View>
                   </View>
-                  <Button title="Kirim Kode OTP" onPress={handleSendOtp} loading={loading} style={{ marginTop: Spacing.md }} />
+                  <Button title={t('forgot_password.send_otp_btn')} onPress={handleSendOtp} loading={loading} style={{ marginTop: Spacing.md }} />
                 </>
               ) : (
                 <>
                   <View style={dynamicStyles.inputGroup}>
-                    <Text style={dynamicStyles.label}>Kode OTP</Text>
+                    <Text style={dynamicStyles.label}>{t('forgot_password.otp_label')}</Text>
                     <View style={dynamicStyles.inputWrap}>
                       <Ionicons name="keypad-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                       <TextInput 
                         style={dynamicStyles.input} 
-                        placeholder="Masukkan 6 digit kode" 
+                        placeholder={t('forgot_password.otp_placeholder')} 
                         placeholderTextColor={colors.textMuted} 
                         value={otp} 
                         onChangeText={setOtp} 
@@ -134,12 +136,12 @@ export default function ForgotPasswordScreen() {
                   </View>
 
                   <View style={dynamicStyles.inputGroup}>
-                    <Text style={dynamicStyles.label}>Password Baru</Text>
+                    <Text style={dynamicStyles.label}>{t('forgot_password.new_password_label')}</Text>
                     <View style={dynamicStyles.inputWrap}>
                       <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                       <TextInput 
                         style={[dynamicStyles.input, { flex: 1 }]} 
-                        placeholder="Minimal 6 karakter" 
+                        placeholder={t('forgot_password.new_password_placeholder')} 
                         placeholderTextColor={colors.textMuted} 
                         value={newPassword} 
                         onChangeText={setNewPassword} 
@@ -150,7 +152,7 @@ export default function ForgotPasswordScreen() {
                       </TouchableOpacity>
                     </View>
                   </View>
-                  <Button title="Ubah Password" onPress={handleResetPassword} loading={loading} style={{ marginTop: Spacing.md }} />
+                  <Button title={t('forgot_password.reset_btn')} onPress={handleResetPassword} loading={loading} style={{ marginTop: Spacing.md }} />
                 </>
               )}
 
