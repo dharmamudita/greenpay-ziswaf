@@ -55,6 +55,24 @@
     "register": "Daftar",
     "have_account": "Sudah punya akun? Masuk"
   },
+  "forgot_password": {
+    "title": "Lupa Password?",
+    "subtitle_step1": "Masukkan email untuk menerima kode reset.",
+    "subtitle_step2": "Masukkan kode OTP dan password baru.",
+    "email_label": "Alamat Email",
+    "email_placeholder": "nama@email.com",
+    "send_otp_btn": "Kirim Kode OTP",
+    "otp_label": "Kode OTP",
+    "otp_placeholder": "Masukkan 6 digit kode",
+    "new_password_label": "Password Baru",
+    "new_password_placeholder": "Minimal 6 karakter",
+    "reset_btn": "Ubah Password",
+    "error_empty_email": "Masukkan alamat email Anda.",
+    "success_otp_sent": "Jika email terdaftar, kami telah mengirimkan kode OTP ke email Anda.",
+    "error_empty_data": "Lengkapi semua data.",
+    "error_short_password": "Password minimal 6 karakter.",
+    "success_reset": "Password Anda telah berhasil diubah!"
+  },
   "home": {
     "badge": "Platform Green Economy",
     "title1": "Bersama Wujudkan",
