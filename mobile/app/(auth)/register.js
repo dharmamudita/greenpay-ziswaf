@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Modal, SafeAreaView, Image } from 'react-native';
+import Recaptcha from 'react-native-recaptcha-that-works';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,9 +23,6 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [captchaNum1, setCaptchaNum1] = useState(0);
-  const [captchaNum2, setCaptchaNum2] = useState(0);
-  const [captchaAnswer, setCaptchaAnswer] = useState('');
   
   const [isSkVisible, setSkVisible] = useState(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
@@ -32,19 +30,14 @@ export default function RegisterScreen() {
   const [otp, setOtp] = useState('');
   const [loadingOtp, setLoadingOtp] = useState(false);
   
+  const recaptchaRef = useRef(null);
+  
   const { register } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
-  React.useEffect(() => {
-    generateCaptcha();
-  }, []);
-
-  const generateCaptcha = () => {
-    setCaptchaNum1(Math.floor(Math.random() * 10) + 1);
-    setCaptchaNum2(Math.floor(Math.random() * 10) + 1);
-    setCaptchaAnswer('');
-  };
+  const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -62,26 +55,31 @@ export default function RegisterScreen() {
       return;
     }
     
-    if (parseInt(captchaAnswer) !== (captchaNum1 + captchaNum2)) {
-      setError('Jawaban CAPTCHA salah. Silakan coba lagi.');
-      generateCaptcha();
+    if (password.length < 6) {
+      setError('Password minimal 6 karakter.');
       return;
     }
     
     setError('');
-    // Alih-alih mendaftar, buka modal S&K
+    // Buka modal S&K
     setSkVisible(true);
     setIsScrolledToBottom(false);
   };
 
-  const executeRegister = async () => {
+  const triggerCaptcha = () => {
     setSkVisible(false);
+    if (recaptchaRef.current) {
+      recaptchaRef.current.open();
+    }
+  };
+
+  const executeRegister = async (captchaToken) => {
     setLoading(true);
     try {
-      await api.post('/auth/request-otp', { email, type: 'register' });
+      await api.post('/auth/request-otp', { email, type: 'register', captchaToken });
       setOtpVisible(true);
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal mengirim OTP.');
+      setError(err.response?.data?.error || 'Gagal memverifikasi reCAPTCHA atau mengirim OTP.');
     } finally {
       setLoading(false);
     }
@@ -176,25 +174,10 @@ export default function RegisterScreen() {
               </View>
 
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Keamanan (CAPTCHA)</Text>
-                <View style={dynamicStyles.captchaWrap}>
-                  <View style={dynamicStyles.captchaQuestion}>
-                    <Text style={dynamicStyles.captchaText}>{captchaNum1} + {captchaNum2} =</Text>
-                  </View>
-                  <View style={[dynamicStyles.inputWrap, { flex: 1 }]}>
-                    <TextInput 
-                      style={[dynamicStyles.input, { textAlign: 'center', fontWeight: '800', fontSize: 20 }]} 
-                      placeholder="?" 
-                      placeholderTextColor={colors.textMuted} 
-                      value={captchaAnswer} 
-                      onChangeText={setCaptchaAnswer} 
-                      keyboardType="number-pad" 
-                      maxLength={2}
-                    />
-                  </View>
-                  <TouchableOpacity onPress={generateCaptcha} style={dynamicStyles.captchaRefresh}>
-                    <Ionicons name="refresh" size={24} color={Colors.green[500]} />
-                  </TouchableOpacity>
+                <Text style={dynamicStyles.label}>Konfirmasi Password</Text>
+                <View style={dynamicStyles.inputWrap}>
+                  <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
+                  <TextInput style={dynamicStyles.input} placeholder="Ulangi password" placeholderTextColor={colors.textMuted} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={!showPassword} />
                 </View>
               </View>
 
@@ -271,7 +254,7 @@ export default function RegisterScreen() {
                 dynamicStyles.skBtn, 
                 { backgroundColor: isScrolledToBottom ? Colors.green[600] : (isDark ? colors.border : Colors.gray[200]) }
               ]} 
-              onPress={executeRegister} 
+              onPress={triggerCaptcha} 
               disabled={!isScrolledToBottom}
               activeOpacity={0.8}
             >
@@ -282,6 +265,15 @@ export default function RegisterScreen() {
           </View>
         </SafeAreaView>
       </Modal>
+
+      <Recaptcha
+        ref={recaptchaRef}
+        siteKey="6LfRukwtAAAAAO5s5EuQ7ZcVrfpdQICSfC-JTUCs"
+        baseUrl="http://localhost"
+        onVerify={executeRegister}
+        onExpire={() => setError('CAPTCHA kedaluwarsa. Silakan coba lagi.')}
+        size="invisible"
+      />
 
       {/* Modal Verifikasi OTP */}
       <Modal visible={otpVisible} animationType="fade" transparent={true} onRequestClose={() => setOtpVisible(false)}>

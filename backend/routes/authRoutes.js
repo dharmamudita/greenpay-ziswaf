@@ -12,8 +12,28 @@ const { sendEmail } = require('../utils/mailer');
 // POST /api/auth/request-otp
 router.post('/request-otp', async (req, res) => {
   try {
-    const { email, type } = req.body;
+    const { email, type, captchaToken } = req.body;
     if (!email || !type) return res.status(400).json({ error: 'Email dan tipe (type) harus diisi.' });
+
+    // Verify reCAPTCHA for registration
+    if (type === 'register') {
+      if (!captchaToken) {
+        return res.status(400).json({ error: 'CAPTCHA token wajib dikirim.' });
+      }
+      
+      try {
+        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
+        const recaptchaRes = await fetch(verifyUrl, { method: 'POST' });
+        const recaptchaData = await recaptchaRes.json();
+        
+        if (!recaptchaData.success) {
+          return res.status(400).json({ error: 'Validasi CAPTCHA gagal. Anda terdeteksi sebagai bot.' });
+        }
+      } catch (err) {
+        console.error('reCAPTCHA error:', err);
+        return res.status(500).json({ error: 'Terjadi kesalahan saat memverifikasi CAPTCHA.' });
+      }
+    }
 
     // Generate 6 digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
