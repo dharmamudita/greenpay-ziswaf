@@ -2,15 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../context/ThemeContext';
 import Colors from '../../theme/colors';
+import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 export default function RegisterDistrikScreen() {
   const { colors, isDark } = useTheme();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState(null); // 'unregistered', 'pending', 'approved', 'rejected'
+  const [status, setStatus] = useState(null); 
+  
+  const [otpVisible, setOtpVisible] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [otpError, setOtpError] = useState('');
   
   const [form, setForm] = useState({
     name: '',
@@ -44,14 +51,30 @@ export default function RegisterDistrikScreen() {
 
     setSubmitting(true);
     try {
-      await api.post('/distrik/register', form);
-      Alert.alert('Sukses', 'Pengajuan berhasil dikirim! Menunggu verifikasi admin.');
-      checkStatus(); // Reload status
+      await api.post('/auth/request-otp', { email: user.email, type: 'register_distrik' });
+      setOtpVisible(true);
     } catch (error) {
-      console.log('Error submitting:', error.response?.data || error);
-      Alert.alert('Error', error.response?.data?.error || 'Gagal mengirim pengajuan.');
+      console.log('Error requesting OTP:', error.response?.data || error);
+      Alert.alert('Error', error.response?.data?.error || 'Gagal mengirim OTP.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length < 6) return setOtpError('OTP harus 6 digit.');
+    setLoadingOtp(true);
+    setOtpError('');
+    try {
+      await api.post('/auth/verify-otp', { email: user.email, otp, type: 'register_distrik' });
+      await api.post('/distrik/register', form);
+      setOtpVisible(false);
+      Alert.alert('Sukses', 'Pengajuan berhasil dikirim! Menunggu verifikasi admin.');
+      checkStatus(); 
+    } catch (error) {
+      setOtpError(error.response?.data?.error || 'OTP tidak valid.');
+    } finally {
+      setLoadingOtp(false);
     }
   };
 
@@ -148,6 +171,48 @@ export default function RegisterDistrikScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Modal Verifikasi OTP */}
+      {otpVisible && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 24, zIndex: 1000, elevation: 10 }}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ width: '100%' }}>
+            <View style={{ backgroundColor: colors.surface, padding: 24, borderRadius: 24, width: '100%', alignItems: 'center' }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: isDark ? 'rgba(16,185,129,0.2)' : Colors.green[50], alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Ionicons name="mail-open" size={32} color={Colors.green[500]} />
+              </View>
+              
+              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 8 }}>Cek Email Anda</Text>
+              <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 22 }}>
+                Kami telah mengirimkan OTP keamanan ke <Text style={{ fontWeight: '700', color: colors.text }}>{user?.email}</Text>.
+              </Text>
+
+              {otpError ? (
+                <Text style={{ color: Colors.error, marginBottom: 16, textAlign: 'center' }}>{otpError}</Text>
+              ) : null}
+
+              <View style={[dynamicStyles.inputWrap, { width: '100%', marginBottom: 16, paddingHorizontal: 0, justifyContent: 'center' }]}>
+                <TextInput 
+                  style={[dynamicStyles.input, { textAlign: 'center', fontWeight: '900', fontSize: 24, letterSpacing: 10 }]} 
+                  placeholder="------" 
+                  placeholderTextColor={colors.textMuted} 
+                  value={otp} 
+                  onChangeText={setOtp} 
+                  keyboardType="number-pad" 
+                  maxLength={6}
+                />
+              </View>
+
+              <TouchableOpacity style={[dynamicStyles.submitBtn, { width: '100%', marginBottom: 12 }]} onPress={handleVerifyOtp} disabled={loadingOtp}>
+                {loadingOtp ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>Verifikasi</Text>}
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
+                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>Batal</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }

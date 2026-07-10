@@ -34,6 +34,13 @@ export default function AccountSettingScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
 
+  // OTP State
+  const [otpVisible, setOtpVisible] = useState(false);
+  const [otpType, setOtpType] = useState(null); // 'change_email' or 'change_password'
+  const [otp, setOtp] = useState('');
+  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [otpError, setOtpError] = useState('');
+
   useEffect(() => {
     if (user) {
       setName(user.display_name || '');
@@ -143,11 +150,11 @@ export default function AccountSettingScreen() {
     }
     setLoadingEmail(true);
     try {
-      await api.put('/users/me', { email });
-      await refreshProfile();
-      Alert.alert('Sukses', 'Email berhasil diperbarui.');
+      await api.post('/auth/request-otp', { email: email, type: 'change_email' });
+      setOtpType('change_email');
+      setOtpVisible(true);
     } catch (err) {
-      Alert.alert('Gagal', err.response?.data?.error || 'Gagal memperbarui email.');
+      Alert.alert('Gagal', err.response?.data?.error || 'Gagal mengirim OTP ke email baru.');
     } finally {
       setLoadingEmail(false);
     }
@@ -160,14 +167,42 @@ export default function AccountSettingScreen() {
     }
     setLoadingPassword(true);
     try {
-      await api.put('/users/me/password', { oldPassword, newPassword });
-      setOldPassword('');
-      setNewPassword('');
-      Alert.alert('Sukses', 'Password berhasil diubah.');
+      await api.post('/auth/request-otp', { email: user.email, type: 'change_password' });
+      setOtpType('change_password');
+      setOtpVisible(true);
     } catch (err) {
-      Alert.alert('Gagal', err.response?.data?.error || 'Gagal mengubah password.');
+      Alert.alert('Gagal', err.response?.data?.error || 'Gagal mengirim OTP keamanan.');
     } finally {
       setLoadingPassword(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length < 6) return setOtpError('OTP harus 6 digit.');
+    setLoadingOtp(true);
+    setOtpError('');
+    try {
+      const targetEmail = otpType === 'change_email' ? email : user.email;
+      await api.post('/auth/verify-otp', { email: targetEmail, otp, type: otpType });
+      
+      // Proceed with actual operation
+      if (otpType === 'change_email') {
+        await api.put('/users/me', { email });
+        await refreshProfile();
+        Alert.alert('Sukses', 'Email berhasil diperbarui.');
+      } else if (otpType === 'change_password') {
+        await api.put('/users/me/password', { oldPassword, newPassword });
+        setOldPassword('');
+        setNewPassword('');
+        Alert.alert('Sukses', 'Password berhasil diubah.');
+      }
+      
+      setOtpVisible(false);
+      setOtp('');
+    } catch (err) {
+      setOtpError(err.response?.data?.error || 'OTP tidak valid.');
+    } finally {
+      setLoadingOtp(false);
     }
   };
 
@@ -251,6 +286,48 @@ export default function AccountSettingScreen() {
 
         </View>
       </ScrollView>
+
+      {/* Modal Verifikasi OTP */}
+      {otpVisible && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 24, zIndex: 1000, elevation: 10 }}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ width: '100%' }}>
+            <View style={{ backgroundColor: colors.surface, padding: 24, borderRadius: 24, width: '100%', alignItems: 'center' }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: isDark ? 'rgba(16,185,129,0.2)' : Colors.green[50], alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Ionicons name="mail-open" size={32} color={Colors.green[500]} />
+              </View>
+              
+              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 8 }}>Cek Email Anda</Text>
+              <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 22 }}>
+                Kami telah mengirimkan 6-digit OTP keamanan ke <Text style={{ fontWeight: '700', color: colors.text }}>{otpType === 'change_email' ? email : user?.email}</Text>.
+              </Text>
+
+              {otpError ? (
+                <Text style={{ color: Colors.error, marginBottom: 16, textAlign: 'center' }}>{otpError}</Text>
+              ) : null}
+
+              <View style={[dynamicStyles.inputWrap, { width: '100%', marginBottom: 16, paddingHorizontal: 0, justifyContent: 'center' }]}>
+                <TextInput 
+                  style={[dynamicStyles.input, { textAlign: 'center', fontWeight: '900', fontSize: 24, letterSpacing: 10 }]} 
+                  placeholder="------" 
+                  placeholderTextColor={colors.textMuted} 
+                  value={otp} 
+                  onChangeText={setOtp} 
+                  keyboardType="number-pad" 
+                  maxLength={6}
+                />
+              </View>
+
+              <TouchableOpacity style={[dynamicStyles.submitBtn, { width: '100%', marginBottom: 12, backgroundColor: Colors.green[500], padding: 16, borderRadius: 16, alignItems: 'center' }]} onPress={handleVerifyOtp} disabled={loadingOtp}>
+                {loadingOtp ? <ActivityIndicator color={Colors.white} /> : <Text style={{ color: Colors.white, fontSize: 16, fontWeight: '700' }}>Verifikasi & Simpan</Text>}
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
+                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>Batal</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }

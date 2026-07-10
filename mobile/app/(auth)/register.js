@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import api from '../../services/api';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,6 +28,9 @@ export default function RegisterScreen() {
   
   const [isSkVisible, setSkVisible] = useState(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const [otpVisible, setOtpVisible] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [loadingOtp, setLoadingOtp] = useState(false);
   
   const { register } = useAuth();
   const { colors, isDark } = useTheme();
@@ -74,12 +78,28 @@ export default function RegisterScreen() {
     setSkVisible(false);
     setLoading(true);
     try {
-      await register(email, password, name, role);
-      router.replace('/(tabs)');
+      await api.post('/auth/request-otp', { email, type: 'register' });
+      setOtpVisible(true);
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal mendaftar.');
+      setError(err.response?.data?.error || 'Gagal mengirim OTP.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length < 6) return setError('OTP harus 6 digit.');
+    setLoadingOtp(true);
+    setError('');
+    try {
+      await api.post('/auth/verify-otp', { email, otp, type: 'register' });
+      await register(email, password, name, role);
+      setOtpVisible(false);
+      router.replace('/(tabs)');
+    } catch (err) {
+      setError(err.response?.data?.error || 'OTP tidak valid.');
+    } finally {
+      setLoadingOtp(false);
     }
   };
 
@@ -261,6 +281,46 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
+      </Modal>
+
+      {/* Modal Verifikasi OTP */}
+      <Modal visible={otpVisible} animationType="fade" transparent={true} onRequestClose={() => setOtpVisible(false)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: Spacing.xl }}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ width: '100%' }}>
+            <View style={{ backgroundColor: colors.surface, padding: Spacing.xl, borderRadius: BorderRadius['2xl'], width: '100%', alignItems: 'center' }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: isDark ? 'rgba(16,185,129,0.2)' : Colors.green[50], alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.lg }}>
+                <Ionicons name="mail-open" size={32} color={Colors.green[500]} />
+              </View>
+              
+              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: Spacing.xs }}>Cek Email Anda</Text>
+              <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: Spacing.xl, lineHeight: 22 }}>
+                Kami telah mengirimkan 6-digit kode OTP ke <Text style={{ fontWeight: '700', color: colors.text }}>{email}</Text>. Masukkan kode tersebut di bawah ini.
+              </Text>
+
+              {error ? (
+                <Text style={{ color: Colors.error, marginBottom: Spacing.md, textAlign: 'center' }}>{error}</Text>
+              ) : null}
+
+              <View style={[dynamicStyles.inputWrap, { width: '100%', marginBottom: Spacing.lg, paddingHorizontal: 0, justifyContent: 'center' }]}>
+                <TextInput 
+                  style={[dynamicStyles.input, { textAlign: 'center', fontWeight: '900', fontSize: 24, letterSpacing: 10 }]} 
+                  placeholder="------" 
+                  placeholderTextColor={colors.textMuted} 
+                  value={otp} 
+                  onChangeText={setOtp} 
+                  keyboardType="number-pad" 
+                  maxLength={6}
+                />
+              </View>
+
+              <Button title="Verifikasi & Daftar" onPress={handleVerifyOtp} loading={loadingOtp} style={{ width: '100%', marginBottom: Spacing.md }} />
+              
+              <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
+                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>Batal</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
       </Modal>
 
     </KeyboardAvoidingView>
