@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth, ROLES } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
@@ -29,6 +30,7 @@ export default function RegisterScreen() {
   
   const { register } = useAuth();
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     generateCaptcha();
@@ -103,8 +105,8 @@ export default function RegisterScreen() {
                 <Ionicons name="leaf" size={32} color={Colors.white} />
               </LinearGradient>
             </View>
-            <Text style={dynamicStyles.title}>Buat Akun</Text>
-            <Text style={dynamicStyles.subtitle}>Bergabung di <Text style={{ color: Colors.green[500], fontWeight: '700' }}>GreenPay ZISWAF</Text></Text>
+            <Text style={dynamicStyles.title}>{t('auth.join_us')}</Text>
+            <Text style={dynamicStyles.subtitle}>{t('auth.register_desc')}</Text>
           </View>
 
           {error ? (
@@ -145,7 +147,7 @@ export default function RegisterScreen() {
           <View style={[dynamicStyles.formCard, Shadows.md]}>
             <View style={dynamicStyles.form}>
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Nama Lengkap</Text>
+                <Text style={dynamicStyles.label}>{t('auth.fullname')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="person-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput style={dynamicStyles.input} placeholder="Masukkan nama" placeholderTextColor={colors.textMuted} value={name} onChangeText={setName} />
@@ -153,7 +155,7 @@ export default function RegisterScreen() {
               </View>
 
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Alamat Email</Text>
+                <Text style={dynamicStyles.label}>{t('auth.email')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput style={dynamicStyles.input} placeholder="nama@email.com" placeholderTextColor={colors.textMuted} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
@@ -161,7 +163,7 @@ export default function RegisterScreen() {
               </View>
 
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Password</Text>
+                <Text style={dynamicStyles.label}>{t('auth.password')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput style={[dynamicStyles.input, { flex: 1 }]} placeholder="Min. 6 karakter" placeholderTextColor={colors.textMuted} value={password} onChangeText={setPassword} secureTextEntry={!showPassword} />
@@ -202,16 +204,16 @@ export default function RegisterScreen() {
                 </View>
               </View>
 
-              <Button title="Daftar Sekarang" onPress={validateAndShowSK} loading={loading} style={{ marginTop: Spacing.sm }} />
+              <Button title={t('auth.register')} onPress={validateAndShowSK} loading={loading} style={{ marginTop: Spacing.sm }} />
             </View>
           </View>
 
           <View style={[dynamicStyles.footer, { flexDirection: 'column', alignItems: 'center', gap: Spacing.sm }]}>
             <Text style={[dynamicStyles.footerText, { fontSize: 13, textAlign: 'center' }]}>Mendaftar berarti setuju S&K.</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={dynamicStyles.footerText}>Sudah punya akun? </Text>
+              <Text style={dynamicStyles.footerText}>{t('auth.have_account').split('?')[0]}? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-                <Text style={dynamicStyles.linkText}>Masuk</Text>
+                <Text style={dynamicStyles.linkText}>{t('auth.login')}</Text>
               </TouchableOpacity>
             </View>
           </View>
