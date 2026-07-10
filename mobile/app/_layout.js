@@ -5,6 +5,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
 import GlobalToast from '../components/ui/GlobalToast';
+import { useTranslation } from 'react-i18next';
 import '../i18n';
 
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
@@ -23,6 +24,7 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 
 function AppContent() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   
   return (
     <>
@@ -40,16 +42,16 @@ function AppContent() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
-        <Stack.Screen name="bank-sampah" options={{ title: 'Bank Sampah' }} />
-        <Stack.Screen name="dashboard-dampak" options={{ title: 'Dashboard Dampak' }} />
-        <Stack.Screen name="reward" options={{ title: 'Reward' }} />
-        <Stack.Screen name="impact-passport" options={{ title: 'Impact Passport' }} />
-        <Stack.Screen name="settings" options={{ title: 'Pengaturan' }} />
+        <Stack.Screen name="bank-sampah" options={{ title: t('bank_sampah.title') + ' ' + t('bank_sampah.title_highlight') }} />
+        <Stack.Screen name="dashboard-dampak" options={{ title: t('screens.dashboard_title') }} />
+        <Stack.Screen name="reward" options={{ title: t('screens.reward_title') }} />
+        <Stack.Screen name="impact-passport" options={{ title: t('screens.passport_title') }} />
+        <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
         <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
-        <Stack.Screen name="settings/theme" options={{ title: 'Mode Tampilan' }} />
-        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', title: 'AI Scanner', headerShown: false }} />
-        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', title: 'Eco-Ustadz AI', headerShown: false }} />
-        <Stack.Screen name="settings/language" options={{ title: 'Bahasa' }} />
+        <Stack.Screen name="settings/theme" options={{ title: t('settings.theme') }} />
+        <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', title: t('ai_scanner.title'), headerShown: false }} />
+        <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', title: t('eco_ustadz.title'), headerShown: false }} />
+        <Stack.Screen name="settings/language" options={{ title: t('settings.language') }} />
       </Stack>
     </>
   );
