@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
+import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -50,46 +51,72 @@ export default function DistrikDashboard() {
   };
 
   const renderDepositItem = ({ item }) => (
-    <View style={dynamicStyles.card}>
-      <View style={dynamicStyles.cardHeader}>
-        <View style={dynamicStyles.userInfo}>
-          <Ionicons name="person-circle" size={24} color={colors.textMuted} />
-          <Text style={dynamicStyles.userName}>{item.user_name}</Text>
+    <View style={dynamicStyles.ticketCard}>
+      {/* Top Section */}
+      <View style={dynamicStyles.ticketHeader}>
+        <View style={dynamicStyles.userInfoRow}>
+          <View style={dynamicStyles.avatarBox}>
+            <Ionicons name="person" size={16} color={Colors.white} />
+          </View>
+          <View>
+            <Text style={dynamicStyles.userName}>{item.user_name}</Text>
+            <Text style={dynamicStyles.date}>{new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
+          </View>
         </View>
-        <Text style={dynamicStyles.date}>{new Date(item.created_at).toLocaleDateString('id-ID')}</Text>
+        <View style={dynamicStyles.statusBadge}>
+          <Text style={dynamicStyles.statusBadgeText}>Menunggu</Text>
+        </View>
       </View>
       
-      <View style={dynamicStyles.cardBody}>
-        <View style={dynamicStyles.detailRow}>
-          <Text style={dynamicStyles.label}>Jenis Sampah:</Text>
-          <Text style={dynamicStyles.value}>{item.waste_type}</Text>
-        </View>
-        <View style={dynamicStyles.detailRow}>
-          <Text style={dynamicStyles.label}>Berat (Kg):</Text>
-          <Text style={dynamicStyles.value}>{item.weight_kg} Kg</Text>
-        </View>
-        <View style={dynamicStyles.detailRow}>
-          <Text style={dynamicStyles.label}>Lokasi:</Text>
-          <Text style={dynamicStyles.value}>{item.location_name}</Text>
-        </View>
+      {/* Divider */}
+      <View style={dynamicStyles.dividerRow}>
+        <View style={dynamicStyles.circleCutLeft} />
+        <View style={dynamicStyles.dashedLine} />
+        <View style={dynamicStyles.circleCutRight} />
       </View>
 
-      <View style={dynamicStyles.cardFooter}>
+      {/* Body Section */}
+      <View style={dynamicStyles.ticketBody}>
+        <View style={dynamicStyles.detailCol}>
+          <Text style={dynamicStyles.label}>Jenis Sampah</Text>
+          <Text style={dynamicStyles.value}>{item.waste_type}</Text>
+        </View>
+        <View style={dynamicStyles.detailColRight}>
+          <Text style={dynamicStyles.label}>Berat</Text>
+          <Text style={dynamicStyles.valueWeight}>{item.weight_kg} Kg</Text>
+        </View>
+      </View>
+      
+      <View style={dynamicStyles.ticketLocation}>
+        <Ionicons name="location-outline" size={16} color={colors.textMuted} style={{ marginRight: 6 }} />
+        <Text style={dynamicStyles.locationText}>{item.location_name}</Text>
+      </View>
+
+      {/* Footer / Actions */}
+      <View style={dynamicStyles.ticketFooter}>
         <TouchableOpacity 
-          style={[dynamicStyles.button, dynamicStyles.buttonReject, processingId === item.id && dynamicStyles.buttonDisabled]} 
+          style={[dynamicStyles.actionBtn, dynamicStyles.rejectBtn, processingId === item.id && dynamicStyles.btnDisabled]} 
           onPress={() => handleVerify(item.id, 'rejected')}
           disabled={processingId === item.id}
+          activeOpacity={0.7}
         >
-          <Ionicons name="close" size={18} color="white" style={dynamicStyles.btnIcon} />
-          <Text style={dynamicStyles.buttonText}>Tolak</Text>
+          <Text style={dynamicStyles.rejectBtnText}>Tolak</Text>
         </TouchableOpacity>
+        
         <TouchableOpacity 
-          style={[dynamicStyles.button, dynamicStyles.buttonAccept, processingId === item.id && dynamicStyles.buttonDisabled]} 
+          style={[dynamicStyles.actionBtn, dynamicStyles.acceptBtn, processingId === item.id && dynamicStyles.btnDisabled]} 
           onPress={() => handleVerify(item.id, 'verified')}
           disabled={processingId === item.id}
+          activeOpacity={0.7}
         >
-          <Ionicons name="checkmark" size={18} color="white" style={dynamicStyles.btnIcon} />
-          <Text style={dynamicStyles.buttonText}>Terima & Beri Poin</Text>
+          {processingId === item.id ? (
+            <ActivityIndicator size="small" color={Colors.white} />
+          ) : (
+            <>
+              <Ionicons name="checkmark-circle" size={18} color="white" style={{ marginRight: 6 }} />
+              <Text style={dynamicStyles.acceptBtnText}>Terima & Beri Poin</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -98,9 +125,12 @@ export default function DistrikDashboard() {
   if (!isDistrik() && !isAdmin()) {
     return (
       <SafeAreaView style={dynamicStyles.container}>
-        <View style={dynamicStyles.centerContent}>
-          <Ionicons name="lock-closed" size={64} color={colors.textMuted} />
-          <Text style={dynamicStyles.errorText}>Akses Ditolak. Anda bukan admin/distrik.</Text>
+        <View style={dynamicStyles.accessDeniedContainer}>
+          <View style={dynamicStyles.lockIconBox}>
+            <Ionicons name="lock-closed" size={48} color={Colors.white} />
+          </View>
+          <Text style={dynamicStyles.accessTitle}>Akses Ditolak</Text>
+          <Text style={dynamicStyles.accessDesc}>Halaman ini khusus untuk Petugas Distrik dan Admin.</Text>
         </View>
       </SafeAreaView>
     );
@@ -109,8 +139,8 @@ export default function DistrikDashboard() {
   return (
     <SafeAreaView style={dynamicStyles.container} edges={['top']}>
       <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.title}>Verifikasi Distrik</Text>
-        <Text style={dynamicStyles.subtitle}>Antrean Setoran Sampah</Text>
+        <Text style={dynamicStyles.title}>Dashboard Admin</Text>
+        <Text style={dynamicStyles.subtitle}>Verifikasi Antrean Setoran Sampah</Text>
       </View>
 
       {loading ? (
@@ -123,10 +153,14 @@ export default function DistrikDashboard() {
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderDepositItem}
           contentContainerStyle={dynamicStyles.listContainer}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={() => (
             <View style={dynamicStyles.emptyContainer}>
-              <Ionicons name="checkmark-circle-outline" size={64} color={colors.textMuted} />
-              <Text style={dynamicStyles.emptyText}>Semua setoran sudah diverifikasi!</Text>
+              <View style={dynamicStyles.emptyIconWrap}>
+                <Ionicons name="checkmark-done" size={64} color={Colors.green[500]} />
+              </View>
+              <Text style={dynamicStyles.emptyTitle}>Kerja Bagus!</Text>
+              <Text style={dynamicStyles.emptyText}>Semua antrean setoran sampah sudah bersih diverifikasi.</Text>
             </View>
           )}
           refreshing={loading}
@@ -143,18 +177,19 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     backgroundColor: colors.bg,
   },
   header: {
-    padding: 20,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.lg,
+    backgroundColor: colors.bg,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: colors.text,
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.textMuted,
     marginTop: 4,
   },
@@ -163,101 +198,237 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  errorText: {
-    color: colors.textMuted,
-    marginTop: 16,
-    fontSize: 16,
+  
+  // Access Denied
+  accessDeniedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
   },
+  lockIconBox: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: Colors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.lg,
+    ...Shadows.md,
+  },
+  accessTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  accessDesc: {
+    fontSize: 15,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+
   listContainer: {
-    padding: 16,
+    paddingHorizontal: Spacing.xl,
     paddingBottom: 40,
   },
-  card: {
+  
+  // E-Ticket Style Card
+  ticketCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: BorderRadius.xl,
+    marginBottom: Spacing.xl,
     borderWidth: 1,
     borderColor: colors.border,
+    overflow: 'hidden',
+    ...Shadows.md,
+    shadowOpacity: 0.05,
   },
-  cardHeader: {
+  ticketHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    paddingBottom: 12,
-    marginBottom: 12,
+    padding: Spacing.lg,
+    backgroundColor: isDark ? colors.surface2 : Colors.green[50],
   },
-  userInfo: {
+  userInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  avatarBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.green[500],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
   userName: {
     color: colors.text,
-    fontWeight: '600',
-    fontSize: 16,
-    marginLeft: 8,
+    fontWeight: '700',
+    fontSize: 15,
+    marginBottom: 2,
   },
   date: {
     color: colors.textMuted,
     fontSize: 12,
+    fontWeight: '500',
   },
-  cardBody: {
-    marginBottom: 16,
+  statusBadge: {
+    backgroundColor: Colors.gold[500],
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.full,
   },
-  detailRow: {
+  statusBadgeText: {
+    color: Colors.white,
+    fontSize: 10,
+    fontWeight: '700',
+  },
+
+  // Divider with circle cutouts
+  dividerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
+    alignItems: 'center',
+    height: 20,
+    backgroundColor: colors.surface,
+    position: 'relative',
+  },
+  dashedLine: {
+    flex: 1,
+    height: 1,
+    borderWidth: 1,
+    borderColor: isDark ? colors.border : Colors.gray[200],
+    borderStyle: 'dashed',
+    marginHorizontal: 10,
+  },
+  circleCutLeft: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.bg,
+    position: 'absolute',
+    left: -10,
+    borderRightWidth: 1,
+    borderColor: colors.border,
+  },
+  circleCutRight: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.bg,
+    position: 'absolute',
+    right: -10,
+    borderLeftWidth: 1,
+    borderColor: colors.border,
+  },
+
+  ticketBody: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.md,
+  },
+  detailCol: {
+    flex: 1,
+  },
+  detailColRight: {
+    alignItems: 'flex-end',
   },
   label: {
     color: colors.textMuted,
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 4,
   },
   value: {
     color: colors.text,
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  valueWeight: {
+    color: Colors.green[600],
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  ticketLocation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.lg,
+  },
+  locationText: {
+    color: colors.textMuted,
+    fontSize: 13,
     fontWeight: '500',
   },
-  cardFooter: {
+
+  ticketFooter: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
+    padding: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
+    gap: Spacing.md,
   },
-  button: {
-    flex: 1,
+  actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 10,
   },
-  buttonAccept: {
-    backgroundColor: Colors.green[600],
+  rejectBtn: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: Colors.error,
   },
-  buttonReject: {
-    backgroundColor: Colors.error,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  btnIcon: {
-    marginRight: 6,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '600',
+  rejectBtnText: {
+    color: Colors.error,
+    fontWeight: '700',
     fontSize: 14,
   },
+  acceptBtn: {
+    flex: 2,
+    backgroundColor: Colors.green[500],
+  },
+  acceptBtnText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  btnDisabled: {
+    opacity: 0.6,
+  },
+
+  // Empty State
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 80,
+  },
+  emptyIconWrap: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : Colors.green[50],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.lg,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: 8,
   },
   emptyText: {
     color: colors.textMuted,
-    marginTop: 16,
-    fontSize: 16,
+    fontSize: 14,
+    textAlign: 'center',
+    paddingHorizontal: 40,
+    lineHeight: 20,
   }
 });
