@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Modal, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Modal, SafeAreaView, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -101,9 +101,11 @@ export default function RegisterScreen() {
           
           <View style={dynamicStyles.header}>
             <View style={[dynamicStyles.logoWrap, Shadows.md]}>
-              <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.logo} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <Ionicons name="leaf" size={32} color={Colors.white} />
-              </LinearGradient>
+              <Image 
+                source={require('../../assets/images/logo.png')} 
+                style={dynamicStyles.logo}
+                resizeMode="cover"
+              />
             </View>
             <Text style={dynamicStyles.title}>{t('auth.join_us')}</Text>
             <Text style={dynamicStyles.subtitle}>{t('auth.register_desc')}</Text>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -52,13 +52,11 @@ export default function LoginScreen() {
           {/* Header */}
           <View style={dynamicStyles.header}>
             <View style={[dynamicStyles.logoWrap, Shadows.md]}>
-              <LinearGradient
-                colors={[Colors.green[400], Colors.green[600]]}
+              <Image 
+                source={require('../../assets/images/logo.png')} 
                 style={dynamicStyles.logo}
-                start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-              >
-                <Ionicons name="leaf" size={40} color={Colors.white} />
-              </LinearGradient>
+                resizeMode="cover"
+              />
             </View>
             <Text style={dynamicStyles.title}>{t('auth.welcome_back')}</Text>
             <Text style={dynamicStyles.subtitle}>{t('auth.login_desc')} <Text style={{ color: Colors.green[500], fontWeight: '700' }}>GreenPay ZISWAF</Text></Text>

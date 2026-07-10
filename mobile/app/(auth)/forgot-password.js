@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions, Alert, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -78,9 +78,11 @@ export default function ForgotPasswordScreen() {
         <ScrollView contentContainerStyle={dynamicStyles.container} keyboardShouldPersistTaps="handled">
           <View style={dynamicStyles.header}>
             <View style={[dynamicStyles.logoWrap, Shadows.md]}>
-              <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.logo} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <Ionicons name={step === 1 ? 'mail' : 'key'} size={32} color={Colors.white} />
-              </LinearGradient>
+              <Image 
+                source={require('../../assets/images/logo.png')} 
+                style={dynamicStyles.logo}
+                resizeMode="cover"
+              />
             </View>
             <Text style={dynamicStyles.title}>{t('forgot_password.title')}</Text>
             <Text style={dynamicStyles.subtitle}>
