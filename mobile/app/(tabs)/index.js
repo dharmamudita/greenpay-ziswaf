@@ -107,7 +107,7 @@ export default function HomeScreen() {
               <Button title={t('home.login')} variant="outline" onPress={() => router.push('/(auth)/login')} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.15)', borderColor: 'transparent' }} textStyle={{ color: Colors.white }} />
             </View>
           )}
-        </LinearGradient>
+        </View>
       </View>
 
       <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 8 }}>
