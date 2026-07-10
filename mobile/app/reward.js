@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Card, Badge, Button } from '../components/ui';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
@@ -14,6 +15,7 @@ export default function RewardScreen() {
   const [loading, setLoading] = useState(true);
   const [redeeming, setRedeeming] = useState(null);
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -74,7 +76,7 @@ export default function RewardScreen() {
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       <View style={dynamicStyles.container}>
         <View style={dynamicStyles.header}>
-          <Text style={dynamicStyles.pageTitle}>Katalog Reward</Text>
+          <Text style={dynamicStyles.pageTitle}>{t('screens.reward_title')}</Text>
           <Badge text={`${userPoints.toLocaleString()} GP`} variant="gold" />
         </View>
 
