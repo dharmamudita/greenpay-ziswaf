@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, Animated, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import Colors from '../theme/colors';
@@ -190,12 +189,9 @@ export default function EcoUstadzScreen() {
         <View style={[dynamicStyles.messageWrapper, isUser ? dynamicStyles.messageWrapperUser : dynamicStyles.messageWrapperModel]}>
           {!isUser && (
             <View style={dynamicStyles.avatarModel}>
-              <LinearGradient 
-                colors={[Colors.green[400], Colors.green[600]]} 
-                style={dynamicStyles.avatarGradient}
-              >
+              <View style={dynamicStyles.avatarSolid}>
                 <Ionicons name="leaf" size={14} color={Colors.white} />
-              </LinearGradient>
+              </View>
             </View>
           )}
           <View style={{ maxWidth: '78%' }}>
@@ -214,7 +210,7 @@ export default function EcoUstadzScreen() {
               )}
               <Text style={dynamicStyles.timeText}>{formatTime(item.timestamp)}</Text>
               {isUser && (
-                <Ionicons name="checkmark-done" size={14} color={Colors.green[400]} style={{ marginLeft: 4 }} />
+                <Ionicons name="checkmark-done" size={14} color={Colors.green[500]} style={{ marginLeft: 4 }} />
               )}
             </View>
           </View>
@@ -231,22 +227,16 @@ export default function EcoUstadzScreen() {
     >
       {/* Header */}
       <View style={dynamicStyles.header}>
-        <LinearGradient 
-          colors={isDark ? [Colors.dark.surface2, Colors.dark.bg] : [Colors.green[600], Colors.green[800]]}
-          style={StyleSheet.absoluteFillObject}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
         <View style={dynamicStyles.headerContent}>
           <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={Colors.white} />
+            <Ionicons name="arrow-back" size={22} color={colors.text} />
           </TouchableOpacity>
           
           <View style={dynamicStyles.headerCenter}>
             <View style={dynamicStyles.headerAvatar}>
-              <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.headerAvatarGrad}>
+              <View style={dynamicStyles.headerAvatarSolid}>
                 <Ionicons name="leaf" size={18} color={Colors.white} />
-              </LinearGradient>
+              </View>
               <View style={dynamicStyles.onlineDot} />
             </View>
             <View>
@@ -257,7 +247,9 @@ export default function EcoUstadzScreen() {
             </View>
           </View>
 
-          <View style={{ width: 38 }} />
+          <TouchableOpacity onPress={clearChat} style={dynamicStyles.clearBtn}>
+            <Ionicons name="trash-outline" size={20} color={colors.text} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -277,9 +269,9 @@ export default function EcoUstadzScreen() {
       {loading && (
         <View style={dynamicStyles.typingContainer}>
           <View style={dynamicStyles.avatarModel}>
-            <LinearGradient colors={[Colors.green[400], Colors.green[600]]} style={dynamicStyles.avatarGradient}>
+            <View style={dynamicStyles.avatarSolid}>
               <Ionicons name="leaf" size={14} color={Colors.white} />
-            </LinearGradient>
+            </View>
           </View>
           <View style={[dynamicStyles.messageBubble, dynamicStyles.messageBubbleModel]}>
             <TypingDots />
@@ -307,12 +299,14 @@ export default function EcoUstadzScreen() {
           disabled={!inputText.trim() || loading}
           activeOpacity={0.7}
         >
-          <LinearGradient 
-            colors={(!inputText.trim() || loading) ? [Colors.gray[300], Colors.gray[400]] : [Colors.green[500], Colors.green[700]]}
-            style={dynamicStyles.sendBtnGrad}
+          <View 
+            style={[
+              dynamicStyles.sendBtnSolid, 
+              { backgroundColor: (!inputText.trim() || loading) ? (isDark ? colors.surface3 : Colors.gray[300]) : Colors.green[500] }
+            ]}
           >
             <Ionicons name="send" size={18} color={Colors.white} />
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -320,24 +314,23 @@ export default function EcoUstadzScreen() {
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
-  screen: { flex: 1, backgroundColor: isDark ? colors.bg : '#F0F4F0' },
+  screen: { flex: 1, backgroundColor: colors.bg },
   
   // Header
   header: { 
     paddingTop: Platform.OS === 'web' ? Spacing.lg : Spacing['3xl'], 
-    paddingBottom: Spacing.md, 
-    overflow: 'hidden',
-    ...Shadows.lg
+    paddingBottom: Spacing.md,
+    backgroundColor: colors.surface,
   },
   headerContent: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg },
-  backBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
-  headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', marginLeft: Spacing.md },
+  backBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', marginLeft: Spacing.sm },
   headerAvatar: { position: 'relative', marginRight: Spacing.sm },
-  headerAvatarGrad: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)' },
-  onlineDot: { position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: '#4ADE80', borderWidth: 2, borderColor: Colors.green[700] },
-  headerTitle: { color: Colors.white, fontSize: 17, fontWeight: '800', letterSpacing: -0.3 },
-  headerSubtitle: { color: Colors.green[200], fontSize: 12, fontWeight: '500', marginTop: 1 },
-  clearBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
+  headerAvatarSolid: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.green[500], alignItems: 'center', justifyContent: 'center' },
+  onlineDot: { position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: '#4ADE80', borderWidth: 2, borderColor: colors.surface },
+  headerTitle: { color: colors.text, fontSize: 17, fontWeight: '800', letterSpacing: -0.3 },
+  headerSubtitle: { color: Colors.green[500], fontSize: 12, fontWeight: '600', marginTop: 1 },
+  clearBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   
   // Chat
   chatContainer: { padding: Spacing.lg, paddingBottom: Spacing.xl },
@@ -347,7 +340,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   dateLine: { flex: 1, height: 1, backgroundColor: isDark ? colors.border : Colors.gray[200] },
   dateText: { 
     fontSize: 11, fontWeight: '600', color: colors.textMuted, 
-    paddingHorizontal: Spacing.md, backgroundColor: isDark ? colors.bg : '#F0F4F0', 
+    paddingHorizontal: Spacing.md, backgroundColor: colors.bg, 
   },
   
   // Messages
@@ -356,17 +349,17 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   messageWrapperModel: { justifyContent: 'flex-start' },
   
   avatarModel: { marginRight: Spacing.xs, marginBottom: 18 },
-  avatarGradient: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  avatarSolid: { width: 30, height: 30, borderRadius: 15, backgroundColor: Colors.green[500], alignItems: 'center', justifyContent: 'center' },
   
   messageBubble: { padding: Spacing.md, borderRadius: 18 },
   messageBubbleUser: { 
-    backgroundColor: Colors.green[600], 
+    backgroundColor: Colors.green[500], 
     borderBottomRightRadius: 4,
     ...Shadows.sm
   },
   messageBubbleModel: { 
     backgroundColor: isDark ? colors.surface : Colors.white, 
-    borderWidth: isDark ? 1 : 0, 
+    borderWidth: 1, 
     borderColor: colors.border, 
     borderBottomLeftRadius: 4,
     ...Shadows.sm
@@ -377,13 +370,13 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     borderWidth: 1,
   },
   
-  messageText: { fontSize: 15, lineHeight: 22, fontWeight: '400' },
+  messageText: { fontSize: 15, lineHeight: 22, fontWeight: '500' },
   messageTextUser: { color: Colors.white },
   messageTextModel: { color: colors.text },
   
   // Timestamp
   timeRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, paddingHorizontal: 4 },
-  timeText: { fontSize: 11, color: colors.textMuted, fontWeight: '400' },
+  timeText: { fontSize: 11, color: colors.textMuted, fontWeight: '500' },
   
   // Typing indicator
   typingContainer: { 
@@ -398,7 +391,6 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     backgroundColor: isDark ? colors.surface : Colors.white, 
     borderTopWidth: 1, borderTopColor: isDark ? colors.border : Colors.gray[200],
     paddingBottom: Platform.OS === 'ios' ? Spacing['2xl'] : Spacing.sm,
-    ...Shadows.sm
   },
   inputContainer: { 
     flex: 1, backgroundColor: isDark ? colors.bg : Colors.gray[50], 
@@ -412,7 +404,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   },
   sendBtn: { marginLeft: Spacing.sm, marginBottom: 2 },
   sendBtnDisabled: { opacity: 0.6 },
-  sendBtnGrad: { 
+  sendBtnSolid: { 
     width: 44, height: 44, borderRadius: 22, 
     alignItems: 'center', justifyContent: 'center' 
   },
