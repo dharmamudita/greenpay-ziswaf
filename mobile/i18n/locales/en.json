@@ -55,6 +55,24 @@
     "register": "Sign Up",
     "have_account": "Already have an account? Log In"
   },
+  "forgot_password": {
+    "title": "Forgot Password?",
+    "subtitle_step1": "Enter your email to receive a reset code.",
+    "subtitle_step2": "Enter the OTP code and new password.",
+    "email_label": "Email Address",
+    "email_placeholder": "name@email.com",
+    "send_otp_btn": "Send OTP Code",
+    "otp_label": "OTP Code",
+    "otp_placeholder": "Enter 6 digit code",
+    "new_password_label": "New Password",
+    "new_password_placeholder": "Minimum 6 characters",
+    "reset_btn": "Reset Password",
+    "error_empty_email": "Please enter your email address.",
+    "success_otp_sent": "If the email is registered, we have sent an OTP code to your email.",
+    "error_empty_data": "Please complete all fields.",
+    "error_short_password": "Password must be at least 6 characters.",
+    "success_reset": "Your password has been successfully reset!"
+  },
   "home": {
     "badge": "Green Economy Platform",
     "title1": "Together Let's Realize",
