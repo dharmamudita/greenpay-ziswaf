@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import api from '../services/api';
@@ -12,6 +13,7 @@ export default function LeaderboardScreen() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -92,8 +94,8 @@ export default function LeaderboardScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container} edges={['top']}>
       <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.title}>Peringkat Kebaikan</Text>
-        <Text style={dynamicStyles.subtitle}>Top 10 Pejuang Lingkungan</Text>
+        <Text style={dynamicStyles.title}>{t('screens.leaderboard_title')}</Text>
+        <Text style={dynamicStyles.subtitle}>{t('screens.leaderboard_desc')}</Text>
       </View>
 
       {loading ? (
