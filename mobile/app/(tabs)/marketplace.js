@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Image, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../theme/colors';
@@ -14,15 +15,18 @@ export default function MarketplaceScreen() {
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [purchasing, setPurchasing] = useState(null);
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts();
+    }, [])
+  );
 
   const fetchProducts = async () => {
     try {
@@ -32,8 +36,14 @@ export default function MarketplaceScreen() {
       console.log('Error fetching products:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchProducts();
+  }, []);
 
   const handlePurchase = async (productId, productName) => {
     Alert.alert(
@@ -84,7 +94,11 @@ export default function MarketplaceScreen() {
   const fmt = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={dynamicStyles.screen} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+    >
       <View style={dynamicStyles.container}>
         
         {/* Header Section */}
