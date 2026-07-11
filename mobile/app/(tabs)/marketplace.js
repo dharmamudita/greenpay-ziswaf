@@ -309,7 +309,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     shadowOpacity: 0.06,
   },
   prodImgPlaceholder: { 
-    height: 120, 
+    height: 160, 
     backgroundColor: isDark ? colors.surface3 : Colors.green[50],
     alignItems: 'center', 
     justifyContent: 'center',
