@@ -383,5 +383,16 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   modalImage: { width: width, height: width },
   modalImagePlaceholder: { width: width, height: width, justifyContent: 'center', alignItems: 'center' },
   modalImagePlaceholderText: { fontSize: 140, fontWeight: '900', color: Colors.white },
-  closeModalBtn: { position: 'absolute', top: 50, right: 24, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center', zIndex: 100 }
+  closeModalBtn: { position: 'absolute', top: 50, right: 24, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center', zIndex: 100 },
+
+  // Unauth State
+  unauthScreen: { flex: 1, backgroundColor: colors.bg, justifyContent: 'space-between', padding: Spacing.xl },
+  unauthContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  unauthIconGlow: { width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(16, 185, 129, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.xl },
+  unauthIconCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.green[500], justifyContent: 'center', alignItems: 'center', ...Shadows.md },
+  unauthTitle: { fontSize: 24, fontWeight: '900', color: colors.text, marginBottom: Spacing.md, textAlign: 'center' },
+  unauthDesc: { fontSize: 14, color: colors.textMuted, textAlign: 'center', lineHeight: 22, paddingHorizontal: Spacing.lg },
+  unauthFooter: { paddingBottom: Spacing.xl },
+  unauthLoginBtn: { backgroundColor: Colors.green[500], paddingVertical: 16, borderRadius: BorderRadius.xl, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', ...Shadows.sm },
+  unauthLoginText: { color: Colors.white, fontSize: 16, fontWeight: '800' }
 });
