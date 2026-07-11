@@ -80,6 +80,23 @@ router.get('/admin/requests', authenticateToken, requireRole('admin'), async (re
   }
 });
 
+// GET /api/distrik/admin/requests/history — Admin only: view processed requests (history)
+router.get('/admin/requests/history', authenticateToken, requireRole('admin'), async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT dr.*, u.display_name, u.email 
+      FROM district_requests dr
+      JOIN users u ON dr.user_id = u.id
+      WHERE dr.status != 'pending'
+      ORDER BY dr.updated_at DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching district request history:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
 // PUT /api/distrik/admin/requests/:id — Admin only: approve/reject request
 router.put('/admin/requests/:id', authenticateToken, requireRole('admin'), async (req, res) => {
   const { status } = req.body; // 'approved' or 'rejected'
