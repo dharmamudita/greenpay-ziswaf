@@ -58,6 +58,7 @@ export default function DistrikDashboardScreen() {
 
   const distrikMenu = [
     {
+      id: 'tinjau',
       title: 'Tinjau Setoran',
       icon: 'scan',
       route: '/admin/distrik',
@@ -66,6 +67,7 @@ export default function DistrikDashboardScreen() {
       badge: dashboardData.pendingCount > 0 ? dashboardData.pendingCount.toString() : null
     },
     {
+      id: 'toko',
       title: 'Kelola Toko',
       icon: 'storefront',
       route: '/distrik/toko',
@@ -73,6 +75,7 @@ export default function DistrikDashboardScreen() {
       bg: isDark ? 'rgba(45, 212, 191, 0.15)' : '#CCFBF1',
     },
     {
+      id: 'riwayat',
       title: 'Riwayat Setoran',
       icon: 'time',
       route: '/distrik/history',
@@ -80,6 +83,7 @@ export default function DistrikDashboardScreen() {
       bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
     },
     {
+      id: 'profil',
       title: 'Profil Bank Sampah',
       icon: 'location',
       route: '/distrik/profile',
