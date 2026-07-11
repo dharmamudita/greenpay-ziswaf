@@ -147,7 +147,7 @@ export default function DashboardDampakScreen() {
         {/* Executive Chart Module */}
         <View style={dynamicStyles.chartCard}>
           <LinearGradient 
-            colors={isDark ? [colors.surface, colors.bg] : [Colors.white, Colors.gray[50]]} 
+            colors={isDark ? [colors.surface, colors.bg] : [Colors.white, Colors.gray[100]]} 
             style={StyleSheet.absoluteFillObject}
           />
           <View style={dynamicStyles.chartHeader}>
