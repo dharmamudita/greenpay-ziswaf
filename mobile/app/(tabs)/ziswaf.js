@@ -11,14 +11,6 @@ import api from '../../services/api';
 
 const { width } = Dimensions.get('window');
 
-const tabs = [
-  { id: 'zakat', label: 'Zakat', icon: 'cash', color: Colors.gold[400] },
-  { id: 'infak', label: 'Infak', icon: 'heart', color: Colors.green[500] },
-  { id: 'sedekah', label: 'Sedekah', icon: 'hand-left', color: Colors.pink },
-  { id: 'wakaf', label: 'Wakaf', icon: 'business', color: Colors.info },
-  { id: 'kalkulator', label: 'Kalkulator', icon: 'calculator', color: Colors.purple },
-];
-
 const quickAmounts = [10000, 25000, 50000, 100000, 250000, 500000];
 const NISAB_PER_BULAN = 6859000;
 
@@ -40,6 +32,14 @@ export default function ZiswafScreen() {
 
   const dynamicStyles = getStyles(colors, isDark);
 
+  const tabs = [
+    { id: 'zakat', label: t('ziswaf.tab_zakat'), icon: 'cash', color: Colors.gold[400] },
+    { id: 'infak', label: t('ziswaf.tab_infak'), icon: 'heart', color: Colors.green[500] },
+    { id: 'sedekah', label: t('ziswaf.tab_sedekah'), icon: 'hand-left', color: Colors.pink },
+    { id: 'wakaf', label: t('ziswaf.tab_wakaf'), icon: 'business', color: Colors.info },
+    { id: 'kalkulator', label: t('ziswaf.tab_kalkulator'), icon: 'calculator', color: Colors.purple },
+  ];
+
   useEffect(() => {
     fetchPrograms();
   }, []);
@@ -59,7 +59,7 @@ export default function ZiswafScreen() {
   const predictImpact = async (title) => {
     const finalAmount = selectedAmount || parseInt(customAmount);
     if (!finalAmount || finalAmount < 10000) {
-      Alert.alert('Info', 'Pilih nominal donasi terlebih dahulu untuk melihat prediksi dampaknya oleh AI ✨.');
+      Alert.alert('Info', t('ziswaf.predict_info'));
       return;
     }
 
@@ -71,12 +71,12 @@ export default function ZiswafScreen() {
       });
       
       if (response.data.error) {
-         Alert.alert('Gagal', response.data.error);
+         Alert.alert(t('ziswaf.fail_title'), response.data.error);
       } else {
-         Alert.alert('Prediksi Dampak AI 🌍', response.data.forecast);
+         Alert.alert(t('ziswaf.ai_predict_title'), response.data.forecast);
       }
     } catch (error) {
-      Alert.alert('Error AI', error.response?.data?.error || 'Gagal memanggil AI. Pastikan API Key di backend sudah diatur.');
+      Alert.alert(t('ziswaf.ai_error_title'), error.response?.data?.error || 'Gagal memanggil AI. Pastikan API Key di backend sudah diatur.');
     } finally {
       setForecasting(false);
     }
@@ -85,17 +85,17 @@ export default function ZiswafScreen() {
   const handleDonate = async (programId, title) => {
     const finalAmount = selectedAmount || parseInt(customAmount);
     if (!finalAmount || finalAmount < 10000) {
-      Alert.alert('Info', 'Minimal donasi adalah Rp 10.000');
+      Alert.alert('Info', t('ziswaf.donate_min'));
       return;
     }
 
     Alert.alert(
-      "Konfirmasi Donasi",
-      `Tunaikan ${title} sebesar ${fmt(finalAmount)}?`,
+      t('ziswaf.donate_confirm_title'),
+      t('ziswaf.donate_confirm_msg', { title: title, amount: fmt(finalAmount) }),
       [
-        { text: "Batal", style: "cancel" },
+        { text: t('ziswaf.cancel'), style: "cancel" },
         { 
-          text: "Tunaikan", 
+          text: t('ziswaf.pay_now'), 
           onPress: async () => {
             try {
               setDonating(programId);
@@ -103,13 +103,13 @@ export default function ZiswafScreen() {
                 programId: programId,
                 amount: finalAmount
               });
-              Alert.alert('Alhamdulillah', 'Donasi Anda berhasil disalurkan.');
+              Alert.alert(t('ziswaf.donate_success_title'), t('ziswaf.donate_success_msg'));
               setCustomAmount('');
               setSelectedAmount(null);
               fetchPrograms(); // Refresh progress
             } catch (error) {
               console.log('Error donating:', error);
-              Alert.alert('Gagal', 'Terjadi kesalahan saat menyalurkan donasi.');
+              Alert.alert(t('ziswaf.fail_title'), t('ziswaf.donate_fail_msg'));
             } finally {
               setDonating(null);
             }
@@ -138,7 +138,7 @@ export default function ZiswafScreen() {
         <View style={dynamicStyles.quoteCard}>
           <Ionicons name="leaf-outline" size={24} color={Colors.green[500]} style={{ marginRight: 12 }} />
           <Text style={dynamicStyles.quoteText}>
-            "Harta tidak akan berkurang dengan sedekah. Dan seorang hamba yang pemaaf pasti akan Allah tambahkan kewibawaan baginya."
+            {t('ziswaf.quote')}
           </Text>
         </View>
       </View>

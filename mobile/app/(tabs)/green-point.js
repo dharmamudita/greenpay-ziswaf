@@ -15,7 +15,7 @@ export default function GreenPointScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -74,11 +74,11 @@ export default function GreenPointScreen() {
     
     let dateStr = '';
     if (d.toDateString() === today.toDateString()) {
-      dateStr = t('green_point.today', { defaultValue: 'Hari ini' });
+      dateStr = t('green_point.today');
     } else if (d.toDateString() === yesterday.toDateString()) {
-      dateStr = t('green_point.yesterday', { defaultValue: 'Kemarin' });
+      dateStr = t('green_point.yesterday');
     } else {
-      dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      dateStr = d.toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     }
     
     return `${dateStr} • ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
@@ -93,8 +93,8 @@ export default function GreenPointScreen() {
       
       {/* Header Section */}
       <View style={dynamicStyles.headerContainer}>
-        <Text style={dynamicStyles.pageTitle}>{t('green_point.title', { defaultValue: 'Green Point' })}</Text>
-        <Text style={dynamicStyles.pageDesc}>{t('green_point.desc', { defaultValue: 'Kumpulkan poin kebaikan untuk selamatkan bumi.' })}</Text>
+        <Text style={dynamicStyles.pageTitle}>{t('green_point.title')}</Text>
+        <Text style={dynamicStyles.pageDesc}>{t('green_point.desc')}</Text>
       </View>
 
       <View style={dynamicStyles.container}>
