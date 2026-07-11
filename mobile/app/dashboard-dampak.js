@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from 'expo-router';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import api from '../services/api';
@@ -12,25 +13,36 @@ const { width } = Dimensions.get('window');
 
 export default function DashboardDampakScreen() {
   const [stats, setStats] = useState(null);
+  const [monthlyTrend, setMonthlyTrend] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
-
   const fetchDashboard = async () => {
     try {
       const res = await api.get('/impact/dashboard');
       setStats(res.data.stats);
+      setMonthlyTrend(res.data.monthlyTrend ? res.data.monthlyTrend.reverse() : []); // Reverse to show oldest to newest left to right
     } catch (error) {
       console.log('Error fetching dashboard:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchDashboard();
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchDashboard();
   };
 
   const fmtWaste = (kg) => {
@@ -62,13 +74,20 @@ export default function DashboardDampakScreen() {
     { icon: 'people', value: stats?.total_users || 0, label: 'Pengguna Aktif', color: Colors.info, gradient: [Colors.info, '#3B82F6'] },
     { icon: 'refresh', value: waste.v, unit: waste.u, label: 'Total Sampah', color: Colors.green[500], gradient: [Colors.green[400], Colors.green[600]] },
     { icon: 'heart', value: money.v, unit: money.u, label: 'Dana Terkumpul', color: Colors.gold[400], gradient: [Colors.gold[400], Colors.gold[600]] },
-    { icon: 'leaf', value: stats?.total_trees || 0, label: 'Pohon Ditanam', color: Colors.green[400], gradient: [Colors.green[300], Colors.green[500]] },
+    { icon: 'cube', value: stats?.total_programs || 0, label: 'Program ZISWAF', color: Colors.green[400], gradient: [Colors.green[300], Colors.green[500]] },
     { icon: 'cloud', value: co2.v, unit: co2.u, label: 'CO₂ Dikurangi', color: isDark ? Colors.gray[300] : Colors.gray[500], gradient: [Colors.gray[400], Colors.gray[600]] },
-    { icon: 'storefront', value: stats?.total_umkm || 0, label: 'UMKM Hijau', color: Colors.purple, gradient: ['#A855F7', '#7E22CE'] },
+    { icon: 'storefront', value: stats?.total_umkm || 0, label: 'Produk Eco', color: Colors.purple, gradient: ['#A855F7', '#7E22CE'] },
   ];
 
+  // Calculate chart max value
+  const maxWaste = Math.max(...monthlyTrend.map(m => parseFloat(m.waste_kg) || 0), 10); // min max of 10
+
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={dynamicStyles.screen} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+    >
       
       {/* Sci-Fi Premium Header (Hero Section) */}
       <View style={dynamicStyles.heroSection}>
@@ -141,16 +160,27 @@ export default function DashboardDampakScreen() {
               colors={[Colors.green[500] + '10', 'transparent']} 
               style={StyleSheet.absoluteFillObject}
             />
-            {/* Fake Chart Lines */}
-            <View style={dynamicStyles.fakeChartLineWrapper}>
-              {[20, 35, 30, 50, 45, 70, 85, 100].map((h, i) => (
-                <View key={i} style={[dynamicStyles.fakeChartBar, { height: `${h}%`, backgroundColor: Colors.green[500] }]} />
-              ))}
-            </View>
-            <View style={dynamicStyles.chartOverlayText}>
-              <Ionicons name="lock-closed" size={16} color={Colors.gold[500]} style={{ marginBottom: 4 }} />
-              <Text style={dynamicStyles.chartOverlayLabel}>Visualisasi Detail Segera Hadir</Text>
-            </View>
+            {/* Real Chart Bars */}
+            {monthlyTrend.length > 0 ? (
+              <View style={dynamicStyles.chartLineWrapper}>
+                {monthlyTrend.map((m, i) => {
+                  const kg = parseFloat(m.waste_kg) || 0;
+                  const h = Math.max((kg / maxWaste) * 100, 5); // min 5% height
+                  const monthName = new Date(m.month).toLocaleDateString('id-ID', { month: 'short' });
+                  return (
+                    <View key={i} style={dynamicStyles.chartColumn}>
+                      <View style={[dynamicStyles.chartBar, { height: `${h}%`, backgroundColor: Colors.green[500] }]} />
+                      <Text style={dynamicStyles.chartLabel}>{monthName}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              <View style={dynamicStyles.chartOverlayText}>
+                <Ionicons name="information-circle" size={16} color={Colors.gold[500]} style={{ marginBottom: 4 }} />
+                <Text style={dynamicStyles.chartOverlayLabel}>Belum Ada Data Penyelamatan</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -283,20 +313,32 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
-  fakeChartLineWrapper: {
+  chartLineWrapper: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    justifyContent: 'space-around',
+    paddingHorizontal: 10,
     paddingTop: 40,
+    paddingBottom: 25,
     height: '100%',
     width: '100%',
-    opacity: 0.2,
   },
-  fakeChartBar: {
+  chartColumn: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+  chartBar: {
     width: 24,
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
+  },
+  chartLabel: {
+    position: 'absolute',
+    bottom: -20,
+    fontSize: 10,
+    color: colors.textMuted,
+    fontWeight: '600',
   },
   chartOverlayText: {
     ...StyleSheet.absoluteFillObject,
