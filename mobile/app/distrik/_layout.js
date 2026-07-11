@@ -28,7 +28,7 @@ export default function DistrikLayout() {
                 if (canGoBack) {
                   router.back();
                 } else {
-                  router.replace('/admin'); 
+                  router.replace('/(tabs)/profile'); 
                 }
               }} 
               style={{ marginRight: Platform.OS === 'web' ? 16 : 0, marginLeft: Platform.OS === 'web' ? 16 : 8 }}
