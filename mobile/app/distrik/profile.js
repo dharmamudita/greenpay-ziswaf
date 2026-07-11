@@ -108,7 +108,7 @@ export default function DistrikProfileScreen() {
         </View>
 
         <View style={dynamicStyles.formGroup}>
-          <Text style={dynamicStyles.label}>Jam Operasional</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.operational_hours', {defaultValue: 'Jam Operasional'})}</Text>
           <TextInput
             style={dynamicStyles.input}
             value={formData.operating_hours}
@@ -133,23 +133,23 @@ export default function DistrikProfileScreen() {
         <View style={dynamicStyles.formGroup}>
           <Text style={dynamicStyles.label}>Koordinat Peta (GPS) *</Text>
           <Text style={{ color: colors.textMuted, fontSize: 12, marginBottom: Spacing.sm }}>
-            Pastikan titik lokasi di bawah ini akurat agar pengguna tidak tersasar.
+            {t('distrik.map_hint', {defaultValue: 'Pastikan titik lokasi di bawah ini akurat agar pengguna tidak tersasar.'})}
           </Text>
           
           <View style={dynamicStyles.mapContainer}>
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name="map" size={48} color={colors.textMuted} />
-                <Text style={{ color: colors.textMuted, marginTop: 8 }}>Peta dinonaktifkan sementara.</Text>
-                <Text style={{ color: colors.textMuted, fontSize: 12 }}>Isi koordinat secara manual di bawah.</Text>
+                <Text style={{ color: colors.textMuted, marginTop: 8 }}>{t('distrik.map_disabled', {defaultValue: 'Peta dinonaktifkan sementara.'})}</Text>
+                <Text style={{ color: colors.textMuted, fontSize: 12 }}>{t('distrik.map_manual', {defaultValue: 'Isi koordinat secara manual di bawah.'})}</Text>
               </View>
             <View style={dynamicStyles.mapOverlayHint}>
-              <Text style={{ color: Colors.white, fontSize: 10, fontWeight: '700' }}>Ketuk Peta untuk Pindah Titik</Text>
+              <Text style={{ color: Colors.white, fontSize: 10, fontWeight: '700' }}>{t('distrik.map_tap', {defaultValue: 'Ketuk Peta untuk Pindah Titik'})}</Text>
             </View>
           </View>
 
           <View style={{ flexDirection: 'row', gap: 10, marginTop: Spacing.md }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.textMuted, fontSize: 10, marginBottom: 4 }}>Latitude</Text>
+              <Text style={{ color: colors.textMuted, fontSize: 10, marginBottom: 4 }}>{t('distrik.latitude', {defaultValue: 'Latitude'})}</Text>
               <TextInput 
                 style={dynamicStyles.inputSmall} 
                 value={formData.latitude.toString()} 
@@ -157,7 +157,7 @@ export default function DistrikProfileScreen() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.textMuted, fontSize: 10, marginBottom: 4 }}>Longitude</Text>
+              <Text style={{ color: colors.textMuted, fontSize: 10, marginBottom: 4 }}>{t('distrik.longitude', {defaultValue: 'Longitude'})}</Text>
               <TextInput 
                 style={dynamicStyles.inputSmall} 
                 value={formData.longitude.toString()} 
@@ -168,7 +168,7 @@ export default function DistrikProfileScreen() {
 
           <TouchableOpacity style={dynamicStyles.gpsBtn} onPress={handleGetLocation}>
             <Ionicons name="locate" size={16} color={Colors.white} />
-            <Text style={dynamicStyles.gpsBtnText}>Gunakan GPS Saat Ini</Text>
+            <Text style={dynamicStyles.gpsBtnText}>{t('distrik.use_gps', {defaultValue: 'Gunakan GPS Saat Ini'})}</Text>
           </TouchableOpacity>
         </View>
 
@@ -182,7 +182,7 @@ export default function DistrikProfileScreen() {
             style={StyleSheet.absoluteFillObject}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           />
-          {saving ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.saveBtnText}>Simpan Profil</Text>}
+          {saving ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.saveBtnText}>{t('distrik.save_profile', {defaultValue: 'Simpan Profil'})}</Text>}
         </TouchableOpacity>
 
       </View>

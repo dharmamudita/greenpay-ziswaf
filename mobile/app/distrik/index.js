@@ -142,21 +142,21 @@ export default function DistrikDashboardScreen() {
 
             <View style={dynamicStyles.capacityWrap}>
               <View style={dynamicStyles.capacityLabelRow}>
-                <Text style={dynamicStyles.capacityLabel}>Kapasitas Gudang</Text>
+                <Text style={dynamicStyles.capacityLabel}>{t('distrik.capacity', {defaultValue: 'Kapasitas Gudang'})}</Text>
                 <Text style={dynamicStyles.capacityValue}>{dashboardData.capacityUsed} / {dashboardData.capacityMax} Kg</Text>
               </View>
               <View style={dynamicStyles.progressBarBg}>
                 <View style={[dynamicStyles.progressBarFill, { width: `${clampedPercent}%`, backgroundColor: clampedPercent > 80 ? Colors.danger : Colors.green[400] }]} />
               </View>
               {clampedPercent > 80 && (
-                <Text style={dynamicStyles.warningText}>Gudang hampir penuh! Segera jual ke pusat.</Text>
+                <Text style={dynamicStyles.warningText}>{t('distrik.warning_full', {defaultValue: 'Gudang hampir penuh! Segera jual ke pusat.'})}</Text>
               )}
             </View>
           </LinearGradient>
         </View>
 
         {/* Quick Actions / Widgets */}
-        <Text style={dynamicStyles.sectionTitle}>Pusat Kendali</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('distrik.control_center', {defaultValue: 'Pusat Kendali'})}</Text>
         <View style={dynamicStyles.menuGrid}>
           {distrikMenu.map((item, index) => (
             <TouchableOpacity 
@@ -180,9 +180,9 @@ export default function DistrikDashboardScreen() {
 
         {/* Recent Pending Deposits */}
         <View style={dynamicStyles.listHeader}>
-          <Text style={dynamicStyles.sectionTitle}>Setoran Menunggu Verifikasi</Text>
-          <TouchableOpacity onPress={() => router.push('/admin/distrik')}>
-            <Text style={dynamicStyles.seeAllBtn}>Lihat Semua</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('distrik.pending_deposit', {defaultValue: 'Setoran Menunggu Verifikasi'})}</Text>
+          <TouchableOpacity onPress={() => router.push('/admin/verify-distrik')}>
+            <Text style={dynamicStyles.seeAllBtn}>{t('distrik.see_all', {defaultValue: 'Lihat Semua'})}</Text>
           </TouchableOpacity>
         </View>
 
@@ -190,7 +190,7 @@ export default function DistrikDashboardScreen() {
           {dashboardData.recentPending.length === 0 ? (
             <View style={dynamicStyles.emptyPending}>
               <Ionicons name="checkmark-done-circle" size={40} color={Colors.green[500]} />
-              <Text style={{ color: colors.textMuted, marginTop: 8, fontSize: 13 }}>Tidak ada antrean saat ini.</Text>
+              <Text style={{ color: colors.textMuted, marginTop: 8, fontSize: 13 }}>{t('distrik.no_queue', {defaultValue: 'Tidak ada antrean saat ini.'})}</Text>
             </View>
           ) : (
             dashboardData.recentPending.map((item) => (
@@ -203,7 +203,7 @@ export default function DistrikDashboardScreen() {
                   <Text style={dynamicStyles.depositDetail}>{item.waste_type} • {parseFloat(item.weight_kg)} Kg</Text>
                 </View>
                 <TouchableOpacity style={dynamicStyles.verifyBtn} onPress={() => router.push('/admin/distrik')}>
-                  <Text style={dynamicStyles.verifyBtnText}>Tinjau</Text>
+                  <Text style={dynamicStyles.verifyBtnText}>{t('distrik.review', {defaultValue: 'Tinjau'})}</Text>
                 </TouchableOpacity>
               </View>
             ))

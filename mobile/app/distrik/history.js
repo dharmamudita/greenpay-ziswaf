@@ -60,13 +60,13 @@ export default function DepositHistoryScreen() {
       >
         <View style={dynamicStyles.container}>
           
-          <Text style={dynamicStyles.title}>Riwayat Setoran</Text>
-          <Text style={dynamicStyles.subtitle}>Daftar aktivitas pengguna yang telah menyetor sampah di lokasi bank sampah Anda.</Text>
+          <Text style={dynamicStyles.title}>{t('distrik.history_title', {defaultValue: 'Riwayat Setoran'})}</Text>
+          <Text style={dynamicStyles.subtitle}>{t('distrik.history_subtitle', {defaultValue: 'Daftar aktivitas pengguna yang telah menyetor sampah di lokasi bank sampah Anda.'})}</Text>
 
           {history.length === 0 ? (
             <View style={dynamicStyles.emptyState}>
               <Ionicons name="documents-outline" size={48} color={colors.textMuted} />
-              <Text style={{ color: colors.textMuted, marginTop: 12 }}>Belum ada riwayat setoran.</Text>
+              <Text style={{ color: colors.textMuted, marginTop: 12 }}>{t('distrik.no_history', {defaultValue: 'Belum ada riwayat setoran.'})}</Text>
             </View>
           ) : (
             <View style={dynamicStyles.list}>
@@ -94,15 +94,15 @@ export default function DepositHistoryScreen() {
                     
                     <View style={dynamicStyles.cardBody}>
                       <View style={dynamicStyles.infoCol}>
-                        <Text style={dynamicStyles.infoLabel}>Jenis Sampah</Text>
+                        <Text style={dynamicStyles.infoLabel}>{t('distrik.waste_type', {defaultValue: 'Jenis Sampah'})}</Text>
                         <Text style={[dynamicStyles.infoValue, {textTransform: 'capitalize', color: colors.text}]}>{item.waste_type || '-'}</Text>
                       </View>
                       <View style={dynamicStyles.infoCol}>
-                        <Text style={dynamicStyles.infoLabel}>Berat</Text>
+                        <Text style={dynamicStyles.infoLabel}>{t('distrik.weight', {defaultValue: 'Berat'})}</Text>
                         <Text style={[dynamicStyles.infoValue, { color: colors.text }]}>{parseFloat(item.weight_kg || 0)} Kg</Text>
                       </View>
                       <View style={dynamicStyles.infoCol}>
-                        <Text style={dynamicStyles.infoLabel}>Green Point</Text>
+                        <Text style={dynamicStyles.infoLabel}>{t('distrik.point', {defaultValue: 'Green Point'})}</Text>
                         <Text style={[dynamicStyles.infoValue, { color: Colors.gold[500] }]}>+{item.points_earned || 0} pts</Text>
                       </View>
                     </View>

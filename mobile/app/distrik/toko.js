@@ -150,7 +150,7 @@ export default function TokoRewardManagerScreen() {
           <View style={dynamicStyles.verifyCard}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 }}>
               <Ionicons name="scan-circle" size={24} color={Colors.white} />
-              <Text style={dynamicStyles.verifyTitle}>Verifikasi Kode Voucher</Text>
+              <Text style={dynamicStyles.verifyTitle}>{t('distrik.verify_voucher', {defaultValue: 'Verifikasi Kode Voucher'})}</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <TextInput 
@@ -162,7 +162,7 @@ export default function TokoRewardManagerScreen() {
                 autoCapitalize="characters"
               />
               <TouchableOpacity style={dynamicStyles.verifyBtn} onPress={handleVerifyVoucher} disabled={verifying}>
-                {verifying ? <ActivityIndicator size="small" color={Colors.gold[600]} /> : <Text style={dynamicStyles.verifyBtnText}>CEK</Text>}
+                {verifying ? <ActivityIndicator size="small" color={Colors.gold[600]} /> : <Text style={dynamicStyles.verifyBtnText}>{t('distrik.check', {defaultValue: 'CEK'})}</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -170,7 +170,7 @@ export default function TokoRewardManagerScreen() {
           <View style={dynamicStyles.headerRow}>
             <View style={{ flex: 1, paddingRight: 16 }}>
               <Text style={dynamicStyles.title}>Etalase Hadiah (Reward)</Text>
-              <Text style={dynamicStyles.subtitle}>Pajang hadiah Anda di sini. Pengguna akan menukarkan poin GP mereka dengan hadiah ini.</Text>
+              <Text style={dynamicStyles.subtitle}>{t('distrik.toko_subtitle', {defaultValue: 'Pajang hadiah Anda di sini. Pengguna akan menukarkan poin GP mereka dengan hadiah ini.'})}</Text>
             </View>
             <TouchableOpacity style={dynamicStyles.addBtn} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
               <LinearGradient colors={[Colors.gold[500], Colors.gold[600]]} style={StyleSheet.absoluteFillObject} borderRadius={28} />
@@ -183,7 +183,7 @@ export default function TokoRewardManagerScreen() {
               <View style={dynamicStyles.emptyIconWrap}>
                 <Ionicons name="gift-outline" size={48} color={Colors.gold[500]} />
               </View>
-              <Text style={dynamicStyles.emptyTitle}>Etalase Masih Kosong</Text>
+              <Text style={dynamicStyles.emptyTitle}>{t('distrik.toko_empty', {defaultValue: 'Etalase Masih Kosong'})}</Text>
               <Text style={dynamicStyles.emptySub}>Tambahkan hadiah/reward pertama Anda sekarang dengan menekan tombol + di atas.</Text>
             </View>
           ) : (
@@ -238,7 +238,7 @@ export default function TokoRewardManagerScreen() {
                   ) : (
                     <View style={dynamicStyles.imagePickerPlaceholder}>
                       <Ionicons name="image-outline" size={40} color={colors.textMuted} />
-                      <Text style={{ color: colors.textMuted, marginTop: 8, fontSize: 13, fontWeight: '600' }}>Pilih Gambar</Text>
+                      <Text style={{ color: colors.textMuted, marginTop: 8, fontSize: 13, fontWeight: '600' }}>{t('distrik.pick_image', {defaultValue: 'Pilih Gambar'})}</Text>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -255,7 +255,7 @@ export default function TokoRewardManagerScreen() {
                   <TextInput style={dynamicStyles.input} placeholder="500" placeholderTextColor={colors.textMuted} keyboardType="numeric" value={formData.points_cost} onChangeText={t => setFormData({...formData, points_cost: t})} />
                 </View>
                 <View style={[dynamicStyles.formGroup, { flex: 1 }]}>
-                  <Text style={dynamicStyles.label}>Stok</Text>
+                  <Text style={dynamicStyles.label}>{t('distrik.stock', {defaultValue: 'Stok'})}</Text>
                   <TextInput style={dynamicStyles.input} placeholder="10" placeholderTextColor={colors.textMuted} keyboardType="numeric" value={formData.stock} onChangeText={t => setFormData({...formData, stock: t})} />
                 </View>
               </View>
