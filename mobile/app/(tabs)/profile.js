@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Modal, TouchableWithoutFeedback, SafeAreaView, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Modal, TouchableWithoutFeedback, SafeAreaView, Platform, Alert, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +20,7 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   
   const [isPhotoViewerVisible, setPhotoViewerVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const dynamicStyles = getStyles(colors, isDark);
 
   const passportIdStr = user?.passport_id ? String(user.passport_id).padStart(8, '0') : '00000000';
@@ -28,6 +29,12 @@ export default function ProfileScreen() {
     await Clipboard.setStringAsync(passportIdStr);
     Alert.alert('Disalin!', `ID ${passportIdStr} berhasil disalin ke clipboard.`);
   };
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await refreshProfile();
+    setRefreshing(false);
+  }, []);
 
   // --- UNAUTHENTICATED STATE (Hero Onboarding Style) ---
   if (!isAuthenticated) {
@@ -84,7 +91,10 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={dynamicStyles.screen}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+      >
         
         <View style={dynamicStyles.container}>
           {/* Unified Profile Card with Cover Background */}
@@ -116,7 +126,7 @@ export default function ProfileScreen() {
                 <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
               ) : (
                 <View style={dynamicStyles.avatarPlaceholder}>
-                  <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+                  <Ionicons name="person" size={48} color={Colors.white} />
                 </View>
               )}
             </TouchableOpacity>
@@ -207,7 +217,7 @@ export default function ProfileScreen() {
                   <Image source={{ uri: user.photo_url }} style={dynamicStyles.modalImage} resizeMode="contain" />
                 ) : (
                   <View style={[dynamicStyles.modalImagePlaceholder, { backgroundColor: Colors.green[500] }]}>
-                    <Text style={dynamicStyles.modalImagePlaceholderText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+                    <Ionicons name="person" size={160} color={Colors.white} />
                   </View>
                 )}
               </View>
