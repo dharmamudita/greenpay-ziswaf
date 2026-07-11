@@ -1,64 +1,81 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
-import { router, Stack } from 'expo-router';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator, RefreshControl } from 'react-native';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
-
-const dummyNotifications = [
-  {
-    id: '1',
-    title: 'Pembayaran ZISWAF Berhasil',
-    message: 'Alhamdulillah, donasi Zakat Anda sebesar Rp 250.000 telah berhasil diproses.',
-    time: '2 jam yang lalu',
-    type: 'transaction',
-    isRead: false,
-    icon: 'wallet',
-    color: Colors.green[500]
-  },
-  {
-    id: '2',
-    title: 'Green Point Bertambah! 🍃',
-    message: 'Selamat! Anda mendapatkan 50 Green Point dari penukaran 2 Kg Botol Plastik di Bank Sampah Berkah.',
-    time: 'Kemarin',
-    type: 'system',
-    isRead: false,
-    icon: 'leaf',
-    color: Colors.gold[500]
-  },
-  {
-    id: '3',
-    title: 'Peringkat Anda Naik 🏆',
-    message: 'Luar biasa! Anda sekarang berada di peringkat 10 besar Pahlawan Bumi bulan ini.',
-    time: '3 hari yang lalu',
-    type: 'system',
-    isRead: true,
-    icon: 'trophy',
-    color: Colors.info
-  },
-  {
-    id: '4',
-    title: 'Kampanye Baru: Tanam 1000 Pohon',
-    message: 'Mari berpartisipasi dalam kampanye penanaman pohon mangrove di pesisir Demak.',
-    time: '1 minggu yang lalu',
-    type: 'system',
-    isRead: true,
-    icon: 'megaphone',
-    color: Colors.purple
-  }
-];
+import api from '../services/api';
 
 export default function NotificationsScreen() {
   const { colors, isDark } = useTheme();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('Semua');
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const dynamicStyles = getStyles(colors, isDark);
 
-  const filterTabs = ['Semua', 'Transaksi', 'Sistem'];
+  const filterTabs = ['Semua', 'Sistem']; // Simplified for now since we only have system broadcast
 
-  const filteredNotifs = dummyNotifications.filter(n => {
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('/users/notifications');
+      setNotifications(res.data);
+    } catch (error) {
+      console.log('Error fetching notifications:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchNotifications();
+  };
+
+  const handleRead = async (id, isRead) => {
+    if (isRead) return;
+    try {
+      await api.put(`/users/notifications/${id}/read`);
+      // Update local state without refetching immediately
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+    } catch (error) {
+      console.log('Error marking as read:', error);
+    }
+  };
+
+  const getIconForType = (type) => {
+    if (type === 'transaction') return 'wallet';
+    if (type === 'system') return 'megaphone';
+    return 'notifications';
+  };
+
+  const getColorForType = (type) => {
+    if (type === 'transaction') return Colors.green[500];
+    if (type === 'system') return Colors.purple;
+    return Colors.info;
+  };
+
+  const formatTime = (dateString) => {
+    const d = new Date(dateString);
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) {
+      return `Hari ini, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const filteredNotifs = notifications.filter(n => {
     if (activeTab === 'Semua') return true;
-    if (activeTab === 'Transaksi' && n.type === 'transaction') return true;
     if (activeTab === 'Sistem' && n.type === 'system') return true;
     return false;
   });
@@ -93,33 +110,47 @@ export default function NotificationsScreen() {
       </View>
 
       {/* List */}
-      <ScrollView style={dynamicStyles.listContainer} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        {filteredNotifs.length > 0 ? (
-          filteredNotifs.map((notif) => (
-            <TouchableOpacity 
-              key={notif.id} 
-              style={[
-                dynamicStyles.notifCard, 
-                !notif.isRead && dynamicStyles.notifCardUnread
-              ]}
-              activeOpacity={0.7}
-            >
-              <View style={[dynamicStyles.iconBox, { backgroundColor: notif.color + (isDark ? '30' : '15') }]}>
-                <Ionicons name={notif.icon} size={24} color={notif.color} />
-              </View>
-              
-              <View style={dynamicStyles.contentBox}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                  <Text style={[dynamicStyles.title, !notif.isRead && dynamicStyles.titleUnread]} numberOfLines={1}>
-                    {notif.title}
-                  </Text>
-                  {!notif.isRead && <View style={dynamicStyles.unreadDot} />}
+      <ScrollView 
+        style={dynamicStyles.listContainer} 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={{ paddingBottom: 40, flexGrow: 1 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+      >
+        {loading && !refreshing ? (
+          <View style={{ marginTop: 40, alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={Colors.green[500]} />
+          </View>
+        ) : filteredNotifs.length > 0 ? (
+          filteredNotifs.map((notif) => {
+            const color = getColorForType(notif.type);
+            const icon = getIconForType(notif.type);
+            return (
+              <TouchableOpacity 
+                key={notif.id} 
+                style={[
+                  dynamicStyles.notifCard, 
+                  !notif.is_read && dynamicStyles.notifCardUnread
+                ]}
+                activeOpacity={0.7}
+                onPress={() => handleRead(notif.id, notif.is_read)}
+              >
+                <View style={[dynamicStyles.iconBox, { backgroundColor: color + (isDark ? '30' : '15') }]}>
+                  <Ionicons name={icon} size={24} color={color} />
                 </View>
-                <Text style={dynamicStyles.message} numberOfLines={2}>{notif.message}</Text>
-                <Text style={dynamicStyles.time}>{notif.time}</Text>
-              </View>
-            </TouchableOpacity>
-          ))
+                
+                <View style={dynamicStyles.contentBox}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                    <Text style={[dynamicStyles.title, !notif.is_read && dynamicStyles.titleUnread]} numberOfLines={1}>
+                      {notif.title}
+                    </Text>
+                    {!notif.is_read && <View style={dynamicStyles.unreadDot} />}
+                  </View>
+                  <Text style={dynamicStyles.message}>{notif.message}</Text>
+                  <Text style={dynamicStyles.time}>{formatTime(notif.created_at)}</Text>
+                </View>
+              </TouchableOpacity>
+            )
+          })
         ) : (
           <View style={dynamicStyles.emptyState}>
             <View style={dynamicStyles.emptyIconCircle}>
