@@ -2,7 +2,6 @@ import { Stack, router } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
 import { useTranslation } from 'react-i18next';
 
