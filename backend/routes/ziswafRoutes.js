@@ -100,6 +100,12 @@ router.post('/donate', authenticateToken, async (req, res) => {
       req.io.to(`user_${req.user.id}`).emit('USER_PROFILE_UPDATED'); // to update specific user UI
     }
 
+    // Create Notification
+    await pool.query(
+      `INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'transaction')`,
+      [req.user.id, 'Donasi ZISWAF Berhasil', `Alhamdulillah, donasi Rp ${amount.toLocaleString('id-ID')} telah diterima.`]
+    );
+
     res.status(201).json({ message: 'Donasi berhasil!', donation: result.rows[0], pointsEarned });
   } catch (error) {
     console.error('Donate error:', error);

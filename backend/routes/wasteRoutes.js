@@ -66,6 +66,12 @@ router.put('/verify/:id', authenticateToken, requireRole('distrik', 'admin'), as
       }
     }
 
+    // Create Notification
+    await pool.query(
+      `INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'system')`,
+      [d.user_id, `Setoran Sampah ${status === 'verified' ? 'Diverifikasi' : 'Ditolak'}`, `Setoran sampah ${d.waste_type} seberat ${d.weight_kg}kg Anda telah ${status === 'verified' ? 'berhasil diverifikasi dan poin ditambahkan.' : 'ditolak oleh admin distrik.'}`]
+    );
+
     res.json({ message: `Setoran ${status === 'verified' ? 'diverifikasi' : 'ditolak'}.` });
   } catch (error) {
     res.status(500).json({ error: 'Gagal memverifikasi setoran.' });

@@ -57,6 +57,12 @@ router.post('/order', authenticateToken, async (req, res) => {
       );
     }
 
+    // Create Notification
+    await pool.query(
+      `INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'transaction')`,
+      [req.user.id, 'Pembelian Sukses', `Pesanan produk eco-friendly '${p.name}' berhasil dibuat.`]
+    );
+
     res.status(201).json({ message: 'Pesanan berhasil!', order: result.rows[0], pointsEarned: p.points_bonus });
   } catch (error) {
     res.status(500).json({ error: 'Gagal membuat pesanan.' });
