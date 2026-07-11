@@ -151,14 +151,14 @@ export default function AdminZiswafScreen() {
             onPress={() => setCreateModalVisible(true)}
           >
             <Ionicons name="add" size={16} color={Colors.white} />
-            <Text style={dynamicStyles.createBtnText}>Buat Baru</Text>
+            <Text style={dynamicStyles.createBtnText}>{t('admin.create_new', {defaultValue: 'Buat Baru'})}</Text>
           </TouchableOpacity>
         </View>
         
         {programs.length === 0 && (
           <View style={{ alignItems: 'center', marginTop: 40 }}>
             <Ionicons name="folder-open-outline" size={48} color={colors.textMuted} />
-            <Text style={{ color: colors.textMuted, marginTop: 16 }}>Belum ada program ZISWAF.</Text>
+            <Text style={{ color: colors.textMuted, marginTop: 16 }}>{t('admin.no_program', {defaultValue: 'Belum ada program ZISWAF.'})}</Text>
           </View>
         )}
 
