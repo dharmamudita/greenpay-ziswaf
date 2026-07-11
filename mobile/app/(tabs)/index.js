@@ -1,34 +1,21 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, Dimensions } from 'react-native';
-import { router } from 'expo-router';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, Dimensions, Linking, Alert, RefreshControl } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { Card, Button } from '../../components/ui';
+import api from '../../services/api';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 const { width } = Dimensions.get('window');
 
-const statsKeys = [
-  { icon: 'refresh-circle', value: '12.5K', unit: 'Kg', labelKey: 'home.stat_waste', color: Colors.green[500] },
-  { icon: 'leaf', value: '1,247', unit: '', labelKey: 'home.stat_trees', color: Colors.green[400] },
-  { icon: 'heart', value: '2.8M', unit: 'Rp', labelKey: 'home.stat_fund', color: Colors.gold[400] },
-  { icon: 'storefront', value: '156', unit: '', labelKey: 'home.stat_sme', color: Colors.info },
-];
-
 const featuresKeys = [
   { icon: 'refresh-circle', titleKey: 'Sampah', color: Colors.green[500], route: '/bank-sampah' },
-  { icon: 'gift', titleKey: 'Reward', color: Colors.gold[500], route: '/reward' },
+  { icon: 'eye', titleKey: 'Transparan', color: Colors.gold[500], route: '/transparansi-ziswaf' },
   { icon: 'bar-chart', titleKey: 'Dampak', color: Colors.purple, route: '/dashboard-dampak' },
   { icon: 'document-text', titleKey: 'Paspor', color: Colors.pink, route: '/impact-passport' },
-];
-
-const dummyCampaigns = [
-  { id: 1, title: 'Bantu Korban Banjir Demak', image: 'https://images.unsplash.com/photo-1593113589914-07599018dda0?w=500&q=80', progress: 0.75 },
-  { id: 2, title: 'Tanam 1000 Pohon Mangrove', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&q=80', progress: 0.45 },
-  { id: 3, title: 'Sedekah Air Bersih NTB', image: 'https://images.unsplash.com/photo-1520113412646-04473e04e4cb?w=500&q=80', progress: 0.90 }
 ];
 
 export default function HomeScreen() {
@@ -36,6 +23,47 @@ export default function HomeScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const dynamicStyles = getStyles(colors, isDark);
+
+  const [stats, setStats] = useState({ total_waste: 0, total_users: 0, total_fund: 0, total_products: 0 });
+  const [campaigns, setCampaigns] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const [statsRes, campRes, notifRes] = await Promise.all([
+        api.get('/ziswaf/stats'),
+        api.get('/ziswaf/programs'),
+        isAuthenticated ? api.get('/users/notifications') : Promise.resolve({ data: [] })
+      ]);
+      setStats(statsRes.data);
+      setCampaigns(campRes.data.slice(0, 5)); // Only show top 5 on home
+      if (isAuthenticated && notifRes.data) {
+        setHasUnread(notifRes.data.some(n => !n.is_read));
+      }
+    } catch (error) {
+      console.log('Error fetching home data:', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  }, []);
+
+  const statsList = [
+    { icon: 'refresh-circle', value: stats.total_waste, unit: 'Kg', labelKey: 'home.stat_waste', color: Colors.green[500] },
+    { icon: 'people', value: stats.total_users, unit: '', labelKey: 'home.stat_trees', color: Colors.green[400] }, // Reuse label or change icon
+    { icon: 'heart', value: (stats.total_fund / 1000000).toFixed(1), unit: 'Jt', labelKey: 'home.stat_fund', color: Colors.gold[400] },
+    { icon: 'storefront', value: stats.total_products, unit: '', labelKey: 'home.stat_sme', color: Colors.info },
+  ];
 
   return (
     <View style={dynamicStyles.container}>
@@ -66,7 +94,7 @@ export default function HomeScreen() {
           </View>
           <TouchableOpacity style={dynamicStyles.notificationBtn} onPress={() => router.push('/notifications')}>
             <Ionicons name="notifications-outline" size={24} color={isDark ? Colors.white : Colors.gray[800]} />
-            {isAuthenticated && <View style={dynamicStyles.notificationDot} />}
+            {isAuthenticated && hasUnread && <View style={dynamicStyles.notificationDot} />}
           </TouchableOpacity>
         </View>
 
@@ -91,7 +119,7 @@ export default function HomeScreen() {
               )}
             </View>
             {isAuthenticated && (
-              <TouchableOpacity style={dynamicStyles.heroActionBtn} onPress={() => router.push('/reward')}>
+              <TouchableOpacity style={dynamicStyles.heroActionBtn} onPress={() => router.push('/marketplace')}>
                 <Text style={{ color: Colors.green[700], fontSize: 12, fontWeight: '700' }}>Tukar</Text>
               </TouchableOpacity>
             )}
@@ -117,7 +145,12 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 8 }}>
+      <ScrollView 
+        style={dynamicStyles.screen} 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={{ paddingTop: 8 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+      >
         
         {/* Features Menu (4x2 Grid) */}
         <View style={dynamicStyles.menuGrid}>
@@ -140,7 +173,7 @@ export default function HomeScreen() {
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Jejak Kebaikan Kita</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Spacing.xl, gap: Spacing.md, paddingBottom: 8 }}>
-            {statsKeys.map((s, i) => (
+            {statsList.map((s, i) => (
               <View key={i} style={[dynamicStyles.statCard, Shadows.sm]}>
                 <View style={[dynamicStyles.statIconBox, { backgroundColor: s.color + (isDark ? '25' : '15') }]}>
                   <Ionicons name={s.icon} size={22} color={s.color} />
@@ -163,18 +196,35 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToInterval={width * 0.75 + Spacing.md} decelerationRate="fast" contentContainerStyle={{ paddingHorizontal: Spacing.xl, gap: Spacing.md, paddingBottom: 20 }}>
-            {dummyCampaigns.map((camp) => (
-              <TouchableOpacity key={camp.id} style={[dynamicStyles.campaignCard, Shadows.sm]} activeOpacity={0.9}>
-                <Image source={{ uri: camp.image }} style={dynamicStyles.campaignImage} />
-                <View style={dynamicStyles.campaignContent}>
-                  <Text style={dynamicStyles.campaignTitle} numberOfLines={2}>{camp.title}</Text>
-                  <View style={dynamicStyles.progressBarBg}>
-                    <View style={[dynamicStyles.progressBarFill, { width: `${camp.progress * 100}%` }]} />
-                  </View>
-                  <Text style={dynamicStyles.progressText}>{Math.round(camp.progress * 100)}% Terkumpul</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+            {campaigns.length === 0 ? (
+              <View style={{ width: width - Spacing.xl * 2, padding: Spacing.xl, alignItems: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : Colors.gray[100], borderRadius: 20 }}>
+                <Ionicons name="leaf-outline" size={32} color={colors.textMuted} style={{ marginBottom: 8 }} />
+                <Text style={{ color: colors.textMuted, fontSize: 13, textAlign: 'center' }}>Belum ada kampanye ZISWAF yang aktif saat ini.</Text>
+              </View>
+            ) : (
+              campaigns.map((camp) => {
+                const progress = Math.min((camp.collected_amount / camp.target_amount) * 100, 100);
+                return (
+                  <TouchableOpacity 
+                    key={camp.id} 
+                    style={[dynamicStyles.campaignCard, Shadows.sm]} 
+                    activeOpacity={0.9}
+                    onPress={() => {
+                      router.push(`/ziswaf/${camp.id}`);
+                    }}
+                  >
+                    <Image source={{ uri: camp.image_url || 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=500&q=80' }} style={dynamicStyles.campaignImage} />
+                    <View style={dynamicStyles.campaignContent}>
+                      <Text style={dynamicStyles.campaignTitle} numberOfLines={2}>{camp.title}</Text>
+                      <View style={dynamicStyles.progressBarBg}>
+                        <View style={[dynamicStyles.progressBarFill, { width: `${progress}%` }]} />
+                      </View>
+                      <Text style={dynamicStyles.progressText}>{Math.round(progress)}% Terkumpul</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            )}
           </ScrollView>
         </View>
 
