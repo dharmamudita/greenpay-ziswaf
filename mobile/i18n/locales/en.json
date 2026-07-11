@@ -250,7 +250,16 @@
     "search": "Tap to select location",
     "title_highlight": "Bank",
     "deposit": "Deposit",
-    "no_distrik": "No waste bank district available yet."
+    "no_distrik": "No waste bank district available yet.",
+    "select_title": "Select Waste Bank"
+  },
+  "waste": {
+    "plastik": "Plastic",
+    "kertas": "Paper",
+    "logam": "Metal",
+    "kaca": "Glass",
+    "elektronik": "Electronic",
+    "organik": "Organic"
   },
   "leaderboard": {
     "hero_text": "Be the Best!"

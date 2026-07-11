@@ -165,7 +165,7 @@ export default function BankSampahScreen() {
             </View>
             <View style={dynamicStyles.premiumSelectorTextWrap}>
               <Text style={dynamicStyles.premiumSelectorTitle}>
-                {loadingLocs ? t('bank_sampah.loading', {defaultValue: 'Memuat...'}) : (selectedLocation?.name || t('bank_sampah.title', { defaultValue: 'Pilih Bank Sampah' }))}
+                {loadingLocs ? t('bank_sampah.loading', {defaultValue: 'Memuat...'}) : (selectedLocation?.name || t('bank_sampah.select_title', { defaultValue: 'Pilih Bank Sampah' }))}
               </Text>
               <Text style={dynamicStyles.premiumSelectorAddress} numberOfLines={1}>
                 {selectedLocation?.address || t('bank_sampah.search', { defaultValue: 'Ketuk untuk memilih lokasi' })}
@@ -249,7 +249,7 @@ export default function BankSampahScreen() {
                   <View style={[dynamicStyles.typeIconBg, isActive && { backgroundColor: type.color + '20' }]}>
                     <Ionicons name={type.icon} size={28} color={isActive ? type.color : colors.textMuted} />
                   </View>
-                  <Text style={[dynamicStyles.typeText, isActive && { color: colors.text, fontWeight: '800' }]}>{type.name}</Text>
+                  <Text style={[dynamicStyles.typeText, isActive && { color: colors.text, fontWeight: '800' }]}>{t('waste.' + type.id, { defaultValue: type.name })}</Text>
                   <Text style={[dynamicStyles.typePoints, isActive && { color: type.color, fontWeight: '700' }]}>{type.points} GP/kg</Text>
                 </TouchableOpacity>
               );
@@ -305,7 +305,7 @@ export default function BankSampahScreen() {
             </View>
             <View style={dynamicStyles.receiptDivider} />
             <View style={dynamicStyles.receiptRow}>
-              <Text style={dynamicStyles.receiptLabel}>{typeDetails.name} ({weight || '0'} kg x {typeDetails.points} GP)</Text>
+              <Text style={dynamicStyles.receiptLabel}>{t('waste.' + typeDetails.id, { defaultValue: typeDetails.name })} ({weight || '0'} kg x {typeDetails.points} GP)</Text>
               <Text style={dynamicStyles.receiptValue}>+{Math.floor(estimatedPoints)} <Text style={dynamicStyles.receiptUnit}>GP</Text></Text>
             </View>
           </View>

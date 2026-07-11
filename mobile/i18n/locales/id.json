@@ -243,7 +243,16 @@
     "deposit": "Setor",
     "ai_scanner": "AI Waste Scanner ✨",
     "ai_scanner_desc": "Pindai sampah Anda dengan AI untuk mengetahui nilainya!",
-    "no_distrik": "Belum ada distrik bank sampah yang tersedia."
+    "no_distrik": "Belum ada distrik bank sampah yang tersedia.",
+    "select_title": "Pilih Bank Sampah"
+  },
+  "waste": {
+    "plastik": "Plastik",
+    "kertas": "Kertas",
+    "logam": "Logam",
+    "kaca": "Kaca",
+    "elektronik": "Elektronik",
+    "organik": "Organik"
   },
   "transparency": {
     "title": "Laporan Transparansi",

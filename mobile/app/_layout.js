@@ -59,20 +59,20 @@ function AppContent() {
         <Stack.Screen name="distrik" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
-        <Stack.Screen name="bank-sampah" options={{ title: t('bank_sampah.title') + ' ' + t('bank_sampah.title_highlight') }} />
+        <Stack.Screen name="bank-sampah" options={{ title: t('bank_sampah.title', {defaultValue: 'Bank'}) + ' ' + t('bank_sampah.title_highlight', {defaultValue: 'Sampah'}) }} />
         <Stack.Screen name="dashboard-dampak" options={{ title: t('screens.dashboard_title') }} />
         <Stack.Screen name="reward" options={{ title: t('screens.reward_title') }} />
-        <Stack.Screen name="transparansi-ziswaf" options={{ title: 'Transparansi ZISWAF' }} />
+        <Stack.Screen name="transparansi-ziswaf" options={{ title: t('transparency.title', {defaultValue: 'Transparansi ZISWAF'}) }} />
         <Stack.Screen name="ziswaf/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="impact-passport" options={{ title: t('screens.passport_title') }} />
         <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
-        <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
+        <Stack.Screen name="settings/account" options={{ title: t('settings.account', {defaultValue: 'Pengaturan Akun'}) }} />
         <Stack.Screen name="settings/theme" options={{ title: t('settings.theme') }} />
         <Stack.Screen name="ai-scanner" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('ai_scanner.title'), headerShown: false }} />
         <Stack.Screen name="eco-ustadz" options={{ presentation: 'modal', animation: 'slide_from_bottom', title: t('eco_ustadz.title'), headerShown: false }} />
         <Stack.Screen name="settings/language" options={{ title: t('settings.language') }} />
-        <Stack.Screen name="profile/register-distrik" options={{ title: 'Daftar Distrik' }} />
-        <Stack.Screen name="admin/verify-distrik" options={{ title: 'Verifikasi Distrik' }} />
+        <Stack.Screen name="profile/register-distrik" options={{ title: t('reg_distrik.title', {defaultValue: 'Daftar Distrik'}) }} />
+        <Stack.Screen name="admin/verify-distrik" options={{ title: t('admin.verify_distrik', {defaultValue: 'Verifikasi Distrik'}) }} />
       </Stack>
     </NavThemeProvider>
   );
