@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +9,7 @@ import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 
 export default function AdminNotificationsScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const dynamicStyles = getStyles(colors, isDark);
   
@@ -17,18 +19,18 @@ export default function AdminNotificationsScreen() {
 
   const handleSendBroadcast = async () => {
     if (!title.trim() || !message.trim()) {
-      return Alert.alert('Error', 'Judul dan isi pesan tidak boleh kosong.');
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.error_empty_msg', {defaultValue: 'Judul dan isi pesan tidak boleh kosong.'}));
     }
     
     setLoading(true);
     try {
       await api.post('/admin/notifications/broadcast', { title, message });
-      Alert.alert('Sukses', 'Notifikasi broadcast berhasil dikirim ke seluruh pengguna.');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('admin.success_broadcast', {defaultValue: 'Notifikasi broadcast berhasil dikirim ke seluruh pengguna.'}));
       setTitle('');
       setMessage('');
     } catch (error) {
       console.log('Error sending broadcast:', error);
-      Alert.alert('Gagal', 'Gagal mengirim notifikasi.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), t('admin.failed_broadcast', {defaultValue: 'Gagal mengirim notifikasi.'}));
     } finally {
       setLoading(false);
     }
@@ -49,13 +51,13 @@ export default function AdminNotificationsScreen() {
 
 
         <View style={dynamicStyles.formCard}>
-          <Text style={dynamicStyles.sectionTitle}>Kirim Pesan Siaran (Broadcast)</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('admin.broadcast_title', {defaultValue: 'Kirim Pesan Siaran (Broadcast)'})}</Text>
           
           <View style={dynamicStyles.formGroup}>
-            <Text style={dynamicStyles.label}>Judul Notifikasi</Text>
+            <Text style={dynamicStyles.label}>{t('admin.notif_title_label', {defaultValue: 'Judul Notifikasi'})}</Text>
             <TextInput
               style={dynamicStyles.input}
-              placeholder="Contoh: Pemeliharaan Sistem"
+              placeholder={t('admin.notif_title_placeholder', {defaultValue: 'Contoh: Pemeliharaan Sistem'})}
               placeholderTextColor={colors.textMuted}
               value={title}
               onChangeText={setTitle}
@@ -63,10 +65,10 @@ export default function AdminNotificationsScreen() {
           </View>
           
           <View style={dynamicStyles.formGroup}>
-            <Text style={dynamicStyles.label}>Isi Pesan</Text>
+            <Text style={dynamicStyles.label}>{t('admin.notif_msg_label', {defaultValue: 'Isi Pesan'})}</Text>
             <TextInput
               style={[dynamicStyles.input, dynamicStyles.textArea]}
-              placeholder="Ketik pengumuman atau pesan di sini..."
+              placeholder={t('admin.notif_msg_placeholder', {defaultValue: 'Ketik pengumuman atau pesan di sini...'})}
               placeholderTextColor={colors.textMuted}
               value={message}
               onChangeText={setMessage}
@@ -87,7 +89,7 @@ export default function AdminNotificationsScreen() {
             ) : (
               <>
                 <Ionicons name="send" size={20} color={Colors.white} style={{ marginRight: 8 }} />
-                <Text style={dynamicStyles.submitBtnText}>Kirim Sekarang</Text>
+                <Text style={dynamicStyles.submitBtnText}>{t('admin.send_now', {defaultValue: 'Kirim Sekarang'})}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -95,7 +97,7 @@ export default function AdminNotificationsScreen() {
         
         <View style={dynamicStyles.infoBox}>
           <Ionicons name="information-circle" size={24} color={Colors.info} />
-          <Text style={dynamicStyles.infoText}>Pesan siaran akan muncul di tab Notifikasi setiap akun pengguna secara seketika (*real-time*).</Text>
+          <Text style={dynamicStyles.infoText}>{t('admin.notif_info', {defaultValue: 'Pesan siaran akan muncul di tab Notifikasi setiap akun pengguna secara seketika (*real-time*).'})}</Text>
         </View>
 
       </View>

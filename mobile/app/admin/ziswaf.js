@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, TextInput, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +10,7 @@ import api from '../../services/api';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 export default function AdminZiswafScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -40,7 +42,7 @@ export default function AdminZiswafScreen() {
       setPrograms(res.data);
     } catch (error) {
       console.log('Error fetching ZISWAF:', error);
-      Alert.alert('Error', 'Gagal memuat data ZISWAF.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.error_load_ziswaf', {defaultValue: 'Gagal memuat data ZISWAF.'}));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -58,7 +60,7 @@ export default function AdminZiswafScreen() {
 
   const handleAddManual = async () => {
     if (!manualAmount || isNaN(manualAmount)) {
-      return Alert.alert('Error', 'Masukkan nominal yang valid.');
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.invalid_amount', {defaultValue: 'Masukkan nominal yang valid.'}));
     }
     
     setAdding(true);
@@ -69,12 +71,12 @@ export default function AdminZiswafScreen() {
         program_id: selectedProgram.id,
         program_name: selectedProgram.title
       });
-      Alert.alert('Sukses', 'Dana berhasil dicatat sebagai tagihan. Segera setujui pembayaran (jika ada webhook).');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('admin.success_add_fund', {defaultValue: 'Dana berhasil dicatat sebagai tagihan. Segera setujui pembayaran (jika ada webhook).'}));
       setModalVisible(false);
       setManualAmount('');
       fetchZiswaf();
     } catch (error) {
-      Alert.alert('Error', 'Gagal menambah dana manual.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.failed_add_fund', {defaultValue: 'Gagal menambah dana manual.'}));
     } finally {
       setAdding(false);
     }
@@ -143,7 +145,7 @@ export default function AdminZiswafScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.gold[500]} />}
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg }}>
-          <Text style={dynamicStyles.sectionTitle}>Program Aktif</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('admin.active_programs', {defaultValue: 'Program Aktif'})}</Text>
           <TouchableOpacity 
             style={dynamicStyles.createBtn}
             onPress={() => setCreateModalVisible(true)}

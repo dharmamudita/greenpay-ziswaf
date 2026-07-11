@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal, SafeAreaView, Image, Platform, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -8,6 +9,7 @@ import api from '../../services/api';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function AdminUsersScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function AdminUsersScreen() {
       setUsers(res.data);
     } catch (error) {
       console.log('Error fetching users:', error);
-      Alert.alert('Error', 'Gagal memuat data pengguna.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.failed_load_users', {defaultValue: 'Gagal memuat data pengguna.'}));
     } finally {
       setLoading(false);
     }
@@ -39,12 +41,12 @@ export default function AdminUsersScreen() {
     if (!selectedUser) return;
     
     Alert.alert(
-      'Konfirmasi',
-      `Ubah peran ${selectedUser.display_name} menjadi ${newRole.toUpperCase()}?`,
+      t('admin.confirm', {defaultValue: 'Konfirmasi'}),
+      t('admin.change_role_confirm', {defaultValue: `Ubah peran ${selectedUser.display_name} menjadi ${newRole.toUpperCase()}?`}),
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t('admin.cancel', {defaultValue: 'Batal'}), style: 'cancel' },
         { 
-          text: 'Ya, Ubah', 
+          text: t('admin.yes_change', {defaultValue: 'Ya, Ubah'}), 
           onPress: async () => {
             try {
               setUpdating(true);
@@ -53,7 +55,7 @@ export default function AdminUsersScreen() {
               fetchUsers(); // Refresh data
             } catch (error) {
               console.log('Error updating role:', error);
-              Alert.alert('Error', 'Gagal mengubah peran pengguna.');
+              Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.failed_change_role', {defaultValue: 'Gagal mengubah peran pengguna.'}));
             } finally {
               setUpdating(false);
             }
@@ -121,7 +123,7 @@ export default function AdminUsersScreen() {
               onPress={() => setFilterRole(role)}
             >
               <Text style={[dynamicStyles.filterText, filterRole === role && dynamicStyles.filterTextActive]}>
-                {role === 'all' ? 'Semua' : role === 'user' ? 'Pengguna Biasa' : 'Pengelola Distrik'}
+                {role === 'all' ? t('admin.all', {defaultValue: 'Semua'}) : role === 'user' ? t('admin.normal_user', {defaultValue: 'Pengguna Biasa'}) : t('admin.district_manager', {defaultValue: 'Pengelola Distrik'})}
               </Text>
             </TouchableOpacity>
           ))}
@@ -151,7 +153,7 @@ export default function AdminUsersScreen() {
           <View style={dynamicStyles.modalContent}>
             
             <View style={dynamicStyles.modalHeader}>
-              <Text style={dynamicStyles.modalTitle}>Ubah Peran Pengguna</Text>
+              <Text style={dynamicStyles.modalTitle}>{t('admin.change_role_title', {defaultValue: 'Ubah Peran Pengguna'})}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Ionicons name="close-circle" size={28} color={colors.textMuted} />
               </TouchableOpacity>
@@ -162,12 +164,12 @@ export default function AdminUsersScreen() {
                 <Text style={dynamicStyles.selectedUserName}>{selectedUser.display_name}</Text>
                 <Text style={dynamicStyles.selectedUserEmail}>{selectedUser.email}</Text>
                 <Text style={dynamicStyles.currentRoleText}>
-                  Peran saat ini: <Text style={{ fontWeight: '800', color: Colors.green[500] }}>{selectedUser.role.toUpperCase()}</Text>
+                  {t('admin.current_role', {defaultValue: 'Peran saat ini:'})} <Text style={{ fontWeight: '800', color: Colors.green[500] }}>{selectedUser.role.toUpperCase()}</Text>
                 </Text>
               </View>
             )}
 
-            <Text style={dynamicStyles.sectionLabel}>Pilih Peran Baru:</Text>
+            <Text style={dynamicStyles.sectionLabel}>{t('admin.select_new_role', {defaultValue: 'Pilih Peran Baru:'})}</Text>
             
             {['user', 'distrik', 'admin'].map((roleOp) => (
               <TouchableOpacity 

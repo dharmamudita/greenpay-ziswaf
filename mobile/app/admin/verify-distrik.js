@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 export default function VerifyDistrikScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ export default function VerifyDistrikScreen() {
 
   useEffect(() => {
     if (user?.role !== 'admin') {
-      Alert.alert('Akses Ditolak', 'Hanya Super Admin yang bisa mengakses halaman ini.');
+      Alert.alert(t('admin.access_denied', {defaultValue: 'Akses Ditolak'}), t('admin.super_admin_only', {defaultValue: 'Hanya Super Admin yang bisa mengakses halaman ini.'}));
       router.back();
       return;
     }
@@ -40,7 +42,7 @@ export default function VerifyDistrikScreen() {
       setHistory(histRes.data);
     } catch (error) {
       console.log('Error fetching requests:', error);
-      Alert.alert('Error', 'Gagal memuat daftar pengajuan.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.load_failed', {defaultValue: 'Gagal memuat daftar pengajuan.'}));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -115,13 +117,13 @@ export default function VerifyDistrikScreen() {
           style={[dynamicStyles.tabBtn, activeTab === 'pending' && dynamicStyles.activeTabBtn]} 
           onPress={() => setActiveTab('pending')}
         >
-          <Text style={[dynamicStyles.tabText, activeTab === 'pending' && dynamicStyles.activeTabText]}>Menunggu ({requests.length})</Text>
+          <Text style={[dynamicStyles.tabText, activeTab === 'pending' && dynamicStyles.activeTabText]}>{t('admin.tab_pending', {defaultValue: 'Menunggu'})} ({requests.length})</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={[dynamicStyles.tabBtn, activeTab === 'history' && dynamicStyles.activeTabBtn]} 
           onPress={() => setActiveTab('history')}
         >
-          <Text style={[dynamicStyles.tabText, activeTab === 'history' && dynamicStyles.activeTabText]}>Riwayat</Text>
+          <Text style={[dynamicStyles.tabText, activeTab === 'history' && dynamicStyles.activeTabText]}>{t('admin.tab_history', {defaultValue: 'Riwayat'})}</Text>
         </TouchableOpacity>
       </View>
 
@@ -133,7 +135,7 @@ export default function VerifyDistrikScreen() {
           <View style={dynamicStyles.emptyState}>
             <Ionicons name={activeTab === 'pending' ? "checkmark-circle-outline" : "time-outline"} size={60} color={colors.textMuted} />
             <Text style={dynamicStyles.emptyText}>
-              {activeTab === 'pending' ? 'Tidak ada pengajuan baru' : 'Belum ada riwayat verifikasi'}
+              {activeTab === 'pending' ? t('admin.no_pending', {defaultValue: 'Tidak ada pengajuan baru'}) : t('admin.no_history', {defaultValue: 'Belum ada riwayat verifikasi'})}
             </Text>
           </View>
         ) : (
@@ -149,13 +151,10 @@ export default function VerifyDistrikScreen() {
                   {activeTab === 'history' && (
                     <View style={[
                       dynamicStyles.statusBadge, 
-                      req.status === 'approved' ? {backgroundColor: '#D1FAE5'} : {backgroundColor: '#FEE2E2'}
+                      req.status === 'approved' ? dynamicStyles.statusApproved : dynamicStyles.statusRejected
                     ]}>
-                      <Text style={[
-                        dynamicStyles.statusText,
-                        req.status === 'approved' ? {color: Colors.green[600]} : {color: Colors.error}
-                      ]}>
-                        {req.status === 'approved' ? 'Disetujui' : 'Ditolak'}
+                      <Text style={dynamicStyles.statusText}>
+                        {req.status === 'approved' ? t('admin.approved', {defaultValue: 'Disetujui'}) : t('admin.rejected', {defaultValue: 'Ditolak'})}
                       </Text>
                     </View>
                   )}
@@ -165,33 +164,33 @@ export default function VerifyDistrikScreen() {
 
                 <View style={dynamicStyles.detailRow}>
                   <Ionicons name="home" size={16} color={colors.textMuted} />
-                  <Text style={dynamicStyles.detailText}><Text style={{fontWeight:'700'}}>Nama Distrik:</Text> {req.name}</Text>
+                  <Text style={dynamicStyles.detailText}><Text style={{fontWeight:'700'}}>{t('admin.district_name', {defaultValue: 'Nama Distrik:'})}</Text> {req.name}</Text>
                 </View>
                 <View style={dynamicStyles.detailRow}>
                   <Ionicons name="location" size={16} color={colors.textMuted} />
-                  <Text style={dynamicStyles.detailText}><Text style={{fontWeight:'700'}}>Alamat:</Text> {req.address}</Text>
+                  <Text style={dynamicStyles.detailText}><Text style={{fontWeight:'700'}}>{t('admin.address', {defaultValue: 'Alamat:'})}</Text> {req.address}</Text>
                 </View>
                 <View style={dynamicStyles.detailRow}>
                   <Ionicons name="call" size={16} color={colors.textMuted} />
-                  <Text style={dynamicStyles.detailText}><Text style={{fontWeight:'700'}}>No. HP:</Text> {req.phone}</Text>
+                  <Text style={dynamicStyles.detailText}><Text style={{fontWeight:'700'}}>{t('admin.phone', {defaultValue: 'No. HP:'})}</Text> {req.phone}</Text>
                 </View>
 
                 {activeTab === 'pending' && (
                   <View style={dynamicStyles.actionRow}>
                     <TouchableOpacity 
-                      style={[dynamicStyles.actionBtn, { backgroundColor: '#FEE2E2', borderColor: '#FCA5A5' }]} 
+                      style={[dynamicStyles.actionBtn, { backgroundColor: Colors.error, borderColor: Colors.error }]} 
                       onPress={() => handleVerify(req.id, 'rejected')}
                     >
-                      <Ionicons name="close" size={20} color={Colors.error} />
-                      <Text style={[dynamicStyles.actionBtnText, { color: Colors.error }]}>Tolak</Text>
+                      <Ionicons name="close" size={20} color={Colors.white} />
+                      <Text style={dynamicStyles.btnText}>{t('admin.reject', {defaultValue: 'Tolak'})}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity 
-                      style={[dynamicStyles.actionBtn, { backgroundColor: '#D1FAE5', borderColor: '#6EE7B7' }]} 
+                      style={[dynamicStyles.actionBtn, dynamicStyles.approveBtn]} 
                       onPress={() => handleVerify(req.id, 'approved')}
                     >
-                      <Ionicons name="checkmark" size={20} color={Colors.green[600]} />
-                      <Text style={[dynamicStyles.actionBtnText, { color: Colors.green[600] }]}>Setujui</Text>
+                      <Ionicons name="checkmark" size={20} color={Colors.white} />
+                      <Text style={dynamicStyles.btnText}>{t('admin.approve', {defaultValue: 'Setujui'})}</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -243,7 +242,11 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   detailText: { fontSize: 14, color: colors.text, marginLeft: 8, flex: 1, lineHeight: 20 },
   actionRow: { flexDirection: 'row', gap: 12, marginTop: 16 },
   actionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 12, borderRadius: 12, borderWidth: 1, gap: 8 },
+  approveBtn: { backgroundColor: Colors.green[600], borderColor: Colors.green[600] },
+  btnText: { fontWeight: '700', fontSize: 14, color: Colors.white },
   actionBtnText: { fontWeight: '700', fontSize: 14 },
+  statusApproved: { backgroundColor: '#D1FAE5' },
+  statusRejected: { backgroundColor: '#FEE2E2' },
   emptyState: { alignItems: 'center', marginTop: 60 },
   emptyText: { fontSize: 16, color: colors.textMuted, marginTop: 16, fontWeight: '500' }
 });
