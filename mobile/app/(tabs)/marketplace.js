@@ -11,6 +11,18 @@ import api from '../../services/api';
 
 const categories = ['Semua', 'Aksesoris', 'Peralatan', 'Perawatan', 'Dapur', 'Dekorasi'];
 
+const getCategoryTranslation = (cat, t) => {
+  switch(cat) {
+    case 'Semua': return t('marketplace.all', {defaultValue: 'Semua'});
+    case 'Aksesoris': return t('marketplace.accessories', {defaultValue: 'Aksesoris'});
+    case 'Peralatan': return t('marketplace.equipment', {defaultValue: 'Peralatan'});
+    case 'Perawatan': return t('marketplace.care', {defaultValue: 'Perawatan'});
+    case 'Dapur': return t('marketplace.kitchen', {defaultValue: 'Dapur'});
+    case 'Dekorasi': return t('marketplace.decor', {defaultValue: 'Dekorasi'});
+    default: return cat;
+  }
+};
+
 export default function MarketplaceScreen() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('Semua');
@@ -51,9 +63,9 @@ export default function MarketplaceScreen() {
       t('marketplace.confirm_buy'),
       `${t('marketplace.confirm_buy_desc')} ${productName}?`,
       [
-        { text: t('marketplace.cancel'), style: "cancel" },
+        { text: t('marketplace.cancel', {defaultValue: 'Batal'}), style: "cancel" },
         { 
-          text: "Beli", 
+          text: t('marketplace.buy_now', {defaultValue: 'Beli'}), 
           onPress: async () => {
             try {
               setPurchasing(productId);
@@ -131,7 +143,7 @@ export default function MarketplaceScreen() {
                 activeOpacity={0.7}
               >
                 <Text style={[dynamicStyles.pillTabText, activeCategory === cat && dynamicStyles.pillTabTextActive]}>
-                  {cat === 'Semua' ? t('marketplace.all') : cat}
+                  {getCategoryTranslation(cat, t)}
                 </Text>
               </TouchableOpacity>
             ))}
