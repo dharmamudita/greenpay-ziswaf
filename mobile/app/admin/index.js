@@ -51,15 +51,6 @@ export default function AdminDashboardScreen() {
       ring: isDark ? 'rgba(239, 68, 68, 0.3)' : '#FECACA'
     },
     {
-      title: 'Setoran Sampah',
-      desc: 'Terima & tolak setoran sampah masuk dari warga.',
-      icon: 'scan',
-      route: '/admin/distrik',
-      color: Colors.green[500],
-      bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50],
-      ring: isDark ? 'rgba(16, 185, 129, 0.3)' : Colors.green[100]
-    },
-    {
       title: 'Data Pengguna',
       desc: 'Pantau aktivitas, blokir, atau ubah peran akun.',
       icon: 'people',
@@ -72,16 +63,16 @@ export default function AdminDashboardScreen() {
       title: 'Kelola ZISWAF',
       desc: 'Manajemen donasi, zakat, dan pelaporan program.',
       icon: 'heart',
-      route: 'coming_soon',
+      route: '/admin/ziswaf', // Arahkan ke halaman ZISWAF yang baru
       color: Colors.gold[500],
       bg: isDark ? 'rgba(245, 158, 11, 0.15)' : Colors.gold[50],
       ring: isDark ? 'rgba(245, 158, 11, 0.3)' : Colors.gold[100]
     },
     {
-      title: 'Kelola E-Market',
-      desc: 'Persetujuan produk UMKM & pantau transaksi.',
-      icon: 'storefront',
-      route: 'coming_soon',
+      title: 'Buat Notifikasi',
+      desc: 'Kirim pengumuman massal atau personal ke pengguna.',
+      icon: 'megaphone',
+      route: '/admin/notifications', // Halaman baru untuk Notifikasi
       color: Colors.purple,
       bg: isDark ? 'rgba(168, 85, 247, 0.15)' : '#F3E8FF',
       ring: isDark ? 'rgba(168, 85, 247, 0.3)' : '#E9D5FF'
