@@ -62,6 +62,8 @@ function AppContent() {
         <Stack.Screen name="bank-sampah" options={{ title: t('bank_sampah.title') + ' ' + t('bank_sampah.title_highlight') }} />
         <Stack.Screen name="dashboard-dampak" options={{ title: t('screens.dashboard_title') }} />
         <Stack.Screen name="reward" options={{ title: t('screens.reward_title') }} />
+        <Stack.Screen name="transparansi-ziswaf" options={{ title: 'Transparansi ZISWAF' }} />
+        <Stack.Screen name="ziswaf/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="impact-passport" options={{ title: t('screens.passport_title') }} />
         <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
         <Stack.Screen name="settings/account" options={{ title: 'Pengaturan Akun' }} />
