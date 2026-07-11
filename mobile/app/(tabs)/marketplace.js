@@ -58,26 +58,33 @@ export default function MarketplaceScreen() {
     await fetchProducts();
   }, []);
 
-  const handlePurchase = async (productId, productName) => {
+  const handlePurchase = async (productId, productName, itemType = 'product') => {
+    const isReward = itemType === 'reward';
+    
     Alert.alert(
-      t('marketplace.confirm_buy'),
-      `${t('marketplace.confirm_buy_desc')} ${productName}?`,
+      isReward ? 'Konfirmasi Tukar Poin' : t('marketplace.confirm_buy'),
+      isReward ? `Apakah Anda yakin ingin menukar poin dengan ${productName}?` : `${t('marketplace.confirm_buy_desc')} ${productName}?`,
       [
         { text: t('marketplace.cancel', {defaultValue: 'Batal'}), style: "cancel" },
         { 
-          text: t('marketplace.buy_now', {defaultValue: 'Beli'}), 
+          text: isReward ? 'Tukar Poin' : t('marketplace.buy_now', {defaultValue: 'Beli'}), 
           onPress: async () => {
             try {
               setPurchasing(productId);
-              await api.post('/marketplace/order', {
-                productId: productId,
-                quantity: 1
-              });
-              Alert.alert(t('marketplace.success'), t('marketplace.success_desc'));
+              if (isReward) {
+                await api.post('/marketplace/redeem', { reward_id: productId });
+                Alert.alert('Berhasil', 'Reward berhasil ditukar!');
+              } else {
+                await api.post('/marketplace/order', {
+                  productId: productId,
+                  quantity: 1
+                });
+                Alert.alert(t('marketplace.success'), t('marketplace.success_desc'));
+              }
               fetchProducts(); // Refresh stock
             } catch (error) {
-              console.log('Error purchasing:', error);
-              Alert.alert(t('marketplace.failed'), t('marketplace.failed_desc'));
+              console.log('Error purchasing/redeeming:', error);
+              Alert.alert(t('marketplace.failed'), error.response?.data?.error || t('marketplace.failed_desc'));
             } finally {
               setPurchasing(null);
             }
@@ -191,23 +198,29 @@ export default function MarketplaceScreen() {
                   </View>
                   
                   <View style={dynamicStyles.priceRow}>
-                    <Text style={dynamicStyles.prodPrice}>{fmt(p.price)}</Text>
-                    <View style={dynamicStyles.ratingBox}>
-                      <Ionicons name="star" size={10} color={Colors.gold[400]} />
-                      <Text style={dynamicStyles.prodRating}>{p.rating}</Text>
-                    </View>
+                    <Text style={dynamicStyles.prodPrice}>
+                      {p.item_type === 'reward' ? `${p.price} GP` : fmt(p.price)}
+                    </Text>
+                    {p.item_type === 'product' && (
+                      <View style={dynamicStyles.ratingBox}>
+                        <Ionicons name="star" size={10} color={Colors.gold[400]} />
+                        <Text style={dynamicStyles.prodRating}>{p.rating}</Text>
+                      </View>
+                    )}
                   </View>
                   
                   <TouchableOpacity 
-                    style={[dynamicStyles.buyBtn, (purchasing === p.id || p.stock <= 0) && dynamicStyles.buyBtnDisabled]} 
-                    onPress={() => handlePurchase(p.id, p.name)}
+                    style={[dynamicStyles.buyBtn, (purchasing === p.id || p.stock <= 0) && dynamicStyles.buyBtnDisabled, p.item_type === 'reward' && { backgroundColor: Colors.gold[500] }]} 
+                    onPress={() => handlePurchase(p.id, p.name, p.item_type)}
                     disabled={purchasing === p.id || p.stock <= 0}
                     activeOpacity={0.8}
                   >
                     {purchasing === p.id ? (
                       <ActivityIndicator size="small" color={Colors.white} />
                     ) : (
-                      <Text style={dynamicStyles.buyBtnText}>{p.stock <= 0 ? t('marketplace.out_of_stock') : t('marketplace.buy')}</Text>
+                      <Text style={dynamicStyles.buyBtnText}>
+                        {p.stock <= 0 ? t('marketplace.out_of_stock') : (p.item_type === 'reward' ? 'Tukar GP' : t('marketplace.buy'))}
+                      </Text>
                     )}
                   </TouchableOpacity>
                 </View>

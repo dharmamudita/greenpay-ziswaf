@@ -22,8 +22,31 @@ router.get('/products', async (req, res) => {
     }
     query += ' ORDER BY sold_count DESC';
 
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+    const productsResult = await pool.query(query, params);
+    
+    // Also fetch rewards
+    let rewardsQuery = 'SELECT *, points_cost as price, 0 as points_bonus, distrik_name as umkm_name, 5.0 as rating, 0 as sold_count, \'reward\' as item_type FROM rewards WHERE is_active = true';
+    const rewardsParams = [];
+    let rParamIdx = 1;
+
+    if (category) {
+      rewardsQuery += ` AND category = $${rParamIdx++}`;
+      rewardsParams.push(category);
+    }
+    if (search) {
+      rewardsQuery += ` AND (name ILIKE $${rParamIdx++} OR distrik_name ILIKE $${rParamIdx++})`;
+      rewardsParams.push(`%${search}%`, `%${search}%`);
+    }
+    rewardsQuery += ' ORDER BY created_at DESC';
+
+    const rewardsResult = await pool.query(rewardsQuery, rewardsParams);
+
+    const allItems = [
+      ...productsResult.rows.map(p => ({...p, item_type: 'product'})),
+      ...rewardsResult.rows
+    ];
+
+    res.json(allItems);
   } catch (error) {
     res.status(500).json({ error: 'Gagal mengambil data produk.' });
   }
@@ -66,6 +89,44 @@ router.post('/order', authenticateToken, async (req, res) => {
     res.status(201).json({ message: 'Pesanan berhasil!', order: result.rows[0], pointsEarned: p.points_bonus });
   } catch (error) {
     res.status(500).json({ error: 'Gagal membuat pesanan.' });
+  }
+});
+
+// POST /api/marketplace/redeem — Redeem Reward
+router.post('/redeem', authenticateToken, async (req, res) => {
+  try {
+    const { reward_id } = req.body;
+    const reward = await pool.query('SELECT * FROM rewards WHERE id = $1 AND is_active = true', [reward_id]);
+    if (reward.rows.length === 0) return res.status(404).json({ error: 'Reward tidak ditemukan.' });
+
+    const r = reward.rows[0];
+    if (r.stock < 1) return res.status(400).json({ error: 'Stok reward habis.' });
+
+    // Check user points
+    const user = await pool.query('SELECT green_points FROM users WHERE id = $1', [req.user.id]);
+    if (user.rows[0].green_points < r.points_cost) {
+      return res.status(400).json({ error: 'Green Points Anda tidak mencukupi.' });
+    }
+
+    // Deduct points
+    await pool.query('UPDATE users SET green_points = green_points - $1 WHERE id = $2', [r.points_cost, req.user.id]);
+    await pool.query(
+      `INSERT INTO green_point_history (user_id, points, type, source, description) VALUES ($1, $2, 'spend', 'marketplace', $3)`,
+      [req.user.id, r.points_cost, `Tukar ${r.name}`]
+    );
+
+    // Update stock
+    await pool.query('UPDATE rewards SET stock = stock - 1 WHERE id = $1', [reward_id]);
+
+    // Create Notification
+    await pool.query(
+      `INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'transaction')`,
+      [req.user.id, 'Tukar Reward Sukses', `Berhasil menukarkan ${r.points_cost} GP dengan '${r.name}'.`]
+    );
+
+    res.status(201).json({ message: 'Tukar poin berhasil!', reward: r });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal menukar reward.' });
   }
 });
 

@@ -253,7 +253,17 @@ export default function TokoRewardManagerScreen() {
 
               <View style={dynamicStyles.formGroup}>
                 <Text style={dynamicStyles.label}>Kategori *</Text>
-                <TextInput style={dynamicStyles.input} placeholder="Misal: Aksesoris, Botol Minum, dll" placeholderTextColor={colors.textMuted} value={formData.category} onChangeText={t => setFormData({...formData, category: t})} />
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
+                  {['Aksesoris', 'Peralatan', 'Perawatan', 'Dapur', 'Dekorasi'].map(cat => (
+                    <TouchableOpacity
+                      key={cat}
+                      style={[dynamicStyles.catPill, formData.category === cat && dynamicStyles.catPillActive]}
+                      onPress={() => setFormData({...formData, category: cat})}
+                    >
+                      <Text style={[dynamicStyles.catPillText, formData.category === cat && dynamicStyles.catPillTextActive]}>{cat}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
 
               <View style={{ flexDirection: 'row', gap: 16 }}>
@@ -352,5 +362,28 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   input: { backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.border, borderRadius: BorderRadius.xl, padding: Spacing.md, fontSize: 15, color: colors.text, fontWeight: '600' },
   
   saveBtn: { borderRadius: BorderRadius.xl, height: 56, alignItems: 'center', justifyContent: 'center', marginTop: Spacing.xl, overflow: 'hidden', ...Shadows.md },
-  saveBtnText: { color: Colors.white, fontSize: 16, fontWeight: '800', letterSpacing: 0.5 }
+  saveBtnText: { color: Colors.white, fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
+
+  catPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(156, 163, 175, 0.1)',
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  catPillActive: {
+    backgroundColor: Colors.green[50],
+    borderColor: Colors.green[500],
+  },
+  catPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textMuted,
+  },
+  catPillTextActive: {
+    color: Colors.green[700],
+    fontWeight: '700',
+  },
 });
