@@ -84,7 +84,7 @@ export default function BankSampahScreen() {
   const handlePickPhoto = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Izin Ditolak', 'Dibutuhkan akses kamera untuk mengambil bukti foto sampah.');
+      Alert.alert(t('bank_sampah.permission_denied', {defaultValue: 'Izin Ditolak'}), t('bank_sampah.camera_req', {defaultValue: 'Dibutuhkan akses kamera untuk mengambil bukti foto sampah.'}));
       return;
     }
 
@@ -100,11 +100,11 @@ export default function BankSampahScreen() {
 
   const handleSubmit = async () => {
     if (!weight || isNaN(weight) || Number(weight) <= 0) {
-      Alert.alert('Error', 'Silakan masukkan berat sampah yang valid.');
+      Alert.alert(t('bank_sampah.error_title', {defaultValue: 'Error'}), t('bank_sampah.invalid_weight', {defaultValue: 'Silakan masukkan berat sampah yang valid.'}));
       return;
     }
     if (!photoUri) {
-      Alert.alert('Foto Diperlukan', 'Harap ambil foto bukti sampah terlebih dahulu.');
+      Alert.alert(t('bank_sampah.photo_req_title', {defaultValue: 'Foto Diperlukan'}), t('bank_sampah.photo_req_desc', {defaultValue: 'Harap ambil foto bukti sampah terlebih dahulu.'}));
       return;
     }
 
@@ -121,7 +121,7 @@ export default function BankSampahScreen() {
         notes: 'Diunggah via aplikasi',
       });
 
-      Alert.alert('Berhasil!', `Setoran sampah berhasil diajukan dan sedang menunggu verifikasi.`, [
+      Alert.alert(t('bank_sampah.success_title', {defaultValue: 'Berhasil!'}), t('bank_sampah.success_desc', {defaultValue: 'Setoran sampah berhasil diajukan dan sedang menunggu verifikasi.'}), [
         { text: 'OK', onPress: () => router.replace('/(tabs)') }
       ]);
       
@@ -129,7 +129,7 @@ export default function BankSampahScreen() {
       setPhotoUri(null);
     } catch (error) {
       console.error(error);
-      Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah setoran.');
+      Alert.alert(t('bank_sampah.fail_title', {defaultValue: 'Gagal'}), t('bank_sampah.fail_desc', {defaultValue: 'Terjadi kesalahan saat mengunggah setoran.'}));
     } finally {
       setLoading(false);
     }
@@ -165,7 +165,7 @@ export default function BankSampahScreen() {
             </View>
             <View style={dynamicStyles.premiumSelectorTextWrap}>
               <Text style={dynamicStyles.premiumSelectorTitle}>
-                {loadingLocs ? 'Loading...' : (selectedLocation?.name || t('bank_sampah.title', { defaultValue: 'Pilih Bank Sampah' }))}
+                {loadingLocs ? t('bank_sampah.loading', {defaultValue: 'Memuat...'}) : (selectedLocation?.name || t('bank_sampah.title', { defaultValue: 'Pilih Bank Sampah' }))}
               </Text>
               <Text style={dynamicStyles.premiumSelectorAddress} numberOfLines={1}>
                 {selectedLocation?.address || t('bank_sampah.search', { defaultValue: 'Ketuk untuk memilih lokasi' })}
@@ -257,7 +257,7 @@ export default function BankSampahScreen() {
           </View>
 
           {/* Weight Input */}
-          <Text style={[dynamicStyles.label, { marginTop: Spacing.xl }]}>Berat Estimasi (Kg)</Text>
+          <Text style={[dynamicStyles.label, { marginTop: Spacing.xl }]}>{t('bank_sampah.weight_est', {defaultValue: 'Berat Estimasi (Kg)'})}</Text>
           <View style={[dynamicStyles.inputWrap, isDark && { backgroundColor: 'rgba(0,0,0,0.2)' }]}>
             <View style={dynamicStyles.inputIcon}>
               <Ionicons name="scale-outline" size={20} color={colors.textMuted} />
@@ -276,7 +276,7 @@ export default function BankSampahScreen() {
           </View>
 
           {/* Photo Upload */}
-          <Text style={[dynamicStyles.label, { marginTop: Spacing.xl }]}>Foto Bukti (Wajib)</Text>
+          <Text style={[dynamicStyles.label, { marginTop: Spacing.xl }]}>{t('bank_sampah.photo_proof', {defaultValue: 'Foto Bukti (Wajib)'})}</Text>
           <TouchableOpacity style={dynamicStyles.photoBox} onPress={handlePickPhoto} activeOpacity={0.8}>
             {photoUri ? (
               <View style={dynamicStyles.photoPreviewWrap}>
@@ -292,7 +292,7 @@ export default function BankSampahScreen() {
                   <Ionicons name="camera" size={32} color={Colors.green[500]} />
                 </View>
                 <Text style={dynamicStyles.photoHint}>{t('bank_sampah.tap_to_capture', {defaultValue: 'Ketuk untuk potret sampah'})}</Text>
-                <Text style={dynamicStyles.photoHintSmall}>Sistem akan mencatat lokasi & waktu</Text>
+                <Text style={dynamicStyles.photoHintSmall}>{t('bank_sampah.photo_hint_small', {defaultValue: 'Sistem akan mencatat lokasi & waktu'})}</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -311,7 +311,7 @@ export default function BankSampahScreen() {
           </View>
 
           <Button 
-            title={photoUri ? "Kirim Setoran Sekarang" : "Lengkapi Bukti Foto"} 
+            title={photoUri ? t('bank_sampah.submit_btn', {defaultValue: "Kirim Setoran Sekarang"}) : t('bank_sampah.complete_photo_btn', {defaultValue: "Lengkapi Bukti Foto"})} 
             icon={<Ionicons name={photoUri ? "paper-plane" : "camera"} size={18} color={isDark ? Colors.white : Colors.black} />} 
             onPress={handleSubmit} 
             loading={loading}
@@ -355,7 +355,7 @@ export default function BankSampahScreen() {
               <Ionicons name="search" size={20} color={colors.textMuted} style={{ marginRight: 8 }} />
               <TextInput
                 style={dynamicStyles.searchInput}
-                placeholder="Cari nama distrik atau alamat..."
+                placeholder={t('bank_sampah.search_placeholder', {defaultValue: "Cari nama distrik atau alamat..."})}
                 placeholderTextColor={colors.textMuted}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -372,7 +372,7 @@ export default function BankSampahScreen() {
                 <View style={{ padding: 40, alignItems: 'center' }}>
                   <Ionicons name="search-outline" size={48} color={colors.textMuted} style={{ marginBottom: 16 }} />
                   <Text style={{ textAlign: 'center', color: colors.textMuted, fontSize: 14 }}>
-                    {loadingLocs ? 'Memuat lokasi...' : 'Pencarian tidak ditemukan.'}
+                    {loadingLocs ? t('bank_sampah.loading_loc', {defaultValue: 'Memuat lokasi...'}) : t('bank_sampah.no_result', {defaultValue: 'Pencarian tidak ditemukan.'})}
                   </Text>
                 </View>
               )}
