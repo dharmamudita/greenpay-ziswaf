@@ -76,4 +76,37 @@ router.put('/users/:id/role', async (req, res) => {
   }
 });
 
+// 4. POST /api/admin/notifications/broadcast (Send broadcast to all users)
+router.post('/notifications/broadcast', async (req, res) => {
+  try {
+    const { title, message } = req.body;
+    
+    if (!title || !message) {
+      return res.status(400).json({ error: 'Judul dan isi pesan wajib diisi.' });
+    }
+
+    // Get all users
+    const users = await pool.query('SELECT id FROM users WHERE is_active = true');
+    
+    // Insert notification for each user
+    const values = users.rows.map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`).join(', ');
+    const params = [];
+    users.rows.forEach(u => {
+      params.push(u.id, title, message);
+    });
+
+    if (params.length > 0) {
+      await pool.query(
+        `INSERT INTO notifications (user_id, title, message) VALUES ${values}`,
+        params
+      );
+    }
+
+    res.json({ message: 'Broadcast berhasil dikirim ke ' + users.rows.length + ' pengguna.' });
+  } catch (err) {
+    console.error('Error sending broadcast:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
