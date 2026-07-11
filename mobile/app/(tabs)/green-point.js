@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
@@ -13,14 +13,17 @@ export default function GreenPointScreen() {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory();
+    }, [user])
+  );
 
   const fetchHistory = async () => {
     if (!user) {
@@ -34,8 +37,14 @@ export default function GreenPointScreen() {
       console.log('Error fetching GP history:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchHistory();
+  }, [user]);
 
   const getIconForSource = (source) => {
     switch(source) {
@@ -76,7 +85,11 @@ export default function GreenPointScreen() {
   };
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={dynamicStyles.screen} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+    >
       
       {/* Header Section */}
       <View style={dynamicStyles.headerContainer}>
@@ -106,7 +119,7 @@ export default function GreenPointScreen() {
           
           <TouchableOpacity 
             style={dynamicStyles.redeemBtn} 
-            onPress={() => router.push('/reward')}
+            onPress={() => router.push('/marketplace')}
             activeOpacity={0.8}
           >
             <Text style={dynamicStyles.redeemBtnText}>{t('green_point.redeem')}</Text>
