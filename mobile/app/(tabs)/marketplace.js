@@ -30,6 +30,7 @@ export default function MarketplaceScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [purchasing, setPurchasing] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ visible: false, product: null });
   const { colors, isDark } = useTheme();
   const { t, i18n } = useTranslation();
 
@@ -58,40 +59,40 @@ export default function MarketplaceScreen() {
     await fetchProducts();
   }, []);
 
-  const handlePurchase = async (productId, productName, itemType = 'product') => {
-    const isReward = itemType === 'reward';
+  const handlePurchase = (productId, productName, itemType = 'product') => {
+    setConfirmModal({
+      visible: true,
+      product: { id: productId, name: productName, type: itemType }
+    });
+  };
+
+  const executePurchase = async () => {
+    if (!confirmModal.product) return;
     
-    Alert.alert(
-      isReward ? 'Konfirmasi Tukar Poin' : t('marketplace.confirm_buy'),
-      isReward ? `Apakah Anda yakin ingin menukar poin dengan ${productName}?` : `${t('marketplace.confirm_buy_desc')} ${productName}?`,
-      [
-        { text: t('marketplace.cancel', {defaultValue: 'Batal'}), style: "cancel" },
-        { 
-          text: isReward ? 'Tukar Poin' : t('marketplace.buy_now', {defaultValue: 'Beli'}), 
-          onPress: async () => {
-            try {
-              setPurchasing(productId);
-              if (isReward) {
-                await api.post('/marketplace/redeem', { reward_id: productId });
-                Alert.alert('Berhasil', 'Reward berhasil ditukar!');
-              } else {
-                await api.post('/marketplace/order', {
-                  productId: productId,
-                  quantity: 1
-                });
-                Alert.alert(t('marketplace.success'), t('marketplace.success_desc'));
-              }
-              fetchProducts(); // Refresh stock
-            } catch (error) {
-              console.log('Error purchasing/redeeming:', error);
-              Alert.alert(t('marketplace.failed'), error.response?.data?.error || t('marketplace.failed_desc'));
-            } finally {
-              setPurchasing(null);
-            }
-          }
-        }
-      ]
-    );
+    const { id, name, type } = confirmModal.product;
+    const isReward = type === 'reward';
+    
+    try {
+      setConfirmModal({ visible: false, product: null });
+      setPurchasing(id);
+      
+      if (isReward) {
+        await api.post('/marketplace/redeem', { reward_id: id });
+        Alert.alert('Berhasil', 'Reward berhasil ditukar!');
+      } else {
+        await api.post('/marketplace/order', {
+          productId: id,
+          quantity: 1
+        });
+        Alert.alert(t('marketplace.success'), t('marketplace.success_desc'));
+      }
+      fetchProducts(); // Refresh stock
+    } catch (error) {
+      console.log('Error purchasing/redeeming:', error);
+      Alert.alert(t('marketplace.failed'), error.response?.data?.error || t('marketplace.failed_desc'));
+    } finally {
+      setPurchasing(null);
+    }
   };
 
   const getIconForCategory = (category) => {
@@ -231,6 +232,43 @@ export default function MarketplaceScreen() {
         )}
       </View>
       <View style={{ height: Spacing['3xl'] }} />
+
+      {/* Confirmation Modal */}
+      {confirmModal.visible && confirmModal.product && (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }]}>
+          <View style={{ backgroundColor: colors.surface, padding: 24, borderRadius: 20, width: '80%', maxWidth: 320, ...Shadows.lg }}>
+            <Ionicons 
+              name={confirmModal.product.type === 'reward' ? 'gift' : 'cart'} 
+              size={48} 
+              color={confirmModal.product.type === 'reward' ? Colors.gold[500] : Colors.green[500]} 
+              style={{ alignSelf: 'center', marginBottom: 16 }} 
+            />
+            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
+              {confirmModal.product.type === 'reward' ? 'Konfirmasi Tukar Poin' : 'Konfirmasi Pembelian'}
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
+              {confirmModal.product.type === 'reward' 
+                ? `Apakah Anda yakin ingin menukar poin dengan ${confirmModal.product.name}?` 
+                : `Apakah Anda yakin ingin membeli ${confirmModal.product.name}?`}
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <TouchableOpacity 
+                style={{ flex: 1, padding: 12, borderRadius: 12, backgroundColor: isDark ? colors.surface2 : Colors.gray[100], alignItems: 'center' }}
+                onPress={() => setConfirmModal({ visible: false, product: null })}
+              >
+                <Text style={{ fontWeight: '600', color: colors.text }}>Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={{ flex: 1, padding: 12, borderRadius: 12, backgroundColor: confirmModal.product.type === 'reward' ? Colors.gold[500] : Colors.green[500], alignItems: 'center' }}
+                onPress={executePurchase}
+              >
+                <Text style={{ fontWeight: '700', color: Colors.white }}>Ya, Lanjutkan</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
     </ScrollView>
   );
 }
