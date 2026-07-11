@@ -67,8 +67,8 @@ export default function DistrikDashboardScreen() {
       title: 'Kelola Toko',
       icon: 'storefront',
       route: '/distrik/toko',
-      color: Colors.warning || '#F59E0B',
-      bg: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7',
+      color: Colors.gold[400],
+      bg: isDark ? 'rgba(45, 212, 191, 0.15)' : '#CCFBF1',
     },
     {
       title: 'Riwayat Setoran',
