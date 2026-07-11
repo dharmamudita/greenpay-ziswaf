@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal, SafeAreaView, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal, SafeAreaView, Image, Platform, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import Colors from '../../theme/colors';
@@ -14,6 +14,7 @@ export default function AdminUsersScreen() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [filterRole, setFilterRole] = useState('all'); // 'all', 'user', 'distrik'
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -62,6 +63,11 @@ export default function AdminUsersScreen() {
     );
   };
 
+  const filteredUsers = users.filter(u => {
+    if (filterRole === 'all') return true;
+    return u.role === filterRole;
+  });
+
   const renderUserItem = ({ item }) => {
     let roleColor = Colors.info;
     let roleIcon = 'person';
@@ -105,16 +111,21 @@ export default function AdminUsersScreen() {
   return (
     <View style={dynamicStyles.container}>
       
-      {/* Header */}
-      <View style={dynamicStyles.header}>
-        <View style={dynamicStyles.headerTopRow}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-          <Text style={dynamicStyles.headerTitle}>Data Pengguna</Text>
-          <View style={{ width: 24 }} />
-        </View>
-        <Text style={dynamicStyles.headerSubtitle}>Kelola peran (role) pengguna terdaftar</Text>
+      {/* Filter Chips */}
+      <View style={dynamicStyles.filterRow}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {['all', 'user', 'distrik'].map(role => (
+            <TouchableOpacity 
+              key={role} 
+              style={[dynamicStyles.filterChip, filterRole === role && dynamicStyles.filterChipActive]}
+              onPress={() => setFilterRole(role)}
+            >
+              <Text style={[dynamicStyles.filterText, filterRole === role && dynamicStyles.filterTextActive]}>
+                {role === 'all' ? 'Semua' : role === 'user' ? 'Pengguna Biasa' : 'Pengelola Distrik'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
 
       {/* List */}
@@ -124,7 +135,7 @@ export default function AdminUsersScreen() {
         </View>
       ) : (
         <FlatList
-          data={users}
+          data={filteredUsers}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderUserItem}
           contentContainerStyle={dynamicStyles.listContainer}
@@ -193,32 +204,28 @@ export default function AdminUsersScreen() {
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  header: {
+  filterRow: {
     paddingHorizontal: Spacing.xl,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: Spacing.md,
-    backgroundColor: colors.bg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTopRow: {
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.sm,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    flex: 1,
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: BorderRadius.full,
+    backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : Colors.gray[100],
+    marginRight: Spacing.sm,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
-  headerSubtitle: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
-    textAlign: 'center',
+  filterChipActive: {
+    backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
+    borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE',
   },
+  filterText: { fontSize: 13, fontWeight: '600', color: colors.textMuted },
+  filterTextActive: { color: Colors.info, fontWeight: '800' },
+  
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   
   listContainer: { padding: Spacing.xl, paddingBottom: 100 },
