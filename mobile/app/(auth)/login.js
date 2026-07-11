@@ -10,6 +10,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as Facebook from 'expo-auth-session/providers/facebook';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
+import * as SecureStore from 'expo-secure-store';
+import * as WebBrowser from 'expo-web-browser';
 import api from '../../services/api';
 import authService from '../../services/authService';
 import { Button } from '../../components/ui';
@@ -29,6 +31,22 @@ export default function LoginScreen() {
   const { setAuthState } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
+
+  React.useEffect(() => {
+    const loadCredentials = async () => {
+      try {
+        const savedEmail = await SecureStore.getItemAsync('saved_email');
+        const savedPassword = await SecureStore.getItemAsync('saved_password');
+        if (savedEmail && savedPassword) {
+          setEmail(savedEmail);
+          setPassword(savedPassword);
+        }
+      } catch (err) {
+        console.log('Error loading credentials', err);
+      }
+    };
+    loadCredentials();
+  }, []);
 
   const GOOGLE_CLIENT_ID = '863588088837-9t2av69r05o3dg1f02gfenrf2htu5j4h.apps.googleusercontent.com';
   const FB_CLIENT_ID = '1035461415601809';
@@ -110,6 +128,15 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const data = await authService.login(email.trim().toLowerCase(), password);
+      
+      // Save credentials for auto-fill on next login
+      try {
+        await SecureStore.setItemAsync('saved_email', email.trim().toLowerCase());
+        await SecureStore.setItemAsync('saved_password', password);
+      } catch (e) {
+        console.log('Could not save credentials', e);
+      }
+
       await setAuthState(data.token, data.user);
       router.replace('/(tabs)');
     } catch (err) {
