@@ -11,7 +11,7 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import * as SecureStore from 'expo-secure-store';
-import * as WebBrowser from 'expo-web-browser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../services/api';
 import authService from '../../services/authService';
 import { Button } from '../../components/ui';
@@ -35,8 +35,17 @@ export default function LoginScreen() {
   React.useEffect(() => {
     const loadCredentials = async () => {
       try {
-        const savedEmail = await SecureStore.getItemAsync('saved_email');
-        const savedPassword = await SecureStore.getItemAsync('saved_password');
+        let savedEmail = null;
+        let savedPassword = null;
+        
+        if (Platform.OS === 'web') {
+          savedEmail = await AsyncStorage.getItem('saved_email');
+          savedPassword = await AsyncStorage.getItem('saved_password');
+        } else {
+          savedEmail = await SecureStore.getItemAsync('saved_email');
+          savedPassword = await SecureStore.getItemAsync('saved_password');
+        }
+
         if (savedEmail && savedPassword) {
           setEmail(savedEmail);
           setPassword(savedPassword);
@@ -131,8 +140,13 @@ export default function LoginScreen() {
       
       // Save credentials for auto-fill on next login
       try {
-        await SecureStore.setItemAsync('saved_email', email.trim().toLowerCase());
-        await SecureStore.setItemAsync('saved_password', password);
+        if (Platform.OS === 'web') {
+          await AsyncStorage.setItem('saved_email', email.trim().toLowerCase());
+          await AsyncStorage.setItem('saved_password', password);
+        } else {
+          await SecureStore.setItemAsync('saved_email', email.trim().toLowerCase());
+          await SecureStore.setItemAsync('saved_password', password);
+        }
       } catch (e) {
         console.log('Could not save credentials', e);
       }
