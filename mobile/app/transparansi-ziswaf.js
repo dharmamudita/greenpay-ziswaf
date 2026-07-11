@@ -4,11 +4,14 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import Colors from '../theme/colors';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
+import { formatCurrency } from '../utils/currency';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 
 export default function TransparansiZiswafScreen() {
   const { colors, isDark } = useTheme();
+  const { t, i18n } = useTranslation();
   const [stats, setStats] = useState(null);
   const [history, setHistory] = useState([]);
   const [distributions, setDistributions] = useState([]);
@@ -53,7 +56,7 @@ export default function TransparansiZiswafScreen() {
     );
   }
 
-  const formatRp = (num) => 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+  const formatRp = (num) => formatCurrency(num, i18n.language);
 
   return (
     <View style={dynamicStyles.container}>

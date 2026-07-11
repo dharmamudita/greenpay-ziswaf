@@ -6,13 +6,16 @@ import * as WebBrowser from 'expo-web-browser';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import Colors from '../../theme/colors';
+import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/currency';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
 export default function ZiswafDetailScreen() {
   const { id } = useLocalSearchParams();
   const { colors, isDark } = useTheme();
   const { isAuthenticated } = useAuth();
+  const { t, i18n } = useTranslation();
   
   const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -102,7 +105,7 @@ export default function ZiswafDetailScreen() {
         <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={dynamicStyles.headerTitle}>Detail Donasi</Text>
+        <Text style={dynamicStyles.headerTitle}>{t('ziswaf.detail_title', { defaultValue: 'Detail Donasi' })}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -113,8 +116,8 @@ export default function ZiswafDetailScreen() {
           
           <View style={dynamicStyles.progressWrap}>
             <View style={dynamicStyles.progressTextRow}>
-              <Text style={dynamicStyles.collectedText}>Rp {Number(program.collected_amount).toLocaleString('id-ID')}</Text>
-              <Text style={dynamicStyles.targetText}>dari Rp {Number(program.target_amount).toLocaleString('id-ID')}</Text>
+              <Text style={dynamicStyles.collectedText}>{formatCurrency(program.collected_amount, i18n.language)}</Text>
+              <Text style={dynamicStyles.targetText}>{t('ziswaf.from', { defaultValue: 'dari' })} {formatCurrency(program.target_amount, i18n.language)}</Text>
             </View>
             <View style={dynamicStyles.progressBarBg}>
               <View style={[dynamicStyles.progressBarFill, { width: `${progress}%` }]} />
@@ -123,7 +126,7 @@ export default function ZiswafDetailScreen() {
         </View>
 
         <View style={dynamicStyles.card}>
-          <Text style={dynamicStyles.label}>Masukkan Nominal (Min. Rp 10.000)</Text>
+          <Text style={dynamicStyles.label}>{t('ziswaf.enter_amount', { defaultValue: 'Masukkan Nominal (Min. Rp 10.000)' })}</Text>
           <TextInput 
             style={dynamicStyles.input}
             placeholder="0"
@@ -150,7 +153,7 @@ export default function ZiswafDetailScreen() {
           {donating ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
-            <Text style={dynamicStyles.donateBtnText}>Lanjut Pembayaran</Text>
+            <Text style={dynamicStyles.donateBtnText}>{t('ziswaf.continue_payment', { defaultValue: 'Lanjut Pembayaran' })}</Text>
           )}
         </TouchableOpacity>
       </ScrollView>

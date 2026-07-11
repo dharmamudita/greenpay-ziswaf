@@ -105,7 +105,18 @@
     "feat_rank_desc": "Top 10 Pejuang Lingkungan",
     "cta_title": "Siap Membuat Perubahan?",
     "cta_desc": "Daftar gratis dan dapatkan Impact Passport Anda hari ini.",
-    "cta_btn": "Daftar Gratis"
+    "cta_btn": "Daftar Gratis",
+    "greeting": "Hai, ",
+    "status": "Pahlawan Bumi",
+    "total_point": "Total Green Point",
+    "contribute": "Mari Berkontribusi",
+    "start_small": "Mulai langkah kecilmu untuk bumi hari ini",
+    "redeem": "Tukar",
+    "recent_campaigns": "Aksi Hijau Terbaru",
+    "see_all": "Lihat Semua",
+    "no_campaigns": "Belum ada kampanye ZISWAF yang aktif saat ini.",
+    "collected": "% Terkumpul",
+    "impact_footprint": "Jejak Kebaikan Kita"
   },
   "ziswaf": {
     "title": "Program",
@@ -119,10 +130,21 @@
   "marketplace": {
     "title": "Belanja",
     "title_highlight": "Hijau",
-    "subtitle": "Produk ramah lingkungan",
+    "subtitle": "Dukung UMKM lokal dengan produk ramah lingkungan.",
     "search": "Cari produk...",
     "category": "Kategori",
-    "all": "Semua"
+    "all": "Semua",
+    "not_found": "Produk Tidak Ditemukan",
+    "not_found_desc": "Coba cari dengan kata kunci lain atau pilih kategori yang berbeda.",
+    "buy": "Beli Sekarang",
+    "out_of_stock": "Habis",
+    "confirm_buy": "Konfirmasi Pembelian",
+    "confirm_buy_desc": "Apakah Anda yakin ingin membeli",
+    "cancel": "Batal",
+    "success": "Sukses",
+    "success_desc": "Pesanan Anda sedang diproses!",
+    "failed": "Gagal",
+    "failed_desc": "Terjadi kesalahan saat membuat pesanan."
   },
   "green_point": {
     "title": "Green",

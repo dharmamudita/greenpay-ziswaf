@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/currency';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 
@@ -21,7 +22,7 @@ const featuresKeys = [
 export default function HomeScreen() {
   const { user, isAuthenticated } = useAuth();
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dynamicStyles = getStyles(colors, isDark);
 
   const [stats, setStats] = useState({ total_waste: 0, total_users: 0, total_fund: 0, total_products: 0 });
@@ -60,8 +61,8 @@ export default function HomeScreen() {
 
   const statsList = [
     { icon: 'refresh-circle', value: stats.total_waste, unit: 'Kg', labelKey: 'home.stat_waste', color: Colors.green[500] },
-    { icon: 'people', value: stats.total_users, unit: '', labelKey: 'home.stat_trees', color: Colors.green[400] }, // Reuse label or change icon
-    { icon: 'heart', value: (stats.total_fund / 1000000).toFixed(1), unit: 'Jt', labelKey: 'home.stat_fund', color: Colors.gold[400] },
+    { icon: 'people', value: stats.total_users, unit: '', labelKey: 'home.stat_trees', color: Colors.green[400] },
+    { icon: 'heart', value: i18n.language === 'en' ? (stats.total_fund / 15000000000).toFixed(1) : (stats.total_fund / 1000000).toFixed(1), unit: i18n.language === 'en' ? 'M' : 'Jt', labelKey: 'home.stat_fund', color: Colors.gold[400] },
     { icon: 'storefront', value: stats.total_products, unit: '', labelKey: 'home.stat_sme', color: Colors.info },
   ];
 
@@ -81,8 +82,8 @@ export default function HomeScreen() {
                   </View>
                 )}
                 <View>
-                  <Text style={dynamicStyles.greetingText}>Hai, {user?.display_name?.split(' ')[0]} 👋</Text>
-                  <Text style={dynamicStyles.statusText}>Pahlawan Bumi</Text>
+                  <Text style={dynamicStyles.greetingText}>{t('home.greeting')}{user?.display_name?.split(' ')[0]} 👋</Text>
+                  <Text style={dynamicStyles.statusText}>{t('home.status')}</Text>
                 </View>
               </TouchableOpacity>
             ) : (
@@ -103,24 +104,24 @@ export default function HomeScreen() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View>
               <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>
-                {isAuthenticated ? 'Total Green Point' : 'Mari Berkontribusi'}
+                {isAuthenticated ? t('home.total_point') : t('home.contribute')}
               </Text>
               {isAuthenticated ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Ionicons name="leaf" size={24} color={Colors.gold[400]} />
                   <Text style={{ color: Colors.white, fontSize: 32, fontWeight: '900', letterSpacing: -1 }}>
-                    {user?.green_points?.toLocaleString('id-ID') || '0'}
+                    {user?.green_points?.toLocaleString(i18n.language === 'en' ? 'en-US' : 'id-ID') || '0'}
                   </Text>
                 </View>
               ) : (
                 <Text style={{ color: Colors.white, fontSize: 22, fontWeight: '800', lineHeight: 28, maxWidth: '85%' }}>
-                  Mulai langkah kecilmu untuk bumi hari ini
+                  {t('home.start_small')}
                 </Text>
               )}
             </View>
             {isAuthenticated && (
               <TouchableOpacity style={dynamicStyles.heroActionBtn} onPress={() => router.push('/marketplace')}>
-                <Text style={{ color: Colors.green[700], fontSize: 12, fontWeight: '700' }}>Tukar</Text>
+                <Text style={{ color: Colors.green[700], fontSize: 12, fontWeight: '700' }}>{t('home.redeem')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -164,14 +165,14 @@ export default function HomeScreen() {
               <View style={[dynamicStyles.menuIconBox, { backgroundColor: f.color + (isDark ? '25' : '15') }]}>
                 <Ionicons name={f.icon} size={26} color={f.color} />
               </View>
-              <Text style={dynamicStyles.menuTitle}>{f.titleKey}</Text>
+              <Text style={dynamicStyles.menuTitle}>{t('tabs.' + f.titleKey.toLowerCase(), f.titleKey)}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Impact Stats (Horizontal Scroll) */}
         <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>Jejak Kebaikan Kita</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('home.impact_footprint')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Spacing.xl, gap: Spacing.md, paddingBottom: 8 }}>
             {statsList.map((s, i) => (
               <View key={i} style={[dynamicStyles.statCard, Shadows.sm]}>
@@ -190,16 +191,16 @@ export default function HomeScreen() {
         {/* Recent Campaigns (Horizontal Slider) */}
         <View style={[dynamicStyles.section, { marginTop: Spacing.xl }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.xl, marginBottom: Spacing.md }}>
-            <Text style={dynamicStyles.sectionTitle}>Aksi Hijau Terbaru</Text>
+            <Text style={dynamicStyles.sectionTitle}>{t('home.recent_campaigns')}</Text>
             <TouchableOpacity>
-              <Text style={{ color: Colors.green[500], fontWeight: '600', fontSize: 13 }}>Lihat Semua</Text>
+              <Text style={{ color: Colors.green[500], fontWeight: '600', fontSize: 13 }}>{t('home.see_all')}</Text>
             </TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToInterval={width * 0.75 + Spacing.md} decelerationRate="fast" contentContainerStyle={{ paddingHorizontal: Spacing.xl, gap: Spacing.md, paddingBottom: 20 }}>
             {campaigns.length === 0 ? (
               <View style={{ width: width - Spacing.xl * 2, padding: Spacing.xl, alignItems: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : Colors.gray[100], borderRadius: 20 }}>
                 <Ionicons name="leaf-outline" size={32} color={colors.textMuted} style={{ marginBottom: 8 }} />
-                <Text style={{ color: colors.textMuted, fontSize: 13, textAlign: 'center' }}>Belum ada kampanye ZISWAF yang aktif saat ini.</Text>
+                <Text style={{ color: colors.textMuted, fontSize: 13, textAlign: 'center' }}>{t('home.no_campaigns')}</Text>
               </View>
             ) : (
               campaigns.map((camp) => {
@@ -219,7 +220,7 @@ export default function HomeScreen() {
                       <View style={dynamicStyles.progressBarBg}>
                         <View style={[dynamicStyles.progressBarFill, { width: `${progress}%` }]} />
                       </View>
-                      <Text style={dynamicStyles.progressText}>{Math.round(progress)}% Terkumpul</Text>
+                      <Text style={dynamicStyles.progressText}>{Math.round(progress)}{t('home.collected')}</Text>
                     </View>
                   </TouchableOpacity>
                 );

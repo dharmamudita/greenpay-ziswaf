@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { formatCurrency } from '../../utils/currency';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
@@ -18,7 +19,7 @@ export default function MarketplaceScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [purchasing, setPurchasing] = useState(null);
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -47,10 +48,10 @@ export default function MarketplaceScreen() {
 
   const handlePurchase = async (productId, productName) => {
     Alert.alert(
-      "Konfirmasi Pembelian",
-      `Apakah Anda yakin ingin membeli ${productName}?`,
+      t('marketplace.confirm_buy'),
+      `${t('marketplace.confirm_buy_desc')} ${productName}?`,
       [
-        { text: "Batal", style: "cancel" },
+        { text: t('marketplace.cancel'), style: "cancel" },
         { 
           text: "Beli", 
           onPress: async () => {
@@ -60,11 +61,11 @@ export default function MarketplaceScreen() {
                 productId: productId,
                 quantity: 1
               });
-              Alert.alert('Sukses', 'Pesanan Anda sedang diproses!');
+              Alert.alert(t('marketplace.success'), t('marketplace.success_desc'));
               fetchProducts(); // Refresh stock
             } catch (error) {
               console.log('Error purchasing:', error);
-              Alert.alert('Gagal', 'Terjadi kesalahan saat membuat pesanan.');
+              Alert.alert(t('marketplace.failed'), t('marketplace.failed_desc'));
             } finally {
               setPurchasing(null);
             }
@@ -91,7 +92,7 @@ export default function MarketplaceScreen() {
     return matchSearch && matchCat;
   });
 
-  const fmt = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
+  const fmt = (n) => formatCurrency(n, i18n.language);
 
   return (
     <ScrollView 
@@ -104,7 +105,7 @@ export default function MarketplaceScreen() {
         {/* Header Section */}
         <View style={dynamicStyles.headerContainer}>
           <Text style={dynamicStyles.pageTitle}>{t('marketplace.title')} <Text style={{ color: Colors.green[500] }}>{t('marketplace.title_highlight')}</Text></Text>
-          <Text style={dynamicStyles.pageDesc}>Dukung UMKM lokal dengan produk ramah lingkungan.</Text>
+          <Text style={dynamicStyles.pageDesc}>{t('marketplace.subtitle')}</Text>
         </View>
 
         {/* Premium Search Bar */}
@@ -147,8 +148,8 @@ export default function MarketplaceScreen() {
             <View style={dynamicStyles.emptyIconBox}>
               <Ionicons name="cube-outline" size={48} color={isDark ? Colors.gray[600] : Colors.gray[300]} />
             </View>
-            <Text style={dynamicStyles.emptyTitle}>Produk Tidak Ditemukan</Text>
-            <Text style={dynamicStyles.emptyDesc}>Coba cari dengan kata kunci lain atau pilih kategori yang berbeda.</Text>
+            <Text style={dynamicStyles.emptyTitle}>{t('marketplace.not_found')}</Text>
+            <Text style={dynamicStyles.emptyDesc}>{t('marketplace.not_found_desc')}</Text>
           </View>
         ) : (
           <View style={dynamicStyles.prodGrid}>
@@ -194,7 +195,7 @@ export default function MarketplaceScreen() {
                     {purchasing === p.id ? (
                       <ActivityIndicator size="small" color={Colors.white} />
                     ) : (
-                      <Text style={dynamicStyles.buyBtnText}>{p.stock <= 0 ? 'Habis' : 'Beli Sekarang'}</Text>
+                      <Text style={dynamicStyles.buyBtnText}>{p.stock <= 0 ? t('marketplace.out_of_stock') : t('marketplace.buy')}</Text>
                     )}
                   </TouchableOpacity>
                 </View>
