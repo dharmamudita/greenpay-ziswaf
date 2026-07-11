@@ -15,32 +15,62 @@ export default function DistrikDashboardScreen() {
 
   const dynamicStyles = getStyles(colors, isDark);
 
+  const distrikMenu = [
+    {
+      title: 'Tinjau Setoran',
+      icon: 'scan',
+      route: '/admin/distrik',
+      color: Colors.green[500],
+      bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50],
+      badge: '3'
+    },
+    {
+      title: 'Verifikasi Reward',
+      icon: 'gift',
+      route: '/distrik/reward',
+      color: Colors.purple,
+      bg: isDark ? 'rgba(168, 85, 247, 0.15)' : '#F3E8FF',
+    },
+    {
+      title: 'Kelola Toko',
+      icon: 'storefront',
+      route: '/distrik/toko',
+      color: Colors.warning || '#F59E0B',
+      bg: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7',
+    },
+    {
+      title: 'Riwayat Setoran',
+      icon: 'time',
+      route: '/distrik/history',
+      color: Colors.info,
+      bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
+    },
+    {
+      title: 'Profil Bank Sampah',
+      icon: 'location',
+      route: '/distrik/profile',
+      color: Colors.gold[500],
+      bg: isDark ? 'rgba(245, 158, 11, 0.15)' : Colors.gold[50],
+    },
+  ];
+
   const capacityUsed = 750; // Mock data
   const capacityMax = 1000;
   const capacityPercent = (capacityUsed / capacityMax) * 100;
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
-      
-      {/* Header Background */}
-      <View style={dynamicStyles.headerBackground}>
-        <LinearGradient 
-          colors={[isDark ? 'rgba(59, 130, 246, 0.15)' : Colors.info + '20', colors.bg]} 
-          style={StyleSheet.absoluteFillObject}
-        />
-      </View>
-
-      <View style={dynamicStyles.container}>
+    <View style={dynamicStyles.screen}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         
-        {/* Top Bar */}
-        <View style={dynamicStyles.topBar}>
-          <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-          <View style={dynamicStyles.headerTextWrap}>
-            <Text style={dynamicStyles.pageTitle}>Panel Distrik</Text>
-          </View>
+        {/* Header Background */}
+        <View style={dynamicStyles.headerBackground}>
+          <LinearGradient 
+            colors={[isDark ? 'rgba(59, 130, 246, 0.15)' : Colors.info + '20', colors.bg]} 
+            style={StyleSheet.absoluteFillObject}
+          />
         </View>
+
+        <View style={dynamicStyles.container}>
 
         {/* Hero Card: Status & Capacity */}
         <View style={[dynamicStyles.heroCard, Shadows.lg]}>
@@ -85,39 +115,25 @@ export default function DistrikDashboardScreen() {
 
         {/* Quick Actions / Widgets */}
         <Text style={dynamicStyles.sectionTitle}>Pusat Kendali</Text>
-        <View style={dynamicStyles.widgetGrid}>
-          
-          <TouchableOpacity style={dynamicStyles.widgetCard} activeOpacity={0.7} onPress={() => {}}>
-            <View style={[dynamicStyles.widgetIconWrap, { backgroundColor: Colors.gold[500] }]}>
-              <Ionicons name="scan" size={24} color={Colors.white} />
-            </View>
-            <Text style={dynamicStyles.widgetTitle}>Verifikasi Setoran</Text>
-            <View style={dynamicStyles.badgeIndicator}>
-              <Text style={dynamicStyles.badgeText}>3</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={dynamicStyles.widgetCard} activeOpacity={0.7} onPress={() => {}}>
-            <View style={[dynamicStyles.widgetIconWrap, { backgroundColor: Colors.purple }]}>
-              <Ionicons name="layers" size={24} color={Colors.white} />
-            </View>
-            <Text style={dynamicStyles.widgetTitle}>Inventaris Gudang</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={dynamicStyles.widgetCard} activeOpacity={0.7} onPress={() => {}}>
-            <View style={[dynamicStyles.widgetIconWrap, { backgroundColor: Colors.green[500] }]}>
-              <Ionicons name="car" size={24} color={Colors.white} />
-            </View>
-            <Text style={dynamicStyles.widgetTitle}>Jual ke Pusat</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={dynamicStyles.widgetCard} activeOpacity={0.7} onPress={() => {}}>
-            <View style={[dynamicStyles.widgetIconWrap, { backgroundColor: Colors.gray[500] }]}>
-              <Ionicons name="stats-chart" size={24} color={Colors.white} />
-            </View>
-            <Text style={dynamicStyles.widgetTitle}>Laporan Keuangan</Text>
-          </TouchableOpacity>
-
+        <View style={dynamicStyles.menuGrid}>
+          {distrikMenu.map((item, index) => (
+            <TouchableOpacity 
+              key={index} 
+              style={dynamicStyles.menuItem}
+              onPress={() => router.push(item.route)}
+              activeOpacity={0.7}
+            >
+              <View style={[dynamicStyles.menuIconBox, { backgroundColor: item.bg }]}>
+                <Ionicons name={item.icon} size={26} color={item.color} />
+                {item.badge && (
+                  <View style={dynamicStyles.badgeIndicator}>
+                    <Text style={dynamicStyles.badgeText}>{item.badge}</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={dynamicStyles.menuTitle}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         {/* Recent Pending Deposits */}
@@ -160,19 +176,16 @@ export default function DistrikDashboardScreen() {
 
       </View>
       <View style={{ height: Spacing['3xl'] }} />
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
+
   headerBackground: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  container: { padding: Spacing.xl, paddingTop: Spacing.xl },
-  
-  topBar: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.xl },
-  backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100], alignItems: 'center', justifyContent: 'center', marginRight: Spacing.md },
-  headerTextWrap: { flex: 1 },
-  pageTitle: { fontSize: 20, fontWeight: '800', color: colors.text, letterSpacing: -0.5 },
+  container: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.xl },
 
   // Hero Card
   heroCard: { borderRadius: BorderRadius['2xl'], marginBottom: Spacing['2xl'], shadowColor: Colors.info, shadowOpacity: isDark ? 0.4 : 0.2, shadowRadius: 15 },
@@ -191,14 +204,14 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   progressBarFill: { height: '100%', borderRadius: 4 },
   warningText: { color: '#FCA5A5', fontSize: 11, fontWeight: '700', marginTop: 8, fontStyle: 'italic' },
 
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: colors.text, marginBottom: Spacing.md, letterSpacing: -0.5 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: colors.text, marginBottom: Spacing.lg, letterSpacing: -0.5 },
   
-  // Widget Grid
-  widgetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: Spacing['2xl'] },
-  widgetCard: { width: '47%', backgroundColor: colors.surface, padding: Spacing.lg, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border, ...Shadows.sm },
-  widgetIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md },
-  widgetTitle: { fontSize: 14, fontWeight: '700', color: colors.text, lineHeight: 20 },
-  badgeIndicator: { position: 'absolute', top: 12, right: 12, backgroundColor: Colors.danger, width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  // Menu Grid
+  menuGrid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: Spacing.sm, justifyContent: 'flex-start', marginBottom: Spacing['xl'] },
+  menuItem: { width: '33.33%', alignItems: 'center', marginBottom: Spacing.xl },
+  menuIconBox: { width: 56, height: 56, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  menuTitle: { fontSize: 11.5, fontWeight: '600', color: colors.text, textAlign: 'center', marginTop: 4, paddingHorizontal: 4 },
+  badgeIndicator: { position: 'absolute', top: -4, right: -4, backgroundColor: Colors.danger, width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.bg },
   badgeText: { color: Colors.white, fontSize: 10, fontWeight: '800' },
 
   // List

@@ -94,12 +94,13 @@ export default function AiScannerScreen() {
   return (
     <ScrollView style={dynamicStyles.screen} contentContainerStyle={dynamicStyles.container}>
       <View style={dynamicStyles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <View style={dynamicStyles.headerTextWrap}>
+        <View style={dynamicStyles.headerCenter}>
           <Text style={dynamicStyles.title}>{t('ai_scanner.title')}</Text>
         </View>
+        <View style={{ width: 24 }} />
       </View>
 
       <Text style={dynamicStyles.subtitle}>
@@ -182,28 +183,22 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.md,
     backgroundColor: colors.bg,
   },
-  backBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+  headerCenter: {
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
-  },
-  headerTextWrap: {
     flex: 1,
+    paddingHorizontal: 12,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 18,
+    fontWeight: '700',
     color: colors.text,
-    letterSpacing: -0.5,
+    textAlign: 'center',
   },
   subtitle: { fontSize: 14, color: colors.textMuted, lineHeight: 22, textAlign: 'center', marginBottom: Spacing.xl },
   

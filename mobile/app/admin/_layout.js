@@ -27,13 +27,17 @@ export default function AdminLayout() {
       <Stack.Screen 
         name="distrik" 
         options={{ 
-          title: 'Verifikasi Setoran',
-          headerTitleAlign: 'center',
-          headerShown: false
+          title: 'Setoran Sampah'
         }} 
       />
       <Stack.Screen 
         name="users" 
+        options={{ 
+          headerShown: false
+        }} 
+      />
+      <Stack.Screen 
+        name="verify-distrik" 
         options={{ 
           headerShown: false
         }} 

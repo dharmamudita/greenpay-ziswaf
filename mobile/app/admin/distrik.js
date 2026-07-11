@@ -138,20 +138,7 @@ export default function DistrikDashboard() {
   }
 
   return (
-    <SafeAreaView style={dynamicStyles.container} edges={['top']}>
-      <View style={dynamicStyles.header}>
-        <TouchableOpacity 
-          style={dynamicStyles.backBtn} 
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <View style={dynamicStyles.headerTextWrap}>
-          <Text style={dynamicStyles.title}>Setoran Sampah</Text>
-          <Text style={dynamicStyles.subtitle}>Verifikasi Antrean Setoran Sampah</Text>
-        </View>
-      </View>
+    <View style={dynamicStyles.container}>
 
       {loading ? (
         <View style={dynamicStyles.centerContent}>
@@ -177,7 +164,7 @@ export default function DistrikDashboard() {
           onRefresh={fetchPendingDeposits}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -187,35 +174,28 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     backgroundColor: colors.bg,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: Spacing.xl,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.md,
     backgroundColor: colors.bg,
   },
-  backBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+  headerTopRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
+    justifyContent: 'space-between',
   },
-  headerTextWrap: {
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
     flex: 1,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 13,
+  headerSubtitle: {
+    fontSize: 12,
     color: colors.textMuted,
     marginTop: 2,
+    textAlign: 'center',
   },
   centerContent: {
     flex: 1,

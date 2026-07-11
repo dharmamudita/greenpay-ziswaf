@@ -103,17 +103,18 @@ export default function AdminUsersScreen() {
   };
 
   return (
-    <SafeAreaView style={dynamicStyles.container} edges={['top']}>
+    <View style={dynamicStyles.container}>
       
       {/* Header */}
       <View style={dynamicStyles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={dynamicStyles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <View style={dynamicStyles.headerTextWrap}>
-          <Text style={dynamicStyles.title}>Data Pengguna</Text>
-          <Text style={dynamicStyles.subtitle}>Kelola peran (role) pengguna terdaftar</Text>
+        <View style={dynamicStyles.headerTopRow}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={dynamicStyles.headerTitle}>Data Pengguna</Text>
+          <View style={{ width: 24 }} />
         </View>
+        <Text style={dynamicStyles.headerSubtitle}>Kelola peran (role) pengguna terdaftar</Text>
       </View>
 
       {/* List */}
@@ -186,46 +187,38 @@ export default function AdminUsersScreen() {
         </View>
       </Modal>
 
-    </SafeAreaView>
+    </View>
   );
 }
 
 const getStyles = (colors, isDark) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: Spacing.xl,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.md,
     backgroundColor: colors.bg,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  backBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : Colors.gray[100],
+  headerTopRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
+    justifyContent: 'space-between',
   },
-  headerTextWrap: {
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
     flex: 1,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 13,
+  headerSubtitle: {
+    fontSize: 12,
     color: colors.textMuted,
     marginTop: 2,
+    textAlign: 'center',
   },
-  
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   
   listContainer: { padding: Spacing.xl, paddingBottom: 100 },
