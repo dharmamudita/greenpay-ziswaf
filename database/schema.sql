@@ -139,6 +139,8 @@ CREATE TABLE rewards (
     image_url TEXT,
     stock INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
+    created_by UUID REFERENCES users(id),
+    distrik_name VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
