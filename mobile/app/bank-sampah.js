@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking, Image, Alert, Modal, ActivityIndicator, Platform } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Linking, Image, Alert, Modal, ActivityIndicator, Platform, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
@@ -33,6 +33,7 @@ export default function BankSampahScreen() {
   const [loadingLocs, setLoadingLocs] = useState(true);
   const [showLocModal, setShowLocModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
@@ -54,8 +55,14 @@ export default function BankSampahScreen() {
       console.log('Error fetching locations:', error);
     } finally {
       setLoadingLocs(false);
+      setRefreshing(false);
     }
   };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchLocations();
+  }, []);
 
   const typeDetails = wasteTypes.find(t => t.id === selectedType);
   const estimatedPoints = weight ? parseFloat(weight) * typeDetails.points : 0;
@@ -129,7 +136,11 @@ export default function BankSampahScreen() {
   };
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={dynamicStyles.screen} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+    >
       
       {/* Soft Background Gradient */}
       <View style={dynamicStyles.headerBackground}>
