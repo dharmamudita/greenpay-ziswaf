@@ -14,12 +14,12 @@ export const Colors = {
     900: '#071C0E',
   },
   
-  // Premium Accent (Subtle, elegant gold/bronze for highlights, not too bright yellow)
+  // Premium Accent (Sesuai tema hijau utama)
   gold: {
-    300: '#E5C989',
-    400: '#D5B05C',
-    500: '#C19736',
-    600: '#9C7826',
+    300: '#5AC17B', // green-200
+    400: '#269D4D', // green-300
+    500: '#1D7A3C', // green-400
+    600: '#165E2E', // green-500
   },
   
   // Dark Theme (Very deep slate/navy, much more premium than pure black #000)
