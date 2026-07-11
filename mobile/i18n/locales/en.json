@@ -292,7 +292,13 @@
     "stock": "Stock",
     "dashboard_title": "District Dashboard",
     "manage_store": "Manage Store",
-    "profile_title": "Waste Bank Profile"
+    "profile_title": "Waste Bank Profile",
+    "menu_tinjau": "Review Deposits",
+    "menu_toko": "Manage Store",
+    "menu_riwayat": "Deposit History",
+    "menu_profil": "Waste Bank Profile",
+    "open": "OPEN",
+    "closed": "CLOSED"
   },
   "leaderboard": {
     "hero_text": "Be the Best!"

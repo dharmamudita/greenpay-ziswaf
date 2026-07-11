@@ -131,7 +131,7 @@ export default function DistrikDashboardScreen() {
                 <Text style={dynamicStyles.heroSubtitle}>ID: DISTRIK-{user?.id ? user.id.substring(0,6).toUpperCase() : '001'}</Text>
               </View>
               <View style={dynamicStyles.statusToggleWrap}>
-                <Text style={dynamicStyles.statusText}>{isOpen ? 'BUKA' : 'TUTUP'}</Text>
+                <Text style={dynamicStyles.statusText}>{isOpen ? t('distrik.open', {defaultValue: 'BUKA'}) : t('distrik.closed', {defaultValue: 'TUTUP'})}</Text>
                 <Switch 
                   value={isOpen} 
                   onValueChange={setIsOpen}
@@ -175,7 +175,7 @@ export default function DistrikDashboardScreen() {
                   </View>
                 )}
               </View>
-              <Text style={dynamicStyles.menuTitle}>{item.title}</Text>
+              <Text style={dynamicStyles.menuTitle}>{t('distrik.menu_' + item.id, {defaultValue: item.title})}</Text>
             </TouchableOpacity>
           ))}
         </View>

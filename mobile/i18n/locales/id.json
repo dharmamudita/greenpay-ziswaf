@@ -285,7 +285,13 @@
     "stock": "Stok",
     "dashboard_title": "Dashboard Distrik",
     "manage_store": "Kelola Toko",
-    "profile_title": "Profil Bank Sampah"
+    "profile_title": "Profil Bank Sampah",
+    "menu_tinjau": "Tinjau Setoran",
+    "menu_toko": "Kelola Toko",
+    "menu_riwayat": "Riwayat Setoran",
+    "menu_profil": "Profil Bank Sampah",
+    "open": "BUKA",
+    "closed": "TUTUP"
   },
   "transparency": {
     "title": "Laporan Transparansi",
