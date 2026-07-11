@@ -105,25 +105,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Keamanan & Lainnya */}
-        <Text style={dynamicStyles.sectionTitle}>{t('settings.access')}</Text>
-        <View style={[dynamicStyles.card, Shadows.sm]}>
-          <TouchableOpacity 
-            style={[dynamicStyles.optionRow, { borderBottomWidth: 0 }]} 
-            onPress={logout}
-            activeOpacity={0.7}
-          >
-            <View style={dynamicStyles.optionLeft}>
-              <View style={[dynamicStyles.iconWrap, { backgroundColor: Colors.danger }]}>
-                <Ionicons name="log-out" size={18} color={Colors.white} />
-              </View>
-              <Text style={[dynamicStyles.optionTitle, { color: Colors.danger }]}>{t('settings.logout')}</Text>
-            </View>
-            <View style={dynamicStyles.optionRight}>
-              <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={{ opacity: 0.5 }} />
-            </View>
-          </TouchableOpacity>
-        </View>
+
 
         {/* Premium System Footer */}
         <View style={dynamicStyles.footerContainer}>
