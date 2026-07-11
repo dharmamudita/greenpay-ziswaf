@@ -281,7 +281,7 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   greetingText: { fontSize: 18, fontWeight: '800', color: colors.text },
   statusText: { fontSize: 13, color: colors.textMuted, fontWeight: '500', marginTop: 2 },
   notificationBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? colors.bg : Colors.gray[100], alignItems: 'center', justifyContent: 'center' },
-  notificationDot: { position: 'absolute', top: 10, right: 10, width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.error },
+  notificationDot: { position: 'absolute', top: 8, right: 10, width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.error, borderWidth: 2, borderColor: isDark ? colors.bg : Colors.gray[100] },
   
   // Hero Card
   heroCard: {
