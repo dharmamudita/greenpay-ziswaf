@@ -205,7 +205,9 @@
     "see_all": "Lihat Semua",
     "no_campaigns": "Belum ada kampanye ZISWAF yang aktif saat ini.",
     "collected": "% Terkumpul",
-    "impact_footprint": "Jejak Kebaikan Kita"
+    "impact_footprint": "Jejak Dampak Kita",
+    "donasi": "Donasi",
+    "sampah": "Sampah"
   },
   "ziswaf": {
     "quote": "\"Harta tidak akan berkurang dengan sedekah. Dan seorang hamba yang pemaaf pasti akan Allah tambahkan kewibawaan baginya.\"",
@@ -242,11 +244,28 @@
     "calculator_not_reached": "Total penghasilan belum mencapai nisab wajib zakat bulanan.",
     "calculator_not_obliged": "Belum Wajib Zakat",
     "empty_title": "Belum Ada Program",
-    "empty_desc": "Saat ini belum ada program yang aktif di kategori ini.",
+    "empty_desc": "Belum ada program ZISWAF aktif untuk kategori ini.",
     "collected": "Terkumpul",
     "target": "Target",
     "ai_predict": "Prediksi AI",
-    "donate_now": "Tunaikan"
+    "donate_now": "Donasi Sekarang"
+  },
+  "profile": {
+    "user": "Pengguna",
+    "role_admin": "Administrator",
+    "role_district": "Akun Distrik",
+    "role_user": "Pengguna Aktif",
+    "menu_title": "Menu Utama",
+    "logout": "Keluar dari Akun",
+    "admin_dashboard": "Dashboard Admin",
+    "district_panel": "Panel Distrik",
+    "impact_passport": "Impact Passport",
+    "impact_dashboard": "Dashboard Dampak",
+    "waste_bank": "Bank Sampah",
+    "register_district": "Daftar Jadi Distrik",
+    "unauth_title": "Bergabung dengan Gerakan Hijau",
+    "unauth_desc": "Masuk sekarang untuk melacak donasi, menukar poin, dan berpartisipasi menjaga bumi.",
+    "unauth_btn": "Masuk / Daftar Sekarang"
   },
   "impact": {
     "global_report": "LAPORAN DAMPAK GLOBAL",

@@ -205,7 +205,9 @@
     "see_all": "See All",
     "no_campaigns": "No active ZISWAF campaigns at the moment.",
     "collected": "% Collected",
-    "impact_footprint": "Our Impact Footprint"
+    "impact_footprint": "Our Impact Footprint",
+    "donasi": "Donation",
+    "sampah": "Waste"
   },
   "ziswaf": {
     "quote": "\"Wealth will not decrease because of charity. And an evaluating servant will certainly be granted more prestige by Allah.\"",
@@ -247,6 +249,23 @@
     "target": "Target",
     "ai_predict": "AI Predict",
     "donate_now": "Donate Now"
+  },
+  "profile": {
+    "user": "User",
+    "role_admin": "Administrator",
+    "role_district": "District Account",
+    "role_user": "Active User",
+    "menu_title": "Main Menu",
+    "logout": "Log Out",
+    "admin_dashboard": "Admin Dashboard",
+    "district_panel": "District Panel",
+    "impact_passport": "Impact Passport",
+    "impact_dashboard": "Impact Dashboard",
+    "waste_bank": "Waste Bank",
+    "register_district": "Register as District",
+    "unauth_title": "Join the Green Movement",
+    "unauth_desc": "Sign in now to track donations, redeem points, and participate in saving the earth.",
+    "unauth_btn": "Sign In / Register Now"
   },
   "impact": {
     "global_report": "GLOBAL IMPACT REPORT",
