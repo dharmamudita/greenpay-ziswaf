@@ -114,7 +114,7 @@ export default function LeaderboardScreen() {
               <View style={dynamicStyles.heroIconBg}>
                 <Ionicons name="trophy" size={56} color={Colors.gold[400]} />
               </View>
-              <Text style={dynamicStyles.heroText}>Jadilah yang Terbaik!</Text>
+              <Text style={dynamicStyles.heroText}>{t('leaderboard.hero_text', {defaultValue: 'Jadilah yang Terbaik!'})}</Text>
             </View>
           )}
         />

@@ -105,12 +105,12 @@ export default function RegisterDistrikScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
       >
         <Ionicons name="time-outline" size={80} color={Colors.info} />
-        <Text style={dynamicStyles.title}>Menunggu Verifikasi</Text>
+        <Text style={dynamicStyles.title}>{t('reg_distrik.waiting', {defaultValue: 'Menunggu Verifikasi'})}</Text>
         <Text style={dynamicStyles.subtitle}>
-          Pengajuan Anda sebagai Distrik Sampah sedang ditinjau oleh Admin. Mohon bersabar ya!
+          {t('reg_distrik.waiting_desc', {defaultValue: 'Pengajuan Anda sebagai Distrik Sampah sedang ditinjau oleh Admin. Mohon bersabar ya!'})}
         </Text>
         <TouchableOpacity style={dynamicStyles.backBtn} onPress={() => router.back()}>
-          <Text style={dynamicStyles.backBtnText}>Kembali</Text>
+          <Text style={dynamicStyles.backBtnText}>{t('reg_distrik.back', {defaultValue: 'Kembali'})}</Text>
         </TouchableOpacity>
       </ScrollView>
     );
@@ -125,15 +125,15 @@ export default function RegisterDistrikScreen() {
       <ScrollView contentContainerStyle={dynamicStyles.container}>
         <View style={dynamicStyles.header}>
           <Ionicons name="business" size={60} color={Colors.green[500]} />
-          <Text style={dynamicStyles.title}>Daftar Distrik Sampah</Text>
+          <Text style={dynamicStyles.title}>{t('reg_distrik.title', {defaultValue: 'Daftar Distrik Sampah'})}</Text>
           <Text style={dynamicStyles.subtitle}>
-            Bergabunglah menjadi mitra pengelola sampah di lingkungan Anda dan tebarkan manfaat.
+            {t('reg_distrik.subtitle', {defaultValue: 'Bergabunglah menjadi mitra pengelola sampah di lingkungan Anda dan tebarkan manfaat.'})}
           </Text>
         </View>
 
         <View style={dynamicStyles.formCard}>
           <View style={dynamicStyles.inputGroup}>
-            <Text style={dynamicStyles.label}>Nama Bank Sampah / Distrik</Text>
+            <Text style={dynamicStyles.label}>{t('reg_distrik.name_label', {defaultValue: 'Nama Bank Sampah / Distrik'})}</Text>
             <View style={dynamicStyles.inputWrap}>
               <Ionicons name="home-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
               <TextInput
@@ -147,7 +147,7 @@ export default function RegisterDistrikScreen() {
           </View>
 
           <View style={dynamicStyles.inputGroup}>
-            <Text style={dynamicStyles.label}>Alamat Lengkap</Text>
+            <Text style={dynamicStyles.label}>{t('reg_distrik.address_label', {defaultValue: 'Alamat Lengkap'})}</Text>
             <View style={[dynamicStyles.inputWrap, { alignItems: 'flex-start' }]}>
               <Ionicons name="location-outline" size={20} color={colors.textMuted} style={[dynamicStyles.inputIcon, { marginTop: 14 }]} />
               <TextInput
@@ -163,7 +163,7 @@ export default function RegisterDistrikScreen() {
           </View>
 
           <View style={dynamicStyles.inputGroup}>
-            <Text style={dynamicStyles.label}>Nomor WhatsApp/HP</Text>
+            <Text style={dynamicStyles.label}>{t('reg_distrik.phone_label', {defaultValue: 'Nomor WhatsApp/HP'})}</Text>
             <View style={dynamicStyles.inputWrap}>
               <Ionicons name="call-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
               <TextInput
@@ -181,7 +181,7 @@ export default function RegisterDistrikScreen() {
             {submitting ? (
               <ActivityIndicator color={Colors.white} />
             ) : (
-              <Text style={dynamicStyles.submitBtnText}>Kirim Pengajuan</Text>
+              <Text style={dynamicStyles.submitBtnText}>{t('reg_distrik.submit', {defaultValue: 'Kirim Pengajuan'})}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -196,7 +196,7 @@ export default function RegisterDistrikScreen() {
                 <Ionicons name="mail-open" size={32} color={Colors.green[500]} />
               </View>
               
-              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 8 }}>Cek Email Anda</Text>
+              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 8 }}>{t('reg_distrik.check_email', {defaultValue: 'Cek Email Anda'})}</Text>
               <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 22 }}>
                 Kami telah mengirimkan OTP keamanan ke <Text style={{ fontWeight: '700', color: colors.text }}>{user?.email}</Text>.
               </Text>
@@ -218,11 +218,11 @@ export default function RegisterDistrikScreen() {
               </View>
 
               <TouchableOpacity style={[dynamicStyles.submitBtn, { width: '100%', marginBottom: 12 }]} onPress={handleVerifyOtp} disabled={loadingOtp}>
-                {loadingOtp ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>Verifikasi</Text>}
+                {loadingOtp ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>{t('reg_distrik.verify', {defaultValue: 'Verifikasi'})}</Text>}
               </TouchableOpacity>
               
               <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
-                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>Batal</Text>
+                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>{t('reg_distrik.cancel', {defaultValue: 'Batal'})}</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>

@@ -154,7 +154,7 @@ export default function BankSampahScreen() {
         
         {/* Premium Location Selector */}
         <View style={dynamicStyles.locationSelectorWrapper}>
-          <Text style={dynamicStyles.sectionLabel}>Lokasi Setoran</Text>
+          <Text style={dynamicStyles.sectionLabel}>{t('bank_sampah.location', {defaultValue: 'Lokasi Setoran'})}</Text>
           <TouchableOpacity 
             style={dynamicStyles.premiumSelector} 
             activeOpacity={0.8}
@@ -225,13 +225,13 @@ export default function BankSampahScreen() {
           </LinearGradient>
         </TouchableOpacity>
 
-        <Text style={dynamicStyles.sectionTitle}>Setoran Manual</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('bank_sampah.manual_deposit', {defaultValue: 'Setoran Manual'})}</Text>
         
         {/* Interactive Form */}
         <View style={dynamicStyles.formContainer}>
           
           {/* Waste Types Grid */}
-          <Text style={dynamicStyles.label}>Kategori Sampah</Text>
+          <Text style={dynamicStyles.label}>{t('bank_sampah.waste_category', {defaultValue: 'Kategori Sampah'})}</Text>
           <View style={dynamicStyles.typeGrid}>
             {wasteTypes.map((type) => {
               const isActive = selectedType === type.id;
@@ -283,7 +283,7 @@ export default function BankSampahScreen() {
                 <Image source={{ uri: photoUri }} style={dynamicStyles.photoPreview} />
                 <View style={dynamicStyles.photoRetakeBtn}>
                   <Ionicons name="camera-reverse" size={20} color={Colors.white} />
-                  <Text style={dynamicStyles.photoRetakeText}>Ganti Foto</Text>
+                  <Text style={dynamicStyles.photoRetakeText}>{t('bank_sampah.retake_photo', {defaultValue: 'Ganti Foto'})}</Text>
                 </View>
               </View>
             ) : (
@@ -291,7 +291,7 @@ export default function BankSampahScreen() {
                 <View style={dynamicStyles.photoIconCircle}>
                   <Ionicons name="camera" size={32} color={Colors.green[500]} />
                 </View>
-                <Text style={dynamicStyles.photoHint}>Ketuk untuk potret sampah</Text>
+                <Text style={dynamicStyles.photoHint}>{t('bank_sampah.tap_to_capture', {defaultValue: 'Ketuk untuk potret sampah'})}</Text>
                 <Text style={dynamicStyles.photoHintSmall}>Sistem akan mencatat lokasi & waktu</Text>
               </View>
             )}
@@ -301,7 +301,7 @@ export default function BankSampahScreen() {
           <View style={dynamicStyles.receiptBox}>
             <View style={dynamicStyles.receiptHeader}>
               <Ionicons name="receipt-outline" size={16} color={Colors.green[600]} />
-              <Text style={dynamicStyles.receiptTitle}>ESTIMASI PENDAPATAN</Text>
+              <Text style={dynamicStyles.receiptTitle}>{t('bank_sampah.est_revenue', {defaultValue: 'ESTIMASI PENDAPATAN'})}</Text>
             </View>
             <View style={dynamicStyles.receiptDivider} />
             <View style={dynamicStyles.receiptRow}>
@@ -342,8 +342,8 @@ export default function BankSampahScreen() {
             </View>
             <View style={dynamicStyles.modalHeader}>
               <View>
-                <Text style={dynamicStyles.modalTitle}>Pilih Distrik</Text>
-                <Text style={dynamicStyles.modalSubtitle}>Tempat penyaluran setoran sampah Anda</Text>
+                <Text style={dynamicStyles.modalTitle}>{t('bank_sampah.select_district', {defaultValue: 'Pilih Distrik'})}</Text>
+                <Text style={dynamicStyles.modalSubtitle}>{t('bank_sampah.district_subtitle', {defaultValue: 'Tempat penyaluran setoran sampah Anda'})}</Text>
               </View>
               <TouchableOpacity onPress={() => setShowLocModal(false)} style={dynamicStyles.modalCloseBtn}>
                 <Ionicons name="close" size={20} color={colors.textMuted} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator, RefreshControl } from 'react-native';
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import Colors from '../theme/colors';
@@ -11,6 +12,7 @@ import api from '../services/api';
 export default function NotificationsScreen() {
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('Semua');
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +91,7 @@ export default function NotificationsScreen() {
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={dynamicStyles.headerCenter}>
-          <Text style={dynamicStyles.headerTitle}>Notifikasi</Text>
+          <Text style={dynamicStyles.headerTitle}>{t('notifications.title', {defaultValue: 'Notifikasi'})}</Text>
         </View>
         <View style={{ width: 24 }} />
       </View>
@@ -156,8 +158,8 @@ export default function NotificationsScreen() {
             <View style={dynamicStyles.emptyIconCircle}>
               <Ionicons name="notifications-off-outline" size={48} color={colors.textMuted} />
             </View>
-            <Text style={dynamicStyles.emptyTitle}>Belum ada notifikasi baru</Text>
-            <Text style={dynamicStyles.emptyDesc}>Notifikasi seputar transaksi dan aktivitas Anda akan muncul di sini.</Text>
+            <Text style={dynamicStyles.emptyTitle}>{t('notifications.empty_title', {defaultValue: 'Belum ada notifikasi baru'})}</Text>
+            <Text style={dynamicStyles.emptyDesc}>{t('notifications.empty_desc', {defaultValue: 'Notifikasi seputar transaksi dan aktivitas Anda akan muncul di sini.'})}</Text>
           </View>
         )}
       </ScrollView>
