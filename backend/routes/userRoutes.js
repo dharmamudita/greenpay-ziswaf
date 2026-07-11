@@ -101,4 +101,27 @@ router.put('/:id/role', authenticateToken, requireRole('admin'), async (req, res
   }
 });
 
+// GET /api/users/notifications — Get user notifications
+router.get('/notifications', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, title, message, type, is_read, created_at FROM notifications WHERE user_id = $1 ORDER BY created_at DESC',
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal mengambil notifikasi.' });
+  }
+});
+
+// PUT /api/users/notifications/:id/read — Mark notification as read
+router.put('/notifications/:id/read', authenticateToken, async (req, res) => {
+  try {
+    await pool.query('UPDATE notifications SET is_read = true WHERE id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+    res.json({ message: 'Notifikasi ditandai dibaca.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal menandai notifikasi.' });
+  }
+});
+
 module.exports = router;
