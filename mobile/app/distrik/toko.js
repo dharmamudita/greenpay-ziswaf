@@ -251,6 +251,11 @@ export default function TokoRewardManagerScreen() {
                 <TextInput style={dynamicStyles.input} placeholder="Misal: Tumbler Bambu" placeholderTextColor={colors.textMuted} value={formData.name} onChangeText={t => setFormData({...formData, name: t})} />
               </View>
 
+              <View style={dynamicStyles.formGroup}>
+                <Text style={dynamicStyles.label}>Kategori *</Text>
+                <TextInput style={dynamicStyles.input} placeholder="Misal: Aksesoris, Botol Minum, dll" placeholderTextColor={colors.textMuted} value={formData.category} onChangeText={t => setFormData({...formData, category: t})} />
+              </View>
+
               <View style={{ flexDirection: 'row', gap: 16 }}>
                 <View style={[dynamicStyles.formGroup, { flex: 1 }]}>
                   <Text style={dynamicStyles.label}>Harga (Poin GP) *</Text>
