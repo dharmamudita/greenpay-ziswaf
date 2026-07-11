@@ -64,10 +64,10 @@ router.get('/dashboard', async (req, res) => {
   try {
     const stats = await pool.query(`
       SELECT 
-        (SELECT COUNT(*) FROM users WHERE role = 'user') as total_users,
+        (SELECT COUNT(*) FROM users) as total_users,
         (SELECT COALESCE(SUM(total_waste), 0) FROM users) as total_waste_kg,
         (SELECT COALESCE(SUM(total_donation), 0) FROM users) as total_donation,
-        (SELECT COALESCE(SUM(trees_planted), 0) FROM users) as total_trees,
+        (SELECT COUNT(*) FROM ziswaf_programs WHERE is_active = true) as total_programs,
         (SELECT COALESCE(SUM(co2_reduced), 0) FROM users) as total_co2_reduced,
         (SELECT COUNT(DISTINCT umkm_name) FROM products WHERE is_active = true) as total_umkm
     `);
