@@ -10,7 +10,13 @@
     "lang_en": "English",
     "account": "Account Settings",
     "edit_data": "Edit Data",
-    "footer": "Advanced settings to personalize your experience."
+    "footer": "Advanced settings to personalize your experience.",
+    "control_center": "Control Center",
+    "subtitle": "Customize your app experience",
+    "my_account": "My Account",
+    "system_pref": "System Preferences",
+    "access": "Access",
+    "logout": "Logout"
   },
   "account": {
     "personal_data": "Personal Data",
@@ -24,7 +30,16 @@
     "old_password": "Old Password",
     "new_password": "New Password",
     "change_password": "Change Password",
-    "tap_to_change_photo": "Tap to change photo"
+    "adjust_photo": "Adjust Photo",
+    "zoom_hint": "Slide zoom to adjust",
+    "cancel": "Cancel",
+    "use_photo": "Use Photo",
+    "change_cover": "Change Cover",
+    "uploading": "Uploading...",
+    "check_email": "Check Your Email",
+    "otp_sent": "We have sent a 6-digit security OTP to",
+    "verify_save": "Verify & Save",
+    "tap_to_change_photo": "Tap avatar to change photo"
   },
   "tabs": {
     "home": "Home",
@@ -153,6 +168,20 @@
     "chart_title": "Earth Saving Trend",
     "chart_subtitle": "Accumulation of the last 30 days",
     "chart_empty": "No Saving Data Yet"
+  },
+  "passport": {
+    "title": "Impact Passport",
+    "subtitle": "Your official identity as an environmental hero.",
+    "full_name": "FULL NAME",
+    "passport_id": "PASSPORT ID",
+    "waste": "WASTE",
+    "ziswaf": "ZISWAF",
+    "planted": "PLANTED",
+    "tree_unit": "Trees",
+    "achievements_title": "Exclusive Achievements",
+    "achievements_subtitle": "Your collection of award medals",
+    "empty_title": "No Achievements Yet",
+    "empty_subtitle": "Keep collecting points and saving the environment to get exclusive medals."
   },
   "marketplace": {
     "title": "Green",

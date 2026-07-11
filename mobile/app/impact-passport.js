@@ -45,7 +45,13 @@ export default function ImpactPassportScreen() {
     fetchPassport();
   };
 
-  const fmt = (n) => {
+  const fmt = (n, isCurrency = false) => {
+    if (!n) return 0;
+    if (isCurrency && i18n.language === 'en') {
+      const usd = n / 15000;
+      if (usd >= 1000) return (usd / 1000).toFixed(1) + ' K';
+      return usd.toFixed(1);
+    }
     if (n >= 1000000) return (n / 1000000).toFixed(1) + ' Jt';
     if (n >= 1000) return (n / 1000).toFixed(1) + ' Rb';
     return n;
@@ -92,8 +98,8 @@ export default function ImpactPassportScreen() {
       <View style={dynamicStyles.container}>
         
         <View style={dynamicStyles.pageHeader}>
-          <Text style={dynamicStyles.pageTitle}>Paspor Dampak</Text>
-          <Text style={dynamicStyles.pageDesc}>Identitas resmi Anda sebagai pahlawan lingkungan.</Text>
+          <Text style={dynamicStyles.pageTitle}>{t('passport.title')}</Text>
+          <Text style={dynamicStyles.pageDesc}>{t('passport.subtitle')}</Text>
         </View>
 
         {/* VIP Smart Passport Card */}
@@ -128,10 +134,10 @@ export default function ImpactPassportScreen() {
                 </LinearGradient>
               </View>
               <View style={dynamicStyles.userInfo}>
-                <Text style={dynamicStyles.nameLabel}>NAMA LENGKAP</Text>
+                <Text style={dynamicStyles.nameLabel}>{t('passport.full_name')}</Text>
                 <Text style={dynamicStyles.name} numberOfLines={1}>{pUser?.display_name || 'Pengguna'}</Text>
                 
-                <Text style={dynamicStyles.nameLabel}>ID PASPOR</Text>
+                <Text style={dynamicStyles.nameLabel}>{t('passport.passport_id')}</Text>
                 <Text style={dynamicStyles.id}>GPZ-{new Date().getFullYear()}-{user?.id?.substring(0,6).toUpperCase() || '8X9A2C'}</Text>
                 
                 <View style={dynamicStyles.statusWrap}>
@@ -146,17 +152,17 @@ export default function ImpactPassportScreen() {
               <View style={dynamicStyles.glassmorphismContainer}>
                 <View style={dynamicStyles.passStatItem}>
                   <Text style={dynamicStyles.passStatVal}>{fmt(pUser?.total_waste || 0)} <Text style={dynamicStyles.passStatUnit}>kg</Text></Text>
-                  <Text style={dynamicStyles.passStatLbl}>Sampah</Text>
+                  <Text style={dynamicStyles.passStatLbl}>{t('passport.waste')}</Text>
                 </View>
                 <View style={dynamicStyles.passStatDivider} />
                 <View style={dynamicStyles.passStatItem}>
-                  <Text style={dynamicStyles.passStatVal}>{fmt(pUser?.total_donation || 0)} <Text style={dynamicStyles.passStatUnit}>Rp</Text></Text>
-                  <Text style={dynamicStyles.passStatLbl}>ZISWAF</Text>
+                  <Text style={dynamicStyles.passStatVal}>{fmt(pUser?.total_donation || 0, true)} <Text style={dynamicStyles.passStatUnit}>{i18n.language === 'en' ? 'USD' : 'Rp'}</Text></Text>
+                  <Text style={dynamicStyles.passStatLbl}>{t('passport.ziswaf')}</Text>
                 </View>
                 <View style={dynamicStyles.passStatDivider} />
                 <View style={dynamicStyles.passStatItem}>
-                  <Text style={dynamicStyles.passStatVal}>{pUser?.trees_planted || 0} <Text style={dynamicStyles.passStatUnit}>Pohon</Text></Text>
-                  <Text style={dynamicStyles.passStatLbl}>Ditanam</Text>
+                  <Text style={dynamicStyles.passStatVal}>{pUser?.trees_planted || 0} <Text style={dynamicStyles.passStatUnit}>{t('passport.tree_unit')}</Text></Text>
+                  <Text style={dynamicStyles.passStatLbl}>{t('passport.planted')}</Text>
                 </View>
               </View>
             </View>
@@ -171,8 +177,8 @@ export default function ImpactPassportScreen() {
 
         {/* Glowing Trophy Room (Badges) */}
         <View style={dynamicStyles.sectionHeader}>
-          <Text style={dynamicStyles.sectionTitle}>Pencapaian Eksklusif</Text>
-          <Text style={dynamicStyles.sectionSub}>Koleksi medali penghargaan Anda</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('passport.achievements_title')}</Text>
+          <Text style={dynamicStyles.sectionSub}>{t('passport.achievements_subtitle')}</Text>
         </View>
 
         {badges.length === 0 ? (
@@ -180,8 +186,8 @@ export default function ImpactPassportScreen() {
             <View style={dynamicStyles.emptyIconWrap}>
               <Ionicons name="medal-outline" size={56} color={Colors.gold[400]} />
             </View>
-            <Text style={dynamicStyles.emptyStateTitle}>Belum Ada Pencapaian</Text>
-            <Text style={dynamicStyles.emptyStateDesc}>Terus kumpulkan poin dan selamatkan lingkungan untuk mendapatkan medali eksklusif.</Text>
+            <Text style={dynamicStyles.emptyStateTitle}>{t('passport.empty_title')}</Text>
+            <Text style={dynamicStyles.emptyStateDesc}>{t('passport.empty_subtitle')}</Text>
           </View>
         ) : (
           <View style={dynamicStyles.badgeGrid}>

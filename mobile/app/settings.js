@@ -42,12 +42,12 @@ export default function SettingsScreen() {
       <View style={dynamicStyles.container}>
         
         <View style={dynamicStyles.pageHeader}>
-          <Text style={dynamicStyles.pageTitle}>Pusat Kendali</Text>
-          <Text style={dynamicStyles.pageDesc}>Sesuaikan pengalaman aplikasi Anda</Text>
+          <Text style={dynamicStyles.pageTitle}>{t('settings.control_center')}</Text>
+          <Text style={dynamicStyles.pageDesc}>{t('settings.subtitle')}</Text>
         </View>
 
         {/* Akun */}
-        <Text style={dynamicStyles.sectionTitle}>Akun Saya</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('settings.my_account')}</Text>
         <View style={[dynamicStyles.card, Shadows.sm]}>
           <TouchableOpacity 
             style={[dynamicStyles.optionRow, { borderBottomWidth: 0 }]} 
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Tampilan & Bahasa */}
-        <Text style={dynamicStyles.sectionTitle}>Preferensi Sistem</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('settings.system_pref')}</Text>
         <View style={[dynamicStyles.card, Shadows.sm]}>
           <TouchableOpacity 
             style={dynamicStyles.optionRow} 
@@ -106,7 +106,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Keamanan & Lainnya */}
-        <Text style={dynamicStyles.sectionTitle}>Akses</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('settings.access')}</Text>
         <View style={[dynamicStyles.card, Shadows.sm]}>
           <TouchableOpacity 
             style={[dynamicStyles.optionRow, { borderBottomWidth: 0 }]} 
@@ -117,7 +117,7 @@ export default function SettingsScreen() {
               <View style={[dynamicStyles.iconWrap, { backgroundColor: Colors.danger }]}>
                 <Ionicons name="log-out" size={18} color={Colors.white} />
               </View>
-              <Text style={[dynamicStyles.optionTitle, { color: Colors.danger }]}>Keluar Aplikasi</Text>
+              <Text style={[dynamicStyles.optionTitle, { color: Colors.danger }]}>{t('settings.logout')}</Text>
             </View>
             <View style={dynamicStyles.optionRight}>
               <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={{ opacity: 0.5 }} />

@@ -277,7 +277,7 @@ export default function AccountSettingScreen() {
             
             <View style={dynamicStyles.editCoverBtn}>
               <Ionicons name="camera" size={14} color={Colors.white} />
-              <Text style={dynamicStyles.editCoverText}>{uploadingCover ? 'Mengunggah...' : 'Ubah Sampul'}</Text>
+              <Text style={dynamicStyles.editCoverText}>{uploadingCover ? t('account.uploading') : t('account.change_cover')}</Text>
             </View>
 
             <View style={dynamicStyles.profileCardContent}>
@@ -317,7 +317,7 @@ export default function AccountSettingScreen() {
                   <Ionicons name="copy-outline" size={12} color={Colors.white} style={{ marginLeft: 6 }} />
                 </TouchableOpacity>
                 
-                <Text style={dynamicStyles.userHelpText}>{t('account.tap_to_change_photo', { defaultValue: 'Ketuk avatar untuk ubah foto' })}</Text>
+                <Text style={dynamicStyles.userHelpText}>{t('account.tap_to_change_photo')}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -328,8 +328,8 @@ export default function AccountSettingScreen() {
               <View style={{ backgroundColor: colors.surface, borderRadius: 28, padding: 0, width: '92%', maxWidth: 380, alignItems: 'center', overflow: 'hidden' }}>
                 {/* Header */}
                 <View style={{ width: '100%', paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-                  <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, textAlign: 'center' }}>Sesuaikan Foto</Text>
-                  <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center', marginTop: 4 }}>Geser zoom untuk menyesuaikan</Text>
+                  <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, textAlign: 'center' }}>{t('account.adjust_photo')}</Text>
+                  <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center', marginTop: 4 }}>{t('account.zoom_hint')}</Text>
                 </View>
 
                 {/* Crop Area with Grid */}
@@ -393,13 +393,13 @@ export default function AccountSettingScreen() {
                     onPress={() => { setPreviewUri(null); setZoomLevel(1); }} 
                     style={{ flex: 1, padding: 16, alignItems: 'center', borderRightWidth: 1, borderRightColor: colors.border }}
                   >
-                    <Text style={{ fontSize: 15, fontWeight: '600', color: colors.textMuted }}>Batal</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: colors.textMuted }}>{t('account.cancel')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
                     onPress={confirmUpload} 
                     style={{ flex: 1, padding: 16, alignItems: 'center' }}
                   >
-                    <Text style={{ fontSize: 15, fontWeight: '700', color: Colors.green[500] }}>Gunakan Foto</Text>
+                    <Text style={{ fontSize: 15, fontWeight: '700', color: Colors.green[500] }}>{t('account.use_photo')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -466,9 +466,9 @@ export default function AccountSettingScreen() {
                 <Ionicons name="mail-open" size={32} color={Colors.green[500]} />
               </View>
               
-              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 8 }}>Cek Email Anda</Text>
+              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 8 }}>{t('account.check_email')}</Text>
               <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 22 }}>
-                Kami telah mengirimkan 6-digit OTP keamanan ke <Text style={{ fontWeight: '700', color: colors.text }}>{otpType === 'change_email' ? email : user?.email}</Text>.
+                {t('account.otp_sent')} <Text style={{ fontWeight: '700', color: colors.text }}>{otpType === 'change_email' ? email : user?.email}</Text>.
               </Text>
 
               {otpError ? (
@@ -488,11 +488,11 @@ export default function AccountSettingScreen() {
               </View>
 
               <TouchableOpacity style={[dynamicStyles.submitBtn, { width: '100%', marginBottom: 12, backgroundColor: Colors.green[500], padding: 16, borderRadius: 16, alignItems: 'center' }]} onPress={handleVerifyOtp} disabled={loadingOtp}>
-                {loadingOtp ? <ActivityIndicator color={Colors.white} /> : <Text style={{ color: Colors.white, fontSize: 16, fontWeight: '700' }}>Verifikasi & Simpan</Text>}
+                {loadingOtp ? <ActivityIndicator color={Colors.white} /> : <Text style={{ color: Colors.white, fontSize: 16, fontWeight: '700' }}>{t('account.verify_save')}</Text>}
               </TouchableOpacity>
               
               <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
-                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>Batal</Text>
+                <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>{t('account.cancel')}</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>

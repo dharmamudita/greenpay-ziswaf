@@ -10,7 +10,13 @@
     "lang_en": "Inggris",
     "account": "Pengaturan Akun",
     "edit_data": "Ubah Data",
-    "footer": "Pengaturan lanjutan untuk mempersonalisasi pengalaman Anda."
+    "footer": "Pengaturan lanjutan untuk mempersonalisasi pengalaman Anda.",
+    "control_center": "Pusat Kendali",
+    "subtitle": "Sesuaikan pengalaman aplikasi Anda",
+    "my_account": "Akun Saya",
+    "system_pref": "Preferensi Sistem",
+    "access": "Akses",
+    "logout": "Keluar Aplikasi"
   },
   "account": {
     "personal_data": "Data Pribadi",
@@ -24,7 +30,16 @@
     "old_password": "Password Lama",
     "new_password": "Password Baru",
     "change_password": "Ubah Password",
-    "tap_to_change_photo": "Ketuk untuk mengubah foto"
+    "adjust_photo": "Sesuaikan Foto",
+    "zoom_hint": "Geser zoom untuk menyesuaikan",
+    "cancel": "Batal",
+    "use_photo": "Gunakan Foto",
+    "change_cover": "Ubah Sampul",
+    "uploading": "Mengunggah...",
+    "check_email": "Cek Email Anda",
+    "otp_sent": "Kami telah mengirimkan 6-digit OTP keamanan ke",
+    "verify_save": "Verifikasi & Simpan",
+    "tap_to_change_photo": "Ketuk avatar untuk ubah foto"
   },
   "tabs": {
     "home": "Beranda",
@@ -153,6 +168,20 @@
     "chart_title": "Tren Penyelamatan Bumi",
     "chart_subtitle": "Akumulasi 30 hari terakhir",
     "chart_empty": "Belum Ada Data Penyelamatan"
+  },
+  "passport": {
+    "title": "Paspor Dampak",
+    "subtitle": "Identitas resmi Anda sebagai pahlawan lingkungan.",
+    "full_name": "NAMA LENGKAP",
+    "passport_id": "ID PASPOR",
+    "waste": "SAMPAH",
+    "ziswaf": "ZISWAF",
+    "planted": "DITANAM",
+    "tree_unit": "Pohon",
+    "achievements_title": "Pencapaian Eksklusif",
+    "achievements_subtitle": "Koleksi medali penghargaan Anda",
+    "empty_title": "Belum Ada Pencapaian",
+    "empty_subtitle": "Terus kumpulkan poin dan selamatkan lingkungan untuk mendapatkan medali eksklusif."
   },
   "marketplace": {
     "title": "Belanja",
