@@ -212,7 +212,8 @@
     "empty_title": "No History Yet",
     "empty_desc": "Let's start saving the earth and collect your first Green Point.",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "title_highlight": "Point"
   },
   "bank_sampah": {
     "location": "Deposit Location",
@@ -246,7 +247,10 @@
     "ai_scanner": "AI Waste Scanner ✨",
     "ai_scanner_desc": "Scan your waste with AI to find out its value!",
     "title": "Select Waste Bank",
-    "search": "Tap to select location"
+    "search": "Tap to select location",
+    "title_highlight": "Bank",
+    "deposit": "Deposit",
+    "no_distrik": "No waste bank district available yet."
   },
   "leaderboard": {
     "hero_text": "Be the Best!"
@@ -288,30 +292,6 @@
     "success_desc": "Your order is being processed!",
     "failed": "Failed",
     "failed_desc": "An error occurred while placing the order."
-  },
-  "green_point": {
-    "title": "Green",
-    "title_highlight": "Point",
-    "subtitle": "Redeem your points",
-    "history": "Points History",
-    "redeem": "Redeem Reward",
-    "balance": "Total Points",
-    "empty_title": "No Activity Yet",
-    "empty_desc": "Start depositing waste or donating to earn points.",
-    "see_all": "See All",
-    "today": "Today",
-    "yesterday": "Yesterday"
-  },
-  "bank_sampah": {
-    "title": "Waste",
-    "title_highlight": "Bank",
-    "subtitle": "Deposit your waste at the nearest point",
-    "search": "Search location...",
-    "open_maps": "Open Maps",
-    "deposit": "Deposit",
-    "ai_scanner": "AI Waste Scanner ✨",
-    "ai_scanner_desc": "Scan your waste with AI to know its value!",
-    "no_distrik": "No waste bank district available yet."
   },
   "transparency": {
     "title": "Transparency Report",

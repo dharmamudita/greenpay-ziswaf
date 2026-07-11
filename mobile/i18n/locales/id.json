@@ -212,7 +212,8 @@
     "empty_title": "Belum Ada Riwayat",
     "empty_desc": "Ayo mulai selamatkan bumi dan kumpulkan Green Point pertamamu.",
     "today": "Hari ini",
-    "yesterday": "Kemarin"
+    "yesterday": "Kemarin",
+    "title_highlight": "Point"
   },
   "marketplace": {
     "title": "Belanja",
@@ -232,19 +233,6 @@
     "success_desc": "Pesanan Anda sedang diproses!",
     "failed": "Gagal",
     "failed_desc": "Terjadi kesalahan saat membuat pesanan."
-  },
-  "green_point": {
-    "title": "Green",
-    "title_highlight": "Point",
-    "subtitle": "Tukarkan poinmu",
-    "history": "Riwayat Poin",
-    "redeem": "Tukar Reward",
-    "balance": "Total Poin",
-    "empty_title": "Belum Ada Aktivitas",
-    "empty_desc": "Mulai setor sampah atau berdonasi untuk mengumpulkan poin.",
-    "see_all": "Lihat Semua",
-    "today": "Hari ini",
-    "yesterday": "Kemarin"
   },
   "bank_sampah": {
     "title": "Bank",
