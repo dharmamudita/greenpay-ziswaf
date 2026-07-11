@@ -82,8 +82,7 @@ export default function DistrikProfileScreen() {
     <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
       
       <View style={dynamicStyles.container}>
-        <Text style={dynamicStyles.title}>Profil Bank Sampah</Text>
-        <Text style={dynamicStyles.subtitle}>Lengkapi profil agar pengguna mudah menemukan distrik Anda.</Text>
+
 
         <View style={dynamicStyles.formGroup}>
           <Text style={dynamicStyles.label}>Nama Bank Sampah *</Text>

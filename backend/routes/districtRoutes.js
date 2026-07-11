@@ -1,6 +1,8 @@
 const express = require('express');
 const pool = require('../config/database');
 const { authenticateToken, requireRole } = require('../middleware/auth');
+const fs = require('fs');
+const path = require('path');
 
 const router = express.Router();
 
@@ -131,6 +133,77 @@ router.put('/admin/requests/:id', authenticateToken, requireRole('admin'), async
 });
 
 // ==========================================
+// DISTRIK DASHBOARD & HISTORY
+// ==========================================
+
+// GET /api/distrik/dashboard - Get real-time stats for district
+router.get('/dashboard', authenticateToken, requireRole('distrik'), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // 1. Get total verified waste for capacity
+    const capRes = await pool.query(`
+      SELECT COALESCE(SUM(wd.weight_kg), 0) as capacity_used 
+      FROM waste_deposits wd 
+      JOIN waste_locations wl ON wd.location_id = wl.id 
+      WHERE wl.managed_by = $1 AND wd.status = 'verified'
+    `, [userId]);
+    const capacityUsed = parseFloat(capRes.rows[0].capacity_used);
+
+    // 2. Get pending count
+    const penRes = await pool.query(`
+      SELECT COUNT(*) as pending_count 
+      FROM waste_deposits wd 
+      JOIN waste_locations wl ON wd.location_id = wl.id 
+      WHERE wl.managed_by = $1 AND wd.status = 'pending'
+    `, [userId]);
+    const pendingCount = parseInt(penRes.rows[0].pending_count);
+
+    // 3. Get recent pending (limit 3)
+    const recRes = await pool.query(`
+      SELECT wd.*, u.display_name as user_name 
+      FROM waste_deposits wd 
+      JOIN waste_locations wl ON wd.location_id = wl.id 
+      JOIN users u ON wd.user_id = u.id
+      WHERE wl.managed_by = $1 AND wd.status = 'pending'
+      ORDER BY wd.created_at ASC
+      LIMIT 3
+    `, [userId]);
+    const recentPending = recRes.rows;
+
+    // Hardcode capacityMax for now (e.g. 5000 kg)
+    res.json({
+      capacityUsed,
+      capacityMax: 5000,
+      pendingCount,
+      recentPending
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
+// GET /api/distrik/history - Get all deposit history for district
+router.get('/history', authenticateToken, requireRole('distrik'), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await pool.query(`
+      SELECT wd.*, u.display_name as user_name, u.photo_url as user_photo
+      FROM waste_deposits wd 
+      JOIN waste_locations wl ON wd.location_id = wl.id 
+      JOIN users u ON wd.user_id = u.id
+      WHERE wl.managed_by = $1
+      ORDER BY wd.created_at DESC
+    `, [userId]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching history:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
+// ==========================================
 // DISTRICT PANEL NEW FEATURES
 // ==========================================
 
@@ -227,6 +300,95 @@ router.get('/history', authenticateToken, requireRole('distrik'), async (req, re
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching deposit history:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
+// ==========================================
+// TOKO / REWARDS MANAGEMENT
+// ==========================================
+
+// GET /api/distrik/toko/rewards - Get all rewards managed by this district
+router.get('/toko/rewards', authenticateToken, requireRole('distrik'), async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM rewards WHERE created_by = $1 ORDER BY created_at DESC",
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching district rewards:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
+// POST /api/distrik/toko/rewards - Create a new reward
+router.post('/toko/rewards', authenticateToken, requireRole('distrik'), async (req, res) => {
+  const { name, points_cost, stock, category, image_url } = req.body;
+  
+  if (!name || !points_cost || !category) {
+    return res.status(400).json({ error: 'Nama, poin, dan kategori wajib diisi' });
+  }
+
+  let finalImageUrl = image_url || '';
+
+  // Handle base64 image upload
+  if (image_url && image_url.startsWith('data:image/')) {
+    try {
+      const matches = image_url.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+        const base64Data = matches[2];
+        const buffer = Buffer.from(base64Data, 'base64');
+        
+        const uploadDir = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        
+        const fileName = `reward_${Date.now()}_${Math.floor(Math.random()*1000)}.${ext}`;
+        const filePath = path.join(uploadDir, fileName);
+        
+        fs.writeFileSync(filePath, buffer);
+        finalImageUrl = `http://localhost:5000/uploads/${fileName}`;
+      }
+    } catch (err) {
+      console.error('Error saving base64 image:', err);
+    }
+  }
+
+  try {
+    const loc = await pool.query("SELECT name FROM waste_locations WHERE managed_by = $1", [req.user.id]);
+    const distrik_name = loc.rows.length > 0 ? loc.rows[0].name : req.user.display_name;
+
+    const result = await pool.query(
+      `INSERT INTO rewards (name, points_cost, stock, category, image_url, distrik_name, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [name, points_cost, stock || 0, category, finalImageUrl, distrik_name, req.user.id]
+    );
+
+    res.status(201).json({ message: 'Reward berhasil ditambahkan', data: result.rows[0] });
+  } catch (error) {
+    console.error('Error creating reward:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal saat menambah reward' });
+  }
+});
+
+// DELETE /api/distrik/toko/rewards/:id - Delete a reward
+router.delete('/toko/rewards/:id', authenticateToken, requireRole('distrik'), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM rewards WHERE id = $1 AND created_by = $2 RETURNING id",
+      [id, req.user.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Reward tidak ditemukan atau bukan milik Anda' });
+    }
+
+    res.json({ message: 'Reward berhasil dihapus' });
+  } catch (error) {
+    console.error('Error deleting reward:', error);
     res.status(500).json({ error: 'Terjadi kesalahan internal' });
   }
 });

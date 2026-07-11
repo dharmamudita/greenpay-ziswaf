@@ -90,12 +90,22 @@ router.get('/deposits', authenticateToken, async (req, res) => {
 // GET /api/waste/pending — Distrik: Get pending deposits
 router.get('/pending', authenticateToken, requireRole('distrik', 'admin'), async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT wd.*, u.display_name as user_name, wl.name as location_name 
-       FROM waste_deposits wd JOIN users u ON wd.user_id = u.id 
-       JOIN waste_locations wl ON wd.location_id = wl.id 
-       WHERE wd.status = 'pending' ORDER BY wd.created_at DESC`
-    );
+    let query = `
+      SELECT wd.*, u.display_name as user_name, wl.name as location_name 
+      FROM waste_deposits wd JOIN users u ON wd.user_id = u.id 
+      JOIN waste_locations wl ON wd.location_id = wl.id 
+      WHERE wd.status = 'pending'
+    `;
+    const params = [];
+
+    if (req.user.role === 'distrik') {
+      query += ` AND wl.managed_by = $1`;
+      params.push(req.user.id);
+    }
+    
+    query += ` ORDER BY wd.created_at DESC`;
+
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: 'Gagal mengambil data verifikasi.' });

@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
 const dns = require('dns');
+const path = require('path');
 dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
@@ -20,6 +21,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Inject Socket.io to routes
 app.use((req, res, next) => {

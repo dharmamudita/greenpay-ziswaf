@@ -1,19 +1,58 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Image, Platform } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Image, Platform, ActivityIndicator, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
+import api from '../../services/api';
 
 export default function DistrikDashboardScreen() {
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
+  
+  // Real-time state
+  const [dashboardData, setDashboardData] = useState({
+    capacityUsed: 0,
+    capacityMax: 5000,
+    pendingCount: 0,
+    recentPending: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const dynamicStyles = getStyles(colors, isDark);
+
+  const fetchDashboard = async () => {
+    try {
+      const res = await api.get('/distrik/dashboard');
+      setDashboardData({
+        capacityUsed: res.data.capacityUsed || 0,
+        capacityMax: res.data.capacityMax || 5000,
+        pendingCount: res.data.pendingCount || 0,
+        recentPending: res.data.recentPending || []
+      });
+    } catch (error) {
+      console.log('Error fetching distrik dashboard:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchDashboard();
+    }, [])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchDashboard();
+  }, []);
 
   const distrikMenu = [
     {
@@ -22,14 +61,7 @@ export default function DistrikDashboardScreen() {
       route: '/admin/distrik',
       color: Colors.green[500],
       bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50],
-      badge: '3'
-    },
-    {
-      title: 'Verifikasi Reward',
-      icon: 'gift',
-      route: '/distrik/reward',
-      color: Colors.purple,
-      bg: isDark ? 'rgba(168, 85, 247, 0.15)' : '#F3E8FF',
+      badge: dashboardData.pendingCount > 0 ? dashboardData.pendingCount.toString() : null
     },
     {
       title: 'Kelola Toko',
@@ -54,13 +86,23 @@ export default function DistrikDashboardScreen() {
     },
   ];
 
-  const capacityUsed = 750; // Mock data
-  const capacityMax = 1000;
-  const capacityPercent = (capacityUsed / capacityMax) * 100;
+  const capacityPercent = (dashboardData.capacityUsed / dashboardData.capacityMax) * 100;
+  const clampedPercent = Math.min(capacityPercent, 100);
+
+  if (loading) {
+    return (
+      <View style={[dynamicStyles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={Colors.green[500]} />
+      </View>
+    );
+  }
 
   return (
     <View style={dynamicStyles.screen}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+      >
         
         {/* Header Background */}
         <View style={dynamicStyles.headerBackground}>
@@ -83,8 +125,8 @@ export default function DistrikDashboardScreen() {
             
             <View style={dynamicStyles.heroHeader}>
               <View>
-                <Text style={dynamicStyles.heroTitle}>Bank Sampah Berkah</Text>
-                <Text style={dynamicStyles.heroSubtitle}>ID: DISTRIK-001</Text>
+                <Text style={dynamicStyles.heroTitle}>{user?.display_name || 'Bank Sampah'}</Text>
+                <Text style={dynamicStyles.heroSubtitle}>ID: DISTRIK-{user?.id ? user.id.substring(0,6).toUpperCase() : '001'}</Text>
               </View>
               <View style={dynamicStyles.statusToggleWrap}>
                 <Text style={dynamicStyles.statusText}>{isOpen ? 'BUKA' : 'TUTUP'}</Text>
@@ -101,12 +143,12 @@ export default function DistrikDashboardScreen() {
             <View style={dynamicStyles.capacityWrap}>
               <View style={dynamicStyles.capacityLabelRow}>
                 <Text style={dynamicStyles.capacityLabel}>Kapasitas Gudang</Text>
-                <Text style={dynamicStyles.capacityValue}>{capacityUsed} / {capacityMax} Kg</Text>
+                <Text style={dynamicStyles.capacityValue}>{dashboardData.capacityUsed} / {dashboardData.capacityMax} Kg</Text>
               </View>
               <View style={dynamicStyles.progressBarBg}>
-                <View style={[dynamicStyles.progressBarFill, { width: `${capacityPercent}%`, backgroundColor: capacityPercent > 80 ? Colors.danger : Colors.green[400] }]} />
+                <View style={[dynamicStyles.progressBarFill, { width: `${clampedPercent}%`, backgroundColor: clampedPercent > 80 ? Colors.danger : Colors.green[400] }]} />
               </View>
-              {capacityPercent > 80 && (
+              {clampedPercent > 80 && (
                 <Text style={dynamicStyles.warningText}>Gudang hampir penuh! Segera jual ke pusat.</Text>
               )}
             </View>
@@ -139,39 +181,33 @@ export default function DistrikDashboardScreen() {
         {/* Recent Pending Deposits */}
         <View style={dynamicStyles.listHeader}>
           <Text style={dynamicStyles.sectionTitle}>Setoran Menunggu Verifikasi</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/admin/distrik')}>
             <Text style={dynamicStyles.seeAllBtn}>Lihat Semua</Text>
           </TouchableOpacity>
         </View>
 
         <View style={dynamicStyles.depositList}>
-          {/* Mock Item 1 */}
-          <View style={dynamicStyles.depositItem}>
-            <View style={[dynamicStyles.depositIcon, { backgroundColor: Colors.info + '20' }]}>
-              <Ionicons name="water" size={24} color={Colors.info} />
+          {dashboardData.recentPending.length === 0 ? (
+            <View style={dynamicStyles.emptyPending}>
+              <Ionicons name="checkmark-done-circle" size={40} color={Colors.green[500]} />
+              <Text style={{ color: colors.textMuted, marginTop: 8, fontSize: 13 }}>Tidak ada antrean saat ini.</Text>
             </View>
-            <View style={dynamicStyles.depositInfo}>
-              <Text style={dynamicStyles.depositUser}>Ahmad Fulan</Text>
-              <Text style={dynamicStyles.depositDetail}>Plastik • 2.5 Kg</Text>
-            </View>
-            <TouchableOpacity style={dynamicStyles.verifyBtn}>
-              <Text style={dynamicStyles.verifyBtnText}>Tinjau</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Mock Item 2 */}
-          <View style={dynamicStyles.depositItem}>
-            <View style={[dynamicStyles.depositIcon, { backgroundColor: Colors.gold[400] + '20' }]}>
-              <Ionicons name="document-text" size={24} color={Colors.gold[400]} />
-            </View>
-            <View style={dynamicStyles.depositInfo}>
-              <Text style={dynamicStyles.depositUser}>Siti Aisyah</Text>
-              <Text style={dynamicStyles.depositDetail}>Kertas • 12 Kg</Text>
-            </View>
-            <TouchableOpacity style={dynamicStyles.verifyBtn}>
-              <Text style={dynamicStyles.verifyBtnText}>Tinjau</Text>
-            </TouchableOpacity>
-          </View>
+          ) : (
+            dashboardData.recentPending.map((item) => (
+              <View key={item.id} style={dynamicStyles.depositItem}>
+                <View style={[dynamicStyles.depositIcon, { backgroundColor: Colors.info + '20' }]}>
+                  <Ionicons name={item.waste_type === 'plastik' ? 'water' : 'document-text'} size={24} color={Colors.info} />
+                </View>
+                <View style={dynamicStyles.depositInfo}>
+                  <Text style={dynamicStyles.depositUser}>{item.user_name}</Text>
+                  <Text style={dynamicStyles.depositDetail}>{item.waste_type} • {parseFloat(item.weight_kg)} Kg</Text>
+                </View>
+                <TouchableOpacity style={dynamicStyles.verifyBtn} onPress={() => router.push('/admin/distrik')}>
+                  <Text style={dynamicStyles.verifyBtnText}>Tinjau</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
         </View>
 
       </View>
@@ -221,8 +257,9 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   depositItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, padding: Spacing.md, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: colors.border },
   depositIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginRight: Spacing.md },
   depositInfo: { flex: 1 },
-  depositUser: { fontSize: 15, fontWeight: '700', color: colors.text, marginBottom: 2 },
-  depositDetail: { fontSize: 12, color: colors.textMuted, fontWeight: '500' },
+  depositUser: { fontSize: 15, fontWeight: '700', color: colors.text, marginBottom: 2, textTransform: 'capitalize' },
+  depositDetail: { fontSize: 12, color: colors.textMuted, fontWeight: '500', textTransform: 'capitalize' },
   verifyBtn: { backgroundColor: isDark ? 'rgba(59, 130, 246, 0.1)' : Colors.info + '15', paddingHorizontal: 16, paddingVertical: 8, borderRadius: BorderRadius.full },
   verifyBtnText: { color: Colors.info, fontSize: 12, fontWeight: '800' },
+  emptyPending: { padding: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: isDark ? 'rgba(0,0,0,0.1)' : Colors.gray[50], borderRadius: BorderRadius.xl }
 });

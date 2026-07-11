@@ -143,7 +143,11 @@ export default function MarketplaceScreen() {
                 
                 {/* Image Area with Floating Badge */}
                 <View style={dynamicStyles.prodImgPlaceholder}>
-                  <Ionicons name={getIconForCategory(p.category)} size={48} color={Colors.green[500]} />
+                  {p.image_url ? (
+                    <Image source={{ uri: p.image_url }} style={dynamicStyles.actualProductImg} />
+                  ) : (
+                    <Ionicons name={getIconForCategory(p.category)} size={48} color={Colors.green[500]} />
+                  )}
                   <View style={dynamicStyles.floatingBadge}>
                     <Ionicons name="star" size={10} color={Colors.white} style={{ marginRight: 2 }} />
                     <Text style={dynamicStyles.floatingBadgeText}>+{p.points_bonus} GP</Text>
@@ -270,6 +274,12 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     alignItems: 'center', 
     justifyContent: 'center',
     position: 'relative',
+    overflow: 'hidden',
+  },
+  actualProductImg: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   floatingBadge: {
     position: 'absolute',
