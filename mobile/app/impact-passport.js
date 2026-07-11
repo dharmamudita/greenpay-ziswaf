@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform, Dimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform, Dimensions, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from 'expo-router';
 import Colors from '../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../theme/spacing';
 import api from '../services/api';
@@ -15,14 +16,11 @@ export default function ImpactPassportScreen() {
   const { user } = useAuth();
   const [passportData, setPassportData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
-
-  useEffect(() => {
-    fetchPassport();
-  }, []);
 
   const fetchPassport = async () => {
     try {
@@ -32,7 +30,19 @@ export default function ImpactPassportScreen() {
       console.log('Error fetching passport:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPassport();
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchPassport();
   };
 
   const fmt = (n) => {
@@ -65,7 +75,11 @@ export default function ImpactPassportScreen() {
   };
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={dynamicStyles.screen} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+    >
       
       {/* Background Ambience */}
       <View style={dynamicStyles.headerBackground}>
