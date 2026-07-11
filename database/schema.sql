@@ -168,6 +168,19 @@ CREATE TABLE orders (
 );
 
 -- ==================
+-- NOTIFICATIONS
+-- ==================
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50) DEFAULT 'system',
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==================
 -- INDEXES
 -- ==================
 CREATE INDEX idx_users_email ON users(email);
@@ -179,6 +192,7 @@ CREATE INDEX idx_waste_deposits_status ON waste_deposits(status);
 CREATE INDEX idx_green_point_history_user ON green_point_history(user_id);
 CREATE INDEX idx_products_category ON products(category);
 CREATE INDEX idx_orders_user ON orders(user_id);
+CREATE INDEX idx_notifications_user ON notifications(user_id);
 
 -- ==================
 -- SEED DATA: Default Admin
@@ -222,3 +236,16 @@ INSERT INTO rewards (name, description, points_cost, category, stock) VALUES
 ('Donasi Pohon 5 Batang', 'Donasikan 5 bibit pohon atas nama Anda', 300, 'Lingkungan', 100),
 ('Voucher Grab Rp 25.000', 'Voucher Grab senilai Rp 25.000', 250, 'Voucher', 20),
 ('Sabun Natural Set', 'Set sabun natural organic premium', 400, 'Produk', 25);
+
+-- ==================
+-- ZISWAF DISTRIBUTIONS (Penyaluran)
+-- ==================
+CREATE TABLE ziswaf_distributions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    program_id UUID NOT NULL REFERENCES ziswaf_programs(id) ON DELETE CASCADE,
+    amount BIGINT NOT NULL,
+    description TEXT NOT NULL,
+    image_url TEXT,
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
