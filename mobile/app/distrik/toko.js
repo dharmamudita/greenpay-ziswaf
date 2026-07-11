@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Platform, ActivityIndicator, Alert, RefreshControl, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +10,7 @@ import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 
 export default function TokoRewardManagerScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const dynamicStyles = getStyles(colors, isDark);
   

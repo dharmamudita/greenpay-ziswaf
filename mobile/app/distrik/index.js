@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Image, Platform, ActivityIndicator, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
@@ -10,6 +11,7 @@ import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 
 export default function DistrikDashboardScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(true);

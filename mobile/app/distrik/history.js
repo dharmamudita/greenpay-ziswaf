@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, Image, Platform, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -8,6 +9,7 @@ import { Spacing, BorderRadius } from '../../theme/spacing';
 import api from '../../services/api';
 
 export default function DepositHistoryScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
