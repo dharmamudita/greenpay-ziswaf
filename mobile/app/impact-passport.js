@@ -18,7 +18,7 @@ export default function ImpactPassportScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
