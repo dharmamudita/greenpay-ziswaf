@@ -53,6 +53,22 @@ export default function HomeScreen() {
     }, [])
   );
 
+  useEffect(() => {
+    import('../../services/socket').then(({ default: socket }) => {
+      const handleUpdate = () => {
+        fetchData(); // Refetch stats and notifications
+      };
+      
+      socket.on('USER_PROFILE_UPDATED', handleUpdate);
+      socket.on('GLOBAL_IMPACT_UPDATED', handleUpdate);
+      
+      return () => {
+        socket.off('USER_PROFILE_UPDATED', handleUpdate);
+        socket.off('GLOBAL_IMPACT_UPDATED', handleUpdate);
+      };
+    });
+  }, []);
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchData();

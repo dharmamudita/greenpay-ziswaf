@@ -100,6 +100,11 @@ router.post('/notifications/broadcast', async (req, res) => {
         `INSERT INTO notifications (user_id, title, message) VALUES ${values}`,
         params
       );
+
+      // Emit real-time event to all connected users to update their notifications
+      if (req.io) {
+        req.io.emit('USER_PROFILE_UPDATED'); 
+      }
     }
 
     res.json({ message: 'Broadcast berhasil dikirim ke ' + users.rows.length + ' pengguna.' });
