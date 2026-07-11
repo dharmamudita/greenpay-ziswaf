@@ -410,4 +410,57 @@ router.delete('/toko/rewards/:id', authenticateToken, requireRole('distrik'), as
   }
 });
 
+// POST /api/distrik/rewards/verify - Verify and claim a voucher
+router.post('/rewards/verify', authenticateToken, requireRole('distrik'), async (req, res) => {
+  const { voucher_code } = req.body;
+  if (!voucher_code) return res.status(400).json({ error: 'Kode voucher diperlukan.' });
+
+  try {
+    // 1. Find the redemption record
+    const redemption = await pool.query(
+      `SELECT rr.*, r.name as reward_name, r.created_by as reward_owner 
+       FROM reward_redemptions rr 
+       JOIN rewards r ON rr.reward_id = r.id 
+       WHERE rr.voucher_code = $1`,
+      [voucher_code.toUpperCase()]
+    );
+
+    if (redemption.rows.length === 0) {
+      return res.status(404).json({ error: 'Kode voucher tidak valid.' });
+    }
+
+    const record = redemption.rows[0];
+
+    // 2. Optional: Ensure the reward belongs to this distrik (so distrik A can't claim distrik B's vouchers)
+    if (record.reward_owner !== req.user.id) {
+      return res.status(403).json({ error: 'Voucher ini untuk hadiah dari Distrik lain.' });
+    }
+
+    // 3. Check status
+    if (record.status === 'completed') {
+      return res.status(400).json({ error: 'Voucher ini sudah pernah digunakan!' });
+    }
+    if (record.status !== 'pending') {
+      return res.status(400).json({ error: \`Voucher tidak dapat digunakan. Status: \${record.status}\` });
+    }
+
+    // 4. Update status to completed
+    await pool.query(
+      'UPDATE reward_redemptions SET status = $1 WHERE id = $2',
+      ['completed', record.id]
+    );
+
+    // 5. Notify the user
+    await pool.query(
+      \`INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'system')\`,
+      [record.user_id, 'Hadiah Berhasil Diklaim', \`Voucher untuk hadiah '\${record.reward_name}' telah berhasil diklaim di Distrik.\`]
+    );
+
+    res.json({ message: 'Voucher berhasil diklaim', reward_name: record.reward_name });
+  } catch (error) {
+    console.error('Error verifying voucher:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
 module.exports = router;

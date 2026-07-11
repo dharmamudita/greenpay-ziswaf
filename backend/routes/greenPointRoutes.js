@@ -27,6 +27,23 @@ router.get('/history', authenticateToken, async (req, res) => {
   }
 });
 
+// GET /api/green-points/vouchers — Get user's vouchers
+router.get('/vouchers', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT rr.*, r.name as reward_name, r.distrik_name as umkm_name, r.image_url 
+       FROM reward_redemptions rr
+       JOIN rewards r ON rr.reward_id = r.id
+       WHERE rr.user_id = $1 
+       ORDER BY rr.created_at DESC`,
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal mengambil data voucher.' });
+  }
+});
+
 // GET /api/green-points/leaderboard — Get leaderboard
 router.get('/leaderboard', async (req, res) => {
   try {

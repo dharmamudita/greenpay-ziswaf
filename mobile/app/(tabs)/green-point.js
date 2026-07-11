@@ -12,6 +12,8 @@ import { useTranslation } from 'react-i18next';
 export default function GreenPointScreen() {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
+  const [vouchers, setVouchers] = useState([]);
+  const [activeTab, setActiveTab] = useState('history'); // 'history' | 'vouchers'
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { colors, isDark } = useTheme();
@@ -31,10 +33,14 @@ export default function GreenPointScreen() {
       return;
     }
     try {
-      const res = await api.get('/green-points/history');
-      setHistory(res.data);
+      const [histRes, vouchRes] = await Promise.all([
+        api.get('/green-points/history'),
+        api.get('/green-points/vouchers')
+      ]);
+      setHistory(histRes.data);
+      setVouchers(vouchRes.data);
     } catch (error) {
-      console.log('Error fetching GP history:', error);
+      console.log('Error fetching GP data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -145,40 +151,88 @@ export default function GreenPointScreen() {
               <View style={dynamicStyles.emptyIconBox}>
                 <Ionicons name="receipt-outline" size={40} color={colors.textMuted} />
               </View>
-              <Text style={dynamicStyles.emptyTitle}>{t('green_point.empty_title')}</Text>
-              <Text style={dynamicStyles.emptyDesc}>{t('green_point.empty_desc')}</Text>
-            </View>
+        {/* Custom Tabs */}
+        <View style={{ flexDirection: 'row', backgroundColor: isDark ? colors.surface2 : Colors.gray[100], borderRadius: 12, padding: 4, marginBottom: Spacing.xl }}>
+          <TouchableOpacity 
+            style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'history' ? colors.surface : 'transparent', ...(activeTab === 'history' ? Shadows.sm : {}) }}
+            onPress={() => setActiveTab('history')}
+          >
+            <Text style={{ fontWeight: activeTab === 'history' ? '700' : '500', color: activeTab === 'history' ? colors.text : colors.textMuted }}>Riwayat Poin</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'vouchers' ? colors.surface : 'transparent', ...(activeTab === 'vouchers' ? Shadows.sm : {}) }}
+            onPress={() => setActiveTab('vouchers')}
+          >
+            <Text style={{ fontWeight: activeTab === 'vouchers' ? '700' : '500', color: activeTab === 'vouchers' ? colors.text : colors.textMuted }}>Voucher Saya</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loading ? (
+          <ActivityIndicator size="large" color={Colors.green[500]} style={{ marginTop: 40 }} />
+        ) : activeTab === 'history' ? (
+          history.length > 0 ? (
+            history.map((item) => (
+              <View key={item.id} style={dynamicStyles.historyCard}>
+                <View style={[dynamicStyles.iconBox, { backgroundColor: getIconColorForSource(item.source) + '20' }]}>
+                  <Ionicons name={getIconForSource(item.source)} size={24} color={getIconColorForSource(item.source)} />
+                </View>
+                <View style={dynamicStyles.historyContent}>
+                  <Text style={dynamicStyles.historyDesc}>{item.description}</Text>
+                  <Text style={dynamicStyles.historyDate}>{formatTime(item.created_at)}</Text>
+                </View>
+                <Text style={[dynamicStyles.historyPoints, { color: item.points > 0 ? Colors.green[500] : colors.text }]}>
+                  {item.points > 0 ? '+' : ''}{item.points} GP
+                </Text>
+              </View>
+            ))
           ) : (
-            history.map((act, index) => {
-              const isEarn = act.type === 'earn';
-              const isLast = index === history.length - 1;
-              const iconColor = getIconColorForSource(act.source);
-              
-              return (
-                <View key={act.id} style={[dynamicStyles.activityRow, !isLast && dynamicStyles.activityBorder]}>
-                  <View style={[dynamicStyles.activityIconBox, { backgroundColor: iconColor + (isDark ? '25' : '15') }]}>
-                    <Ionicons name={getIconForSource(act.source)} size={20} color={iconColor} />
+            <View style={dynamicStyles.emptyState}>
+              <Ionicons name="leaf-outline" size={64} color={Colors.gray[300]} />
+              <Text style={dynamicStyles.emptyText}>{t('green_point.empty_history')}</Text>
+            </View>
+          )
+        ) : (
+          vouchers.length > 0 ? (
+            vouchers.map((v) => (
+              <View key={v.id} style={{ backgroundColor: colors.surface, borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', ...Shadows.sm }}>
+                <View style={{ flexDirection: 'row', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, borderStyle: 'dashed' }}>
+                  <View style={{ width: 60, height: 60, borderRadius: 8, backgroundColor: isDark ? colors.surface2 : Colors.gray[100], marginRight: 16, overflow: 'hidden' }}>
+                    {v.image_url ? (
+                      <Image source={{ uri: v.image_url }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                    ) : (
+                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Ionicons name="gift" size={24} color={Colors.gold[400]} />
+                      </View>
+                    )}
                   </View>
-                  
-                  <View style={dynamicStyles.activityContent}>
-                    <Text style={dynamicStyles.actAction} numberOfLines={1}>{act.description}</Text>
-                    <Text style={dynamicStyles.actTime}>{formatTime(act.created_at)}</Text>
-                  </View>
-                  
-                  <View style={dynamicStyles.activityAmountBox}>
-                    <Text style={[
-                      dynamicStyles.actAmount, 
-                      isEarn ? dynamicStyles.actAmountEarn : dynamicStyles.actAmountSpend
-                    ]}>
-                      {isEarn ? '+' : '-'}{act.points}
-                    </Text>
-                    <Text style={dynamicStyles.actUnit}>GP</Text>
+                  <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 4 }}>{v.reward_name}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Ionicons name="location" size={12} color={colors.textMuted} style={{ marginRight: 4 }} />
+                      <Text style={{ fontSize: 12, color: colors.textMuted }}>{v.umkm_name}</Text>
+                    </View>
                   </View>
                 </View>
-              );
-            })
-          )}
-        </View>
+                <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: v.status === 'completed' ? (isDark ? colors.surface2 : Colors.gray[50]) : (isDark ? '#2B2412' : '#FFFBEB') }}>
+                  <View>
+                    <Text style={{ fontSize: 11, color: colors.textMuted, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>Kode Voucher</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '900', color: v.status === 'completed' ? colors.textMuted : Colors.gold[600], letterSpacing: 2 }}>{v.voucher_code}</Text>
+                  </View>
+                  <View style={{ backgroundColor: v.status === 'completed' ? Colors.gray[300] : Colors.gold[500], paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 }}>
+                    <Text style={{ color: v.status === 'completed' ? Colors.gray[600] : Colors.white, fontSize: 12, fontWeight: '700' }}>
+                      {v.status === 'completed' ? 'SUDAH DIKLAIM' : 'AKTIF'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))
+          ) : (
+            <View style={dynamicStyles.emptyState}>
+              <Ionicons name="ticket-outline" size={64} color={Colors.gray[300]} />
+              <Text style={dynamicStyles.emptyText}>Anda belum menukarkan voucher apapun.</Text>
+            </View>
+          )
+        )}
       </View>
       <View style={{ height: Spacing['3xl'] }} />
     </ScrollView>

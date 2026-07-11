@@ -92,6 +92,16 @@ router.post('/order', authenticateToken, async (req, res) => {
   }
 });
 
+// Helper function to generate 6-char voucher code
+function generateVoucherCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 // POST /api/marketplace/redeem — Redeem Reward
 router.post('/redeem', authenticateToken, async (req, res) => {
   try {
@@ -118,13 +128,20 @@ router.post('/redeem', authenticateToken, async (req, res) => {
     // Update stock
     await pool.query('UPDATE rewards SET stock = stock - 1 WHERE id = $1', [reward_id]);
 
+    // Create Reward Redemption Record with Voucher Code
+    const voucherCode = generateVoucherCode();
+    await pool.query(
+      `INSERT INTO reward_redemptions (user_id, reward_id, points_spent, status, voucher_code) VALUES ($1, $2, $3, 'pending', $4)`,
+      [req.user.id, reward_id, r.points_cost, voucherCode]
+    );
+
     // Create Notification
     await pool.query(
       `INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'transaction')`,
-      [req.user.id, 'Tukar Reward Sukses', `Berhasil menukarkan ${r.points_cost} GP dengan '${r.name}'.`]
+      [req.user.id, 'Tukar Reward Sukses', `Berhasil menukarkan ${r.points_cost} GP dengan '${r.name}'. Kode Voucher: ${voucherCode}`]
     );
 
-    res.status(201).json({ message: 'Tukar poin berhasil!', reward: r });
+    res.status(201).json({ message: 'Tukar poin berhasil!', reward: r, voucher_code: voucherCode });
   } catch (error) {
     res.status(500).json({ error: 'Gagal menukar reward.' });
   }

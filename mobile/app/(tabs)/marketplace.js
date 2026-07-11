@@ -31,6 +31,7 @@ export default function MarketplaceScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [purchasing, setPurchasing] = useState(null);
   const [confirmModal, setConfirmModal] = useState({ visible: false, product: null });
+  const [successModal, setSuccessModal] = useState({ visible: false, title: '', message: '', code: null });
   const { colors, isDark } = useTheme();
   const { t, i18n } = useTranslation();
 
@@ -77,14 +78,24 @@ export default function MarketplaceScreen() {
       setPurchasing(id);
       
       if (isReward) {
-        await api.post('/marketplace/redeem', { reward_id: id });
-        Alert.alert('Berhasil', 'Reward berhasil ditukar!');
+        const res = await api.post('/marketplace/redeem', { reward_id: id });
+        setSuccessModal({ 
+          visible: true, 
+          title: 'Penukaran Berhasil!', 
+          message: 'Tunjukkan kode voucher ini ke petugas Bank Sampah untuk mengambil hadiah Anda.', 
+          code: res.data.voucher_code 
+        });
       } else {
         await api.post('/marketplace/order', {
           productId: id,
           quantity: 1
         });
-        Alert.alert(t('marketplace.success'), t('marketplace.success_desc'));
+        setSuccessModal({ 
+          visible: true, 
+          title: t('marketplace.success'), 
+          message: t('marketplace.success_desc'), 
+          code: null 
+        });
       }
       fetchProducts(); // Refresh stock
     } catch (error) {
@@ -265,6 +276,39 @@ export default function MarketplaceScreen() {
                 <Text style={{ fontWeight: '700', color: Colors.white }}>Ya, Lanjutkan</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      )}
+
+      {/* Success Modal */}
+      {successModal.visible && (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1001 }]}>
+          <View style={{ backgroundColor: colors.surface, padding: 24, borderRadius: 20, width: '80%', maxWidth: 320, ...Shadows.lg, alignItems: 'center' }}>
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: Colors.green[50], justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+              <Ionicons name="checkmark-circle" size={40} color={Colors.green[500]} />
+            </View>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
+              {successModal.title}
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 16, lineHeight: 20 }}>
+              {successModal.message}
+            </Text>
+            
+            {successModal.code && (
+              <View style={{ backgroundColor: isDark ? colors.surface2 : Colors.gray[100], padding: 16, borderRadius: 12, width: '100%', alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: isDark ? colors.border : Colors.gray[200], borderStyle: 'dashed' }}>
+                <Text style={{ fontSize: 12, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>Kode Voucher</Text>
+                <Text style={{ fontSize: 24, fontWeight: '900', color: Colors.gold[500], letterSpacing: 4 }}>
+                  {successModal.code}
+                </Text>
+              </View>
+            )}
+            
+            <TouchableOpacity 
+              style={{ padding: 14, borderRadius: 12, backgroundColor: Colors.green[500], alignItems: 'center', width: '100%' }}
+              onPress={() => setSuccessModal({ visible: false, title: '', message: '', code: null })}
+            >
+              <Text style={{ fontWeight: '700', color: Colors.white }}>Tutup</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
