@@ -33,13 +33,25 @@ export default function AdminLayout() {
       <Stack.Screen 
         name="users" 
         options={{ 
-          headerShown: false
+          title: 'Data Pengguna'
         }} 
       />
       <Stack.Screen 
         name="verify-distrik" 
         options={{ 
-          headerShown: false
+          title: 'Verifikasi Distrik'
+        }} 
+      />
+      <Stack.Screen 
+        name="ziswaf" 
+        options={{ 
+          title: 'Manajemen ZISWAF'
+        }} 
+      />
+      <Stack.Screen 
+        name="notifications" 
+        options={{ 
+          title: 'Pusat Informasi'
         }} 
       />
     </Stack>
