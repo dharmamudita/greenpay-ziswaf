@@ -295,7 +295,7 @@ export default function AccountSettingScreen() {
                   <Image source={{ uri: user.photo_url }} style={dynamicStyles.avatar} />
                 ) : (
                   <View style={dynamicStyles.avatarPlaceholder}>
-                    <Text style={dynamicStyles.avatarText}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</Text>
+                    <Ionicons name="person" size={48} color={Colors.white} />
                   </View>
                 )}
                 <View style={dynamicStyles.cameraBadge}>
