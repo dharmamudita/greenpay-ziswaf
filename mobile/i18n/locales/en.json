@@ -214,6 +214,38 @@
     "today": "Today",
     "yesterday": "Yesterday"
   },
+  "bank_sampah": {
+    "location": "Deposit Location",
+    "manual_deposit": "Manual Deposit",
+    "waste_category": "Waste Category",
+    "retake_photo": "Retake Photo",
+    "tap_to_capture": "Tap to capture waste",
+    "est_revenue": "ESTIMATED REVENUE",
+    "select_district": "Select District",
+    "district_subtitle": "Where to deposit your waste"
+  },
+  "leaderboard": {
+    "hero_text": "Be the Best!"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty_title": "No new notifications",
+    "empty_desc": "Notifications regarding your transactions and activities will appear here."
+  },
+  "reg_distrik": {
+    "waiting": "Waiting for Verification",
+    "waiting_desc": "Your Waste District application is being reviewed by Admin. Please be patient!",
+    "back": "Go Back",
+    "title": "Waste District Register",
+    "subtitle": "Join as a waste management partner in your neighborhood and spread benefits.",
+    "name_label": "Waste Bank / District Name",
+    "address_label": "Full Address",
+    "phone_label": "WhatsApp/Phone Number",
+    "submit": "Submit Application",
+    "check_email": "Check Your Email",
+    "verify": "Verify",
+    "cancel": "Cancel"
+  },
   "marketplace": {
     "title": "Green",
     "title_highlight": "Shopping",
