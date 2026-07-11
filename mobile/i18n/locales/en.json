@@ -119,13 +119,40 @@
     "impact_footprint": "Our Impact Footprint"
   },
   "ziswaf": {
-    "title": "Program",
+    "title": "Donation",
     "title_highlight": "ZISWAF",
-    "subtitle": "Select a program to donate",
+    "subtitle": "Purify wealth, grow rewards, save the earth.",
+    "detail_title": "Donation Detail",
+    "from": "from",
+    "enter_amount": "Enter Amount (Min. $1.00)",
+    "continue_payment": "Continue Payment",
+    "calculator_title": "Zakat Calculator",
+    "calculator_nisab": "Nisab: $457.00 / month",
+    "calculator_income": "Monthly Routine Income",
+    "calculator_bonus": "Additional Income / Bonus",
+    "calculator_total": "Total Zakat (2.5%)",
+    "calculator_pay": "Pay Zakat Now",
+    "calculator_not_reached": "Total income has not reached the monthly zakat nisab.",
+    "calculator_not_obliged": "Not Obliged to Zakat",
+    "empty_title": "No Programs Yet",
+    "empty_desc": "There are no active programs in this category at the moment.",
     "collected": "Collected",
-    "donate": "Donate",
-    "ai_predict": "AI Predict ✨",
-    "ai_processing": "Processing..."
+    "target": "Target",
+    "ai_predict": "AI Predict",
+    "donate_now": "Donate Now"
+  },
+  "impact": {
+    "global_report": "GLOBAL IMPACT REPORT",
+    "co2_prevented": "Carbon Emission (CO₂) Prevented",
+    "active_users": "Active Users",
+    "total_waste": "Total Waste",
+    "total_funds": "Total Funds",
+    "ziswaf_programs": "ZISWAF Programs",
+    "co2_reduced": "CO₂ Reduced",
+    "eco_products": "Eco Products",
+    "chart_title": "Earth Saving Trend",
+    "chart_subtitle": "Accumulation of the last 30 days",
+    "chart_empty": "No Saving Data Yet"
   },
   "marketplace": {
     "title": "Green",
@@ -152,7 +179,12 @@
     "subtitle": "Redeem your points",
     "history": "Points History",
     "redeem": "Redeem Reward",
-    "balance": "Total Points"
+    "balance": "Total Points",
+    "empty_title": "No Activity Yet",
+    "empty_desc": "Start depositing waste or donating to earn points.",
+    "see_all": "See All",
+    "today": "Today",
+    "yesterday": "Yesterday"
   },
   "bank_sampah": {
     "title": "Waste",
@@ -162,7 +194,21 @@
     "open_maps": "Open Maps",
     "deposit": "Deposit",
     "ai_scanner": "AI Waste Scanner ✨",
-    "ai_scanner_desc": "Scan your waste with AI to know its value!"
+    "ai_scanner_desc": "Scan your waste with AI to know its value!",
+    "no_distrik": "No waste bank district available yet."
+  },
+  "transparency": {
+    "title": "Transparency Report",
+    "desc": "All incoming and distributed ZISWAF funds can be monitored by the public.",
+    "total_fund": "Total Funds Collected",
+    "tab_in": "Incoming Donations",
+    "tab_out": "Distribution Proof",
+    "recent_15": "15 Recent Donations (Real-time)",
+    "empty_in": "No successful donation history yet.",
+    "out_title": "Distribution Transparency",
+    "empty_out": "No fund distribution data yet.",
+    "distributed": "Distributed",
+    "verified_by": "Verified by: "
   },
   "ai_scanner": {
     "title": "AI Waste Scanner",

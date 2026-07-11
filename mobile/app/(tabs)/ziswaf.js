@@ -5,6 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { Button, Card } from '../../components/ui';
 import Colors from '../../theme/colors';
+import { formatCurrency } from '../../utils/currency';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 
@@ -35,7 +36,7 @@ export default function ZiswafScreen() {
   const [income, setIncome] = useState('');
   const [bonus, setBonus] = useState('');
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const dynamicStyles = getStyles(colors, isDark);
 
@@ -118,7 +119,7 @@ export default function ZiswafScreen() {
     );
   };
 
-  const fmt = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
+  const fmt = (n) => formatCurrency(n, i18n.language);
 
   const totalIncome = (parseInt(income) || 0) + (parseInt(bonus) || 0);
   const zakatAmount = totalIncome >= NISAB_PER_BULAN ? totalIncome * 0.025 : 0;
@@ -184,15 +185,15 @@ export default function ZiswafScreen() {
                 <Ionicons name="calculator" size={24} color={Colors.green[500]} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={dynamicStyles.programTitle}>Kalkulator Zakat</Text>
-                <Text style={dynamicStyles.programDesc}>Nisab: Rp 6.859.000 / bulan</Text>
+                <Text style={dynamicStyles.programTitle}>{t('ziswaf.calculator_title')}</Text>
+                <Text style={dynamicStyles.programDesc}>{t('ziswaf.calculator_nisab')}</Text>
               </View>
             </View>
             
             <View style={dynamicStyles.inputSection}>
-              <Text style={dynamicStyles.label}>Penghasilan Rutin per Bulan</Text>
+              <Text style={dynamicStyles.label}>{t('ziswaf.calculator_income')}</Text>
               <View style={dynamicStyles.fintechInputWrapper}>
-                <Text style={dynamicStyles.fintechCurrency}>Rp</Text>
+                <Text style={dynamicStyles.fintechCurrency}>{i18n.language === 'en' ? '$' : 'Rp'}</Text>
                 <TextInput
                   style={dynamicStyles.fintechInput}
                   keyboardType="numeric"
@@ -205,9 +206,9 @@ export default function ZiswafScreen() {
             </View>
 
             <View style={dynamicStyles.inputSection}>
-              <Text style={dynamicStyles.label}>Penghasilan Tambahan / Bonus</Text>
+              <Text style={dynamicStyles.label}>{t('ziswaf.calculator_income')}</Text>
               <View style={dynamicStyles.fintechInputWrapper}>
-                <Text style={dynamicStyles.fintechCurrency}>Rp</Text>
+                <Text style={dynamicStyles.fintechCurrency}>{i18n.language === 'en' ? '$' : 'Rp'}</Text>
                 <TextInput
                   style={dynamicStyles.fintechInput}
                   keyboardType="numeric"
@@ -221,10 +222,10 @@ export default function ZiswafScreen() {
 
             {zakatAmount > 0 ? (
               <View style={dynamicStyles.fintechResultBox}>
-                <Text style={dynamicStyles.fintechResultLabel}>Total Zakat Wajib (2,5%)</Text>
+                <Text style={dynamicStyles.fintechResultLabel}>{t('ziswaf.calculator_total')}</Text>
                 <Text style={dynamicStyles.fintechResultAmount}>{fmt(zakatAmount)}</Text>
                 <Button 
-                  title="Tunaikan Zakat Sekarang" 
+                  title={t('ziswaf.calculator_pay')} 
                   onPress={() => {
                     setActiveTab('zakat');
                     setSelectedAmount(zakatAmount);
@@ -235,10 +236,10 @@ export default function ZiswafScreen() {
             ) : (
               <View style={[dynamicStyles.fintechResultBox, dynamicStyles.fintechResultBoxDisabled]}>
                 <Text style={[dynamicStyles.fintechResultLabel, { color: colors.textMuted }]}>
-                  Total penghasilan belum mencapai nisab wajib zakat bulanan.
+                  {t('ziswaf.calculator_not_reached')}
                 </Text>
                 <Text style={[dynamicStyles.fintechResultAmount, { color: colors.textMuted, fontSize: 18, marginTop: 8 }]}>
-                  Belum Wajib Zakat
+                  {t('ziswaf.calculator_not_obliged')}
                 </Text>
               </View>
             )}
@@ -252,8 +253,8 @@ export default function ZiswafScreen() {
             <View style={dynamicStyles.emptyIconBox}>
               <Ionicons name="folder-open-outline" size={48} color={isDark ? Colors.gray[600] : Colors.gray[300]} />
             </View>
-            <Text style={dynamicStyles.emptyTitle}>Belum Ada Program</Text>
-            <Text style={dynamicStyles.emptyDesc}>Saat ini belum ada program yang aktif di kategori ini.</Text>
+            <Text style={dynamicStyles.emptyTitle}>{t('ziswaf.empty_title')}</Text>
+            <Text style={dynamicStyles.emptyDesc}>{t('ziswaf.empty_desc')}</Text>
           </View>
         ) : (
           currentPrograms.map((p) => {
@@ -273,11 +274,11 @@ export default function ZiswafScreen() {
 
                 <View style={dynamicStyles.progressInfoRow}>
                   <View>
-                    <Text style={dynamicStyles.progressLabel}>Terkumpul</Text>
+                    <Text style={dynamicStyles.progressLabel}>{t('ziswaf.collected')}</Text>
                     <Text style={dynamicStyles.progressValueGreen}>{fmt(p.collected_amount)}</Text>
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={dynamicStyles.progressLabel}>Target</Text>
+                    <Text style={dynamicStyles.progressLabel}>{t('ziswaf.target')}</Text>
                     <Text style={dynamicStyles.progressValue}>{fmt(p.target_amount)}</Text>
                   </View>
                 </View>
@@ -308,7 +309,7 @@ export default function ZiswafScreen() {
                     ) : (
                       <>
                         <Ionicons name="sparkles" size={16} color={Colors.green[500]} style={{ marginRight: 6 }} />
-                        <Text style={dynamicStyles.actionBtnOutlineText}>Prediksi AI</Text>
+                        <Text style={dynamicStyles.actionBtnOutlineText}>{t('ziswaf.ai_predict')}</Text>
                       </>
                     )}
                   </TouchableOpacity>
@@ -322,7 +323,7 @@ export default function ZiswafScreen() {
                       <ActivityIndicator size="small" color={Colors.white} />
                     ) : (
                       <>
-                        <Text style={dynamicStyles.actionBtnSolidText}>Tunaikan</Text>
+                        <Text style={dynamicStyles.actionBtnSolidText}>{t('ziswaf.donate_now')}</Text>
                         <Ionicons name="arrow-forward" size={16} color={Colors.white} style={{ marginLeft: 6 }} />
                       </>
                     )}

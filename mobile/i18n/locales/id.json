@@ -119,13 +119,40 @@
     "impact_footprint": "Jejak Kebaikan Kita"
   },
   "ziswaf": {
-    "title": "Program",
+    "title": "Donasi",
     "title_highlight": "ZISWAF",
-    "subtitle": "Pilih program untuk disalurkan",
+    "subtitle": "Bersihkan harta, tumbuhkan pahala, selamatkan bumi.",
+    "detail_title": "Detail Donasi",
+    "from": "dari",
+    "enter_amount": "Masukkan Nominal (Min. Rp 10.000)",
+    "continue_payment": "Lanjut Pembayaran",
+    "calculator_title": "Kalkulator Zakat",
+    "calculator_nisab": "Nisab: Rp 6.859.000 / bulan",
+    "calculator_income": "Penghasilan Rutin per Bulan",
+    "calculator_bonus": "Penghasilan Tambahan / Bonus",
+    "calculator_total": "Total Zakat Wajib (2,5%)",
+    "calculator_pay": "Tunaikan Zakat Sekarang",
+    "calculator_not_reached": "Total penghasilan belum mencapai nisab wajib zakat bulanan.",
+    "calculator_not_obliged": "Belum Wajib Zakat",
+    "empty_title": "Belum Ada Program",
+    "empty_desc": "Saat ini belum ada program yang aktif di kategori ini.",
     "collected": "Terkumpul",
-    "donate": "Donasi",
-    "ai_predict": "Prediksi AI ✨",
-    "ai_processing": "Memproses..."
+    "target": "Target",
+    "ai_predict": "Prediksi AI",
+    "donate_now": "Tunaikan"
+  },
+  "impact": {
+    "global_report": "LAPORAN DAMPAK GLOBAL",
+    "co2_prevented": "Emisi Karbon (CO₂) Berhasil Dicegah",
+    "active_users": "Pengguna Aktif",
+    "total_waste": "Total Sampah",
+    "total_funds": "Dana Terkumpul",
+    "ziswaf_programs": "Program ZISWAF",
+    "co2_reduced": "CO₂ Dikurangi",
+    "eco_products": "Produk Eco",
+    "chart_title": "Tren Penyelamatan Bumi",
+    "chart_subtitle": "Akumulasi 30 hari terakhir",
+    "chart_empty": "Belum Ada Data Penyelamatan"
   },
   "marketplace": {
     "title": "Belanja",
@@ -152,7 +179,12 @@
     "subtitle": "Tukarkan poinmu",
     "history": "Riwayat Poin",
     "redeem": "Tukar Reward",
-    "balance": "Total Poin"
+    "balance": "Total Poin",
+    "empty_title": "Belum Ada Aktivitas",
+    "empty_desc": "Mulai setor sampah atau berdonasi untuk mengumpulkan poin.",
+    "see_all": "Lihat Semua",
+    "today": "Hari ini",
+    "yesterday": "Kemarin"
   },
   "bank_sampah": {
     "title": "Bank",
@@ -162,7 +194,21 @@
     "open_maps": "Buka di Maps",
     "deposit": "Setor",
     "ai_scanner": "AI Waste Scanner ✨",
-    "ai_scanner_desc": "Pindai sampah Anda dengan AI untuk mengetahui nilainya!"
+    "ai_scanner_desc": "Pindai sampah Anda dengan AI untuk mengetahui nilainya!",
+    "no_distrik": "Belum ada distrik bank sampah yang tersedia."
+  },
+  "transparency": {
+    "title": "Laporan Transparansi",
+    "desc": "Semua dana ZISWAF yang masuk dan tersalurkan dapat dipantau oleh publik.",
+    "total_fund": "Total Dana Terkumpul",
+    "tab_in": "Donasi Masuk",
+    "tab_out": "Bukti Penyaluran",
+    "recent_15": "15 Donasi Terakhir (Real-time)",
+    "empty_in": "Belum ada riwayat donasi yang sukses.",
+    "out_title": "Transparansi Penyaluran",
+    "empty_out": "Belum ada data penyaluran dana.",
+    "distributed": "Tersalurkan",
+    "verified_by": "Diverifikasi oleh: "
   },
   "ai_scanner": {
     "title": "AI Waste Scanner",

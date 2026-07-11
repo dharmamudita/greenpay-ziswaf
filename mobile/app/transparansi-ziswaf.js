@@ -68,11 +68,11 @@ export default function TransparansiZiswafScreen() {
         {/* Banner Transparansi */}
         <View style={dynamicStyles.heroCard}>
           <Ionicons name="shield-checkmark" size={32} color={Colors.white} style={{ marginBottom: Spacing.sm }} />
-          <Text style={dynamicStyles.heroTitle}>Laporan Transparansi</Text>
-          <Text style={dynamicStyles.heroDesc}>Semua dana ZISWAF yang masuk dan tersalurkan dapat dipantau oleh publik.</Text>
+          <Text style={dynamicStyles.heroTitle}>{t('transparency.title')}</Text>
+          <Text style={dynamicStyles.heroDesc}>{t('transparency.desc')}</Text>
           
           <View style={dynamicStyles.heroStats}>
-            <Text style={dynamicStyles.heroStatsLabel}>Total Dana Terkumpul</Text>
+            <Text style={dynamicStyles.heroStatsLabel}>{t('transparency.total_fund')}</Text>
             <Text style={dynamicStyles.heroStatsValue}>{formatRp(stats?.total_fund)}</Text>
           </View>
         </View>
@@ -83,23 +83,23 @@ export default function TransparansiZiswafScreen() {
             style={[dynamicStyles.tabBtn, activeTab === 'donasi' && dynamicStyles.tabBtnActive]}
             onPress={() => setActiveTab('donasi')}
           >
-            <Text style={[dynamicStyles.tabText, activeTab === 'donasi' && dynamicStyles.tabTextActive]}>Donasi Masuk</Text>
+            <Text style={[dynamicStyles.tabText, activeTab === 'donasi' && dynamicStyles.tabTextActive]}>{t('transparency.tab_in')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[dynamicStyles.tabBtn, activeTab === 'penyaluran' && dynamicStyles.tabBtnActive]}
             onPress={() => setActiveTab('penyaluran')}
           >
-            <Text style={[dynamicStyles.tabText, activeTab === 'penyaluran' && dynamicStyles.tabTextActive]}>Bukti Penyaluran</Text>
+            <Text style={[dynamicStyles.tabText, activeTab === 'penyaluran' && dynamicStyles.tabTextActive]}>{t('transparency.tab_out')}</Text>
           </TouchableOpacity>
         </View>
 
         {activeTab === 'donasi' ? (
           <>
-            <Text style={dynamicStyles.sectionTitle}>15 Donasi Terakhir (Real-time)</Text>
+            <Text style={dynamicStyles.sectionTitle}>{t('transparency.recent_15')}</Text>
             {history.length === 0 ? (
               <View style={dynamicStyles.emptyState}>
                 <Ionicons name="time-outline" size={48} color={colors.textMuted} />
-                <Text style={dynamicStyles.emptyText}>Belum ada riwayat donasi yang sukses.</Text>
+                <Text style={dynamicStyles.emptyText}>{t('transparency.empty_in')}</Text>
               </View>
             ) : (
               history.map((item, idx) => (
@@ -125,11 +125,11 @@ export default function TransparansiZiswafScreen() {
           </>
         ) : (
           <>
-            <Text style={dynamicStyles.sectionTitle}>Transparansi Penyaluran</Text>
+            <Text style={dynamicStyles.sectionTitle}>{t('transparency.out_title')}</Text>
             {distributions.length === 0 ? (
               <View style={dynamicStyles.emptyState}>
                 <Ionicons name="documents-outline" size={48} color={colors.textMuted} />
-                <Text style={dynamicStyles.emptyText}>Belum ada data penyaluran dana.</Text>
+                <Text style={dynamicStyles.emptyText}>{t('transparency.empty_out')}</Text>
               </View>
             ) : (
               distributions.map((dist, idx) => (
@@ -139,7 +139,7 @@ export default function TransparansiZiswafScreen() {
                       {new Date(dist.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </Text>
                     <View style={dynamicStyles.distBadge}>
-                      <Text style={dynamicStyles.distBadgeText}>Tersalurkan</Text>
+                      <Text style={dynamicStyles.distBadgeText}>{t('transparency.distributed')}</Text>
                     </View>
                   </View>
                   <Text style={dynamicStyles.distAmount}>{formatRp(dist.amount)}</Text>
@@ -148,7 +148,7 @@ export default function TransparansiZiswafScreen() {
                   <Text style={dynamicStyles.distDesc}>{dist.description}</Text>
                   <View style={dynamicStyles.distFooter}>
                     <Ionicons name="shield-checkmark" size={14} color={Colors.green[500]} style={{ marginRight: 4 }} />
-                    <Text style={dynamicStyles.distAdmin}>Diverifikasi oleh: {dist.admin_name}</Text>
+                    <Text style={dynamicStyles.distAdmin}>{t('transparency.verified_by')} {dist.admin_name}</Text>
                   </View>
                 </View>
               ))

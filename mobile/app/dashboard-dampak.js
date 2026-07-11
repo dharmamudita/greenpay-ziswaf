@@ -53,6 +53,11 @@ export default function DashboardDampakScreen() {
 
   const fmtMoney = (rp) => {
     if (!rp) return { v: '0', u: '' };
+    if (i18n.language === 'en') {
+      const usd = rp / 15000;
+      if (usd >= 1000) return { v: (usd / 1000).toFixed(1), u: 'K' };
+      return { v: usd.toFixed(1), u: '' };
+    }
     if (rp >= 1000000) return { v: (rp / 1000000).toFixed(1), u: 'Jt' };
     if (rp >= 1000) return { v: (rp / 1000).toFixed(1), u: 'Rb' };
     return { v: rp, u: '' };
@@ -71,12 +76,12 @@ export default function DashboardDampakScreen() {
   const co2 = fmtWaste(stats?.total_co2_reduced);
 
   const impactData = [
-    { icon: 'people', value: stats?.total_users || 0, label: 'Pengguna Aktif', color: Colors.info, gradient: [Colors.info, '#3B82F6'] },
-    { icon: 'refresh', value: waste.v, unit: waste.u, label: 'Total Sampah', color: Colors.green[500], gradient: [Colors.green[400], Colors.green[600]] },
-    { icon: 'heart', value: money.v, unit: money.u, label: 'Dana Terkumpul', color: Colors.gold[400], gradient: [Colors.gold[400], Colors.gold[600]] },
-    { icon: 'cube', value: stats?.total_programs || 0, label: 'Program ZISWAF', color: Colors.green[400], gradient: [Colors.green[300], Colors.green[500]] },
-    { icon: 'cloud', value: co2.v, unit: co2.u, label: 'CO₂ Dikurangi', color: isDark ? Colors.gray[300] : Colors.gray[500], gradient: [Colors.gray[400], Colors.gray[600]] },
-    { icon: 'storefront', value: stats?.total_umkm || 0, label: 'Produk Eco', color: Colors.purple, gradient: ['#A855F7', '#7E22CE'] },
+    { icon: 'people', value: stats?.total_users || 0, label: t('impact.active_users'), color: Colors.info, gradient: [Colors.info, '#3B82F6'] },
+    { icon: 'refresh', value: waste.v, unit: waste.u, label: t('impact.total_waste'), color: Colors.green[500], gradient: [Colors.green[400], Colors.green[600]] },
+    { icon: 'heart', value: `${i18n.language === 'en' ? '$' : 'Rp'}${money.v}`, unit: money.u, label: t('impact.total_funds'), color: Colors.gold[400], gradient: [Colors.gold[400], Colors.gold[600]] },
+    { icon: 'cube', value: stats?.total_programs || 0, label: t('impact.ziswaf_programs'), color: Colors.green[400], gradient: [Colors.green[300], Colors.green[500]] },
+    { icon: 'cloud', value: co2.v, unit: co2.u, label: t('impact.co2_reduced'), color: isDark ? Colors.gray[300] : Colors.gray[500], gradient: [Colors.gray[400], Colors.gray[600]] },
+    { icon: 'storefront', value: stats?.total_umkm || 0, label: t('impact.eco_products'), color: Colors.purple, gradient: ['#A855F7', '#7E22CE'] },
   ];
 
   // Calculate chart max value
@@ -106,9 +111,9 @@ export default function DashboardDampakScreen() {
           <Ionicons name="leaf" size={64} color={Colors.gold[400]} />
         </View>
 
-        <Text style={dynamicStyles.heroSub}>LAPORAN DAMPAK GLOBAL</Text>
+        <Text style={dynamicStyles.heroSub}>{t('impact.global_report')}</Text>
         <Text style={dynamicStyles.heroTitle}>{co2.v} <Text style={{ fontSize: 24, fontWeight: '700', color: 'rgba(255,255,255,0.7)' }}>{co2.u}</Text></Text>
-        <Text style={dynamicStyles.heroDesc}>Emisi Karbon (CO₂) Berhasil Dicegah</Text>
+        <Text style={dynamicStyles.heroDesc}>{t('impact.co2_prevented')}</Text>
 
       </View>
 
@@ -147,8 +152,8 @@ export default function DashboardDampakScreen() {
           />
           <View style={dynamicStyles.chartHeader}>
             <View>
-              <Text style={dynamicStyles.chartTitle}>Tren Penyelamatan Bumi</Text>
-              <Text style={dynamicStyles.chartSubtitle}>Akumulasi 30 hari terakhir</Text>
+              <Text style={dynamicStyles.chartTitle}>{t('impact.chart_title')}</Text>
+              <Text style={dynamicStyles.chartSubtitle}>{t('impact.chart_subtitle')}</Text>
             </View>
             <View style={dynamicStyles.chartIconBox}>
               <Ionicons name="pulse" size={24} color={Colors.green[500]} />
@@ -166,7 +171,7 @@ export default function DashboardDampakScreen() {
                 {monthlyTrend.map((m, i) => {
                   const kg = parseFloat(m.waste_kg) || 0;
                   const h = Math.max((kg / maxWaste) * 100, 5); // min 5% height
-                  const monthName = new Date(m.month).toLocaleDateString('id-ID', { month: 'short' });
+                  const monthName = new Date(m.month).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'id-ID', { month: 'short' });
                   return (
                     <View key={i} style={dynamicStyles.chartColumn}>
                       <View style={[dynamicStyles.chartBar, { height: `${h}%`, backgroundColor: Colors.green[500] }]} />
@@ -178,7 +183,7 @@ export default function DashboardDampakScreen() {
             ) : (
               <View style={dynamicStyles.chartOverlayText}>
                 <Ionicons name="information-circle" size={16} color={Colors.gold[500]} style={{ marginBottom: 4 }} />
-                <Text style={dynamicStyles.chartOverlayLabel}>Belum Ada Data Penyelamatan</Text>
+                <Text style={dynamicStyles.chartOverlayLabel}>{t('impact.chart_empty')}</Text>
               </View>
             )}
           </View>

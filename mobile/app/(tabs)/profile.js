@@ -48,9 +48,9 @@ export default function ProfileScreen() {
             </View>
           </View>
           
-          <Text style={dynamicStyles.unauthTitle}>Bergabung dengan Gerakan Hijau</Text>
+          <Text style={dynamicStyles.unauthTitle}>{t('profile.unauth_title', { defaultValue: 'Bergabung dengan Gerakan Hijau' })}</Text>
           <Text style={dynamicStyles.unauthDesc}>
-            Masuk sekarang untuk melacak donasi, menukar poin, dan berpartisipasi menjaga bumi.
+            {t('profile.unauth_desc', { defaultValue: 'Masuk sekarang untuk melacak donasi, menukar poin, dan berpartisipasi menjaga bumi.' })}
           </Text>
         </View>
 
@@ -60,7 +60,7 @@ export default function ProfileScreen() {
             onPress={() => router.push('/(auth)/login')}
             activeOpacity={0.8}
           >
-            <Text style={dynamicStyles.unauthLoginText}>Masuk / Daftar Sekarang</Text>
+            <Text style={dynamicStyles.unauthLoginText}>{t('profile.unauth_btn', { defaultValue: 'Masuk / Daftar Sekarang' })}</Text>
             <Ionicons name="arrow-forward" size={20} color={Colors.white} style={{ marginLeft: 8 }} />
           </TouchableOpacity>
         </View>
@@ -72,9 +72,9 @@ export default function ProfileScreen() {
   let menuItems = [];
 
   if (isAdmin()) {
-    menuItems.push({ icon: 'briefcase', label: 'Dashboard Admin', route: '/admin', color: Colors.gold[500] });
+    menuItems.push({ icon: 'briefcase', label: t('profile.admin_dashboard', { defaultValue: 'Dashboard Admin' }), route: '/admin', color: Colors.gold[500] });
   } else if (isDistrik()) {
-    menuItems.push({ icon: 'business', label: 'Panel Distrik', route: '/distrik', color: Colors.info });
+    menuItems.push({ icon: 'business', label: t('profile.district_panel', { defaultValue: 'Panel Distrik' }), route: '/distrik', color: Colors.info });
   }
 
   menuItems.push(
@@ -84,7 +84,7 @@ export default function ProfileScreen() {
   );
 
   if (user?.role === 'user') {
-    menuItems.push({ icon: 'business', label: 'Daftar Jadi Distrik', route: '/profile/register-distrik', color: Colors.info });
+    menuItems.push({ icon: 'business', label: t('profile.register_district', { defaultValue: 'Daftar Jadi Distrik' }), route: '/profile/register-distrik', color: Colors.info });
   }
 
   menuItems.push({ icon: 'settings', label: t('settings.title', { defaultValue: 'Pengaturan' }), route: '/settings', color: isDark ? Colors.gray[400] : Colors.gray[500] });
@@ -132,7 +132,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
             
             <View style={dynamicStyles.userInfoCol}>
-              <Text style={dynamicStyles.userName} numberOfLines={1}>{user?.display_name || 'Pengguna'}</Text>
+              <Text style={dynamicStyles.userName} numberOfLines={1}>{user?.display_name || t('profile.user', { defaultValue: 'Pengguna' })}</Text>
               
               <TouchableOpacity 
                 style={dynamicStyles.idBorderWrap}
@@ -147,7 +147,7 @@ export default function ProfileScreen() {
               
               <View style={{ marginTop: 8, alignSelf: 'flex-start' }}>
                 <Badge 
-                  text={user?.role === 'admin' ? 'Administrator' : user?.role === 'distrik' ? 'Akun Distrik' : 'Pengguna Aktif'} 
+                  text={user?.role === 'admin' ? t('profile.role_admin', { defaultValue: 'Administrator' }) : user?.role === 'distrik' ? t('profile.role_district', { defaultValue: 'Akun Distrik' }) : t('profile.role_user', { defaultValue: 'Pengguna Aktif' })} 
                   variant={user?.role === 'admin' ? 'gold' : 'primary'}
                 />
               </View>
@@ -158,9 +158,9 @@ export default function ProfileScreen() {
         {/* Fintech-style Stats */}
         <View style={dynamicStyles.statsRow}>
           {[
-            { label: 'Green Point', value: user?.green_points || 0, icon: 'leaf', color: Colors.green[500], bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50] },
-            { label: 'Donasi', value: `${((user?.total_donation || 0) / 1000).toFixed(0)}K`, icon: 'heart', color: Colors.gold[500], bg: isDark ? 'rgba(245, 158, 11, 0.15)' : Colors.gold[50] },
-            { label: 'Sampah', value: `${user?.total_waste || 0} kg`, icon: 'sync', color: Colors.info, bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF' },
+            { label: t('green_point.title', { defaultValue: 'Green Point' }), value: user?.green_points || 0, icon: 'leaf', color: Colors.green[500], bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50] },
+            { label: t('home.donasi', { defaultValue: 'Donasi' }), value: `${((user?.total_donation || 0) / 1000).toFixed(0)}K`, icon: 'heart', color: Colors.gold[500], bg: isDark ? 'rgba(245, 158, 11, 0.15)' : Colors.gold[50] },
+            { label: t('home.sampah', { defaultValue: 'Sampah' }), value: `${user?.total_waste || 0} kg`, icon: 'sync', color: Colors.info, bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF' },
           ].map((s, i) => (
             <View key={i} style={dynamicStyles.statItem}>
               <View style={[dynamicStyles.statIconWrap, { backgroundColor: s.bg }]}>
@@ -173,7 +173,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Premium Menu Group */}
-        <Text style={dynamicStyles.sectionTitle}>Menu Utama</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('profile.menu_title', { defaultValue: 'Menu Utama' })}</Text>
         <View style={dynamicStyles.menuGroup}>
           {menuItems.map((item, i) => (
             <TouchableOpacity 

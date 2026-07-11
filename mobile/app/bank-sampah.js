@@ -165,10 +165,10 @@ export default function BankSampahScreen() {
             </View>
             <View style={dynamicStyles.premiumSelectorTextWrap}>
               <Text style={dynamicStyles.premiumSelectorTitle}>
-                {loadingLocs ? 'Memuat lokasi...' : (selectedLocation?.name || 'Pilih Bank Sampah')}
+                {loadingLocs ? 'Loading...' : (selectedLocation?.name || t('bank_sampah.title', { defaultValue: 'Pilih Bank Sampah' }))}
               </Text>
               <Text style={dynamicStyles.premiumSelectorAddress} numberOfLines={1}>
-                {selectedLocation?.address || 'Ketuk untuk memilih lokasi'}
+                {selectedLocation?.address || t('bank_sampah.search', { defaultValue: 'Ketuk untuk memilih lokasi' })}
               </Text>
             </View>
             <View style={dynamicStyles.premiumSelectorChevron}>
@@ -184,7 +184,7 @@ export default function BankSampahScreen() {
               <Map lat={lat} lng={lng} openGoogleMaps={openGoogleMaps} colors={colors} />
               
               <View style={dynamicStyles.mapOverlayHint}>
-                <Text style={dynamicStyles.mapOverlayText}>Buka di Maps</Text>
+                <Text style={dynamicStyles.mapOverlayText}>{t('bank_sampah.open_maps', { defaultValue: 'Buka di Maps' })}</Text>
                 <Ionicons name="open-outline" size={12} color={Colors.white} style={{ marginLeft: 4 }} />
               </View>
             </TouchableOpacity>
@@ -216,8 +216,8 @@ export default function BankSampahScreen() {
               </View>
             </View>
             <View style={{ flex: 1, marginLeft: Spacing.md }}>
-              <Text style={dynamicStyles.aiBannerTitle}>{t('bank_sampah.ai_scanner')}</Text>
-              <Text style={dynamicStyles.aiBannerDesc}>{t('bank_sampah.ai_scanner_desc')}</Text>
+              <Text style={dynamicStyles.aiBannerTitle}>{t('bank_sampah.ai_scanner', { defaultValue: 'AI Waste Scanner ✨' })}</Text>
+              <Text style={dynamicStyles.aiBannerDesc}>{t('bank_sampah.ai_scanner_desc', { defaultValue: 'Pindai sampah Anda dengan AI untuk mengetahui nilainya!' })}</Text>
             </View>
             <View style={dynamicStyles.aiArrowBtn}>
               <Ionicons name="chevron-forward" size={20} color={Colors.white} />

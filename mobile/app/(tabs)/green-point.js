@@ -74,9 +74,9 @@ export default function GreenPointScreen() {
     
     let dateStr = '';
     if (d.toDateString() === today.toDateString()) {
-      dateStr = 'Hari ini';
+      dateStr = t('green_point.today', { defaultValue: 'Hari ini' });
     } else if (d.toDateString() === yesterday.toDateString()) {
-      dateStr = 'Kemarin';
+      dateStr = t('green_point.yesterday', { defaultValue: 'Kemarin' });
     } else {
       dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     }
@@ -93,8 +93,8 @@ export default function GreenPointScreen() {
       
       {/* Header Section */}
       <View style={dynamicStyles.headerContainer}>
-        <Text style={dynamicStyles.pageTitle}>Green Point</Text>
-        <Text style={dynamicStyles.pageDesc}>Kumpulkan poin kebaikan untuk selamatkan bumi.</Text>
+        <Text style={dynamicStyles.pageTitle}>{t('green_point.title', { defaultValue: 'Green Point' })}</Text>
+        <Text style={dynamicStyles.pageDesc}>{t('green_point.desc', { defaultValue: 'Kumpulkan poin kebaikan untuk selamatkan bumi.' })}</Text>
       </View>
 
       <View style={dynamicStyles.container}>
@@ -129,9 +129,9 @@ export default function GreenPointScreen() {
 
         {/* Recent Activities (Bank Statement Style) */}
         <View style={dynamicStyles.sectionHeader}>
-          <Text style={dynamicStyles.sectionTitle}>Riwayat Poin</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('green_point.history')}</Text>
           <TouchableOpacity>
-            <Text style={dynamicStyles.seeAllBtn}>Lihat Semua</Text>
+            <Text style={dynamicStyles.seeAllBtn}>{t('green_point.see_all')}</Text>
           </TouchableOpacity>
         </View>
         
@@ -145,8 +145,8 @@ export default function GreenPointScreen() {
               <View style={dynamicStyles.emptyIconBox}>
                 <Ionicons name="receipt-outline" size={40} color={colors.textMuted} />
               </View>
-              <Text style={dynamicStyles.emptyTitle}>Belum Ada Aktivitas</Text>
-              <Text style={dynamicStyles.emptyDesc}>Mulai setor sampah atau berdonasi untuk mengumpulkan poin.</Text>
+              <Text style={dynamicStyles.emptyTitle}>{t('green_point.empty_title')}</Text>
+              <Text style={dynamicStyles.emptyDesc}>{t('green_point.empty_desc')}</Text>
             </View>
           ) : (
             history.map((act, index) => {
