@@ -41,6 +41,34 @@
     "verify_save": "Verifikasi & Simpan",
     "tap_to_change_photo": "Ketuk avatar untuk ubah foto"
   },
+  "admin": {
+    "dashboard_title": "Dashboard Admin",
+    "deposit_title": "Setoran Sampah",
+    "users_title": "Data Pengguna",
+    "verify_distrik_title": "Verifikasi Distrik",
+    "ziswaf_title": "Manajemen ZISWAF",
+    "notifications_title": "Pusat Informasi",
+    "coming_soon": "Segera Hadir",
+    "coming_soon_desc": "Fitur ini sedang dalam tahap pengembangan.",
+    "greeting": "Selamat Bekerja,",
+    "admin": "Admin",
+    "super_admin": "SUPER ADMIN",
+    "traffic": "LALU LINTAS SISTEM (REALTIME)",
+    "stat_pending": "Setoran\nAntre",
+    "stat_sme": "Produk\nUMKM",
+    "stat_ziswaf": "ZISWAF\nBerhasil",
+    "control_center": "Pusat Kendali",
+    "menu_verify_distrik": "Verifikasi Distrik",
+    "menu_users": "Data Pengguna",
+    "menu_ziswaf": "Kelola ZISWAF",
+    "menu_notifications": "Buat Notifikasi"
+  },
+  "nav": {
+    "home": "Beranda",
+    "ziswaf": "Ziswaf",
+    "market": "Pasar",
+    "profile": "Profil"
+  },
   "tabs": {
     "home": "Beranda",
     "ziswaf": "Ziswaf",

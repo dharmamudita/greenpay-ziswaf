@@ -41,6 +41,34 @@
     "verify_save": "Verify & Save",
     "tap_to_change_photo": "Tap avatar to change photo"
   },
+  "admin": {
+    "dashboard_title": "Admin Dashboard",
+    "deposit_title": "Waste Deposit",
+    "users_title": "User Data",
+    "verify_distrik_title": "Verify District",
+    "ziswaf_title": "ZISWAF Management",
+    "notifications_title": "Information Center",
+    "coming_soon": "Coming Soon",
+    "coming_soon_desc": "This feature is currently under development.",
+    "greeting": "Welcome,",
+    "admin": "Admin",
+    "super_admin": "SUPER ADMIN",
+    "traffic": "SYSTEM TRAFFIC (REALTIME)",
+    "stat_pending": "Pending\nDeposits",
+    "stat_sme": "SME\nProducts",
+    "stat_ziswaf": "Successful\nZISWAF",
+    "control_center": "Control Center",
+    "menu_verify_distrik": "Verify District",
+    "menu_users": "User Data",
+    "menu_ziswaf": "Manage ZISWAF",
+    "menu_notifications": "Create Notification"
+  },
+  "nav": {
+    "home": "Home",
+    "ziswaf": "Ziswaf",
+    "market": "Market",
+    "profile": "Profile"
+  },
   "tabs": {
     "home": "Home",
     "ziswaf": "Ziswaf",

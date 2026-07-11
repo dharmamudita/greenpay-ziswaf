@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
@@ -10,6 +11,7 @@ import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
 
 export default function AdminDashboardScreen() {
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
   const [stats, setStats] = useState({
@@ -42,6 +44,7 @@ export default function AdminDashboardScreen() {
 
   const adminMenu = [
     {
+      id: 'verify_distrik',
       title: 'Verifikasi Distrik',
       desc: 'Setujui pengajuan pendaftaran pengelola Distrik.',
       icon: 'shield-checkmark',
@@ -51,6 +54,7 @@ export default function AdminDashboardScreen() {
       ring: isDark ? 'rgba(239, 68, 68, 0.3)' : '#FECACA'
     },
     {
+      id: 'users',
       title: 'Data Pengguna',
       desc: 'Pantau aktivitas, blokir, atau ubah peran akun.',
       icon: 'people',
@@ -60,6 +64,7 @@ export default function AdminDashboardScreen() {
       ring: isDark ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE'
     },
     {
+      id: 'ziswaf',
       title: 'Kelola ZISWAF',
       desc: 'Manajemen donasi, zakat, dan pelaporan program.',
       icon: 'heart',
@@ -69,6 +74,7 @@ export default function AdminDashboardScreen() {
       ring: isDark ? 'rgba(245, 158, 11, 0.3)' : Colors.gold[100]
     },
     {
+      id: 'notifications',
       title: 'Buat Notifikasi',
       desc: 'Kirim pengumuman massal atau personal ke pengguna.',
       icon: 'megaphone',
@@ -81,7 +87,7 @@ export default function AdminDashboardScreen() {
 
   const handleMenuPress = (route) => {
     if (route === 'coming_soon') {
-      Alert.alert('Segera Hadir', 'Fitur ini sedang dalam tahap pengembangan.');
+      Alert.alert(t('admin.coming_soon', {defaultValue: 'Segera Hadir'}), t('admin.coming_soon_desc', {defaultValue: 'Fitur ini sedang dalam tahap pengembangan.'}));
     } else {
       router.push(route);
     }
@@ -103,12 +109,12 @@ export default function AdminDashboardScreen() {
         {/* Welcome Section */}
         <View style={dynamicStyles.welcomeSection}>
           <View>
-            <Text style={dynamicStyles.greeting}>Selamat Bekerja,</Text>
-            <Text style={dynamicStyles.adminName}>{user?.display_name || 'Admin'}!</Text>
+            <Text style={dynamicStyles.greeting}>{t('admin.greeting', {defaultValue: 'Selamat Bekerja,'})}</Text>
+            <Text style={dynamicStyles.adminName}>{user?.display_name || t('admin.admin', {defaultValue: 'Admin'})}!</Text>
           </View>
           <View style={dynamicStyles.adminBadge}>
             <Ionicons name="shield-checkmark" size={14} color={Colors.gold[400]} />
-            <Text style={dynamicStyles.adminBadgeText}>SUPER ADMIN</Text>
+            <Text style={dynamicStyles.adminBadgeText}>{t('admin.super_admin', {defaultValue: 'SUPER ADMIN'})}</Text>
           </View>
         </View>
         
@@ -122,7 +128,7 @@ export default function AdminDashboardScreen() {
             <View style={dynamicStyles.summaryHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <View style={dynamicStyles.liveIndicator} />
-                <Text style={dynamicStyles.summaryTitle}>LALU LINTAS SISTEM (REALTIME)</Text>
+                <Text style={dynamicStyles.summaryTitle}>{t('admin.traffic', {defaultValue: 'LALU LINTAS SISTEM (REALTIME)'})}</Text>
               </View>
               <Ionicons name="stats-chart" size={18} color={Colors.gold[400]} />
             </View>
@@ -133,24 +139,24 @@ export default function AdminDashboardScreen() {
               <View style={dynamicStyles.statsRow}>
                 <View style={dynamicStyles.statBox}>
                   <Text style={dynamicStyles.statVal}>{stats.pendingDeposits}</Text>
-                  <Text style={dynamicStyles.statLbl}>Setoran{'\n'}Antre</Text>
+                  <Text style={dynamicStyles.statLbl}>{t('admin.stat_pending', {defaultValue: 'Setoran\nAntre'})}</Text>
                 </View>
                 <View style={dynamicStyles.statDivider} />
                 <View style={dynamicStyles.statBox}>
                   <Text style={dynamicStyles.statVal}>{stats.productsCount}</Text>
-                  <Text style={dynamicStyles.statLbl}>Produk{'\n'}UMKM</Text>
+                  <Text style={dynamicStyles.statLbl}>{t('admin.stat_sme', {defaultValue: 'Produk\nUMKM'})}</Text>
                 </View>
                 <View style={dynamicStyles.statDivider} />
                 <View style={dynamicStyles.statBox}>
                   <Text style={dynamicStyles.statVal}>{stats.successfulDonations}</Text>
-                  <Text style={dynamicStyles.statLbl}>ZISWAF{'\n'}Berhasil</Text>
+                  <Text style={dynamicStyles.statLbl}>{t('admin.stat_ziswaf', {defaultValue: 'ZISWAF\nBerhasil'})}</Text>
                 </View>
               </View>
             )}
           </LinearGradient>
         </View>
 
-        <Text style={dynamicStyles.sectionTitle}>Pusat Kendali</Text>
+        <Text style={dynamicStyles.sectionTitle}>{t('admin.control_center', {defaultValue: 'Pusat Kendali'})}</Text>
         
         {/* Premium Menu Grid */}
         <View style={dynamicStyles.menuGrid}>
@@ -164,7 +170,7 @@ export default function AdminDashboardScreen() {
               <View style={[dynamicStyles.menuIconBox, { backgroundColor: item.bg }]}>
                 <Ionicons name={item.icon} size={26} color={item.color} />
               </View>
-              <Text style={dynamicStyles.menuTitle}>{item.title}</Text>
+              <Text style={dynamicStyles.menuTitle}>{t('admin.menu_' + item.id, {defaultValue: item.title})}</Text>
             </TouchableOpacity>
           ))}
         </View>
