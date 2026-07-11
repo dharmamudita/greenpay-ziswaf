@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../theme/colors';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +13,7 @@ export default function RegisterDistrikScreen() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null); 
+  const [refreshing, setRefreshing] = useState(false);
   
   const [otpVisible, setOtpVisible] = useState(false);
   const [otp, setOtp] = useState('');
@@ -37,11 +38,22 @@ export default function RegisterDistrikScreen() {
       setStatus(res.data.status);
     } catch (error) {
       console.log('Error checking status:', error);
-      Alert.alert('Error', 'Gagal memuat status pendaftaran.');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      checkStatus();
+    }, [])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    checkStatus();
+  }, []);
 
   const handleSubmit = async () => {
     if (!form.name || !form.address || !form.phone) {
@@ -88,7 +100,10 @@ export default function RegisterDistrikScreen() {
 
   if (status === 'pending') {
     return (
-      <View style={dynamicStyles.centerScreen}>
+      <ScrollView 
+        contentContainerStyle={dynamicStyles.centerScreen}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+      >
         <Ionicons name="time-outline" size={80} color={Colors.info} />
         <Text style={dynamicStyles.title}>Menunggu Verifikasi</Text>
         <Text style={dynamicStyles.subtitle}>
@@ -97,7 +112,7 @@ export default function RegisterDistrikScreen() {
         <TouchableOpacity style={dynamicStyles.backBtn} onPress={() => router.back()}>
           <Text style={dynamicStyles.backBtnText}>Kembali</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     );
   }
 
