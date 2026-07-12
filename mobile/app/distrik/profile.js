@@ -8,6 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
 import api from '../../services/api';
+import Map from '../../components/Map';
 
 // Map feature disabled temporarily for Web compatibility
 
@@ -139,11 +140,21 @@ export default function DistrikProfileScreen() {
           </Text>
           
           <View style={dynamicStyles.mapContainer}>
+            {Platform.OS !== 'web' ? (
+              <View style={{ flex: 1, borderRadius: 12, overflow: 'hidden' }}>
+                <Map 
+                  lat={formData.latitude} 
+                  lng={formData.longitude} 
+                  onMapPress={(coord) => setFormData({...formData, latitude: coord.latitude, longitude: coord.longitude})} 
+                />
+              </View>
+            ) : (
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name="map" size={48} color={colors.textMuted} />
                 <Text style={{ color: colors.textMuted, marginTop: 8 }}>{t('distrik.map_disabled', {defaultValue: 'Peta dinonaktifkan sementara.'})}</Text>
                 <Text style={{ color: colors.textMuted, fontSize: 12 }}>{t('distrik.map_manual', {defaultValue: 'Isi koordinat secara manual di bawah.'})}</Text>
               </View>
+            )}
             <View style={dynamicStyles.mapOverlayHint}>
               <Text style={{ color: Colors.white, fontSize: 10, fontWeight: '700' }}>{t('distrik.map_tap', {defaultValue: 'Ketuk Peta untuk Pindah Titik'})}</Text>
             </View>

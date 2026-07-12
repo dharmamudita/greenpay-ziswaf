@@ -1,7 +1,7 @@
 import React from 'react';
 import MapView, { Marker } from 'react-native-maps';
 
-export default function Map({ lat, lng, openGoogleMaps }) {
+export default function Map({ lat, lng, openGoogleMaps, onMapPress }) {
   return (
     <MapView
       style={{ width: '100%', height: '100%' }}
@@ -12,13 +12,24 @@ export default function Map({ lat, lng, openGoogleMaps }) {
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       }}
-      onPress={openGoogleMaps}
+      region={{
+        latitude: lat,
+        longitude: lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }}
+      onPress={(e) => {
+        if (onMapPress) {
+          onMapPress(e.nativeEvent.coordinate);
+        } else if (openGoogleMaps) {
+          openGoogleMaps();
+        }
+      }}
     >
       <Marker 
         coordinate={{ latitude: lat, longitude: lng }}
-        title="Bank Sampah Hijau Lestari"
-        description="Jl. ZA Pagar Alam No. 45, Rajabasa"
-        onPress={openGoogleMaps}
+        title="Lokasi"
+        onPress={openGoogleMaps ? openGoogleMaps : undefined}
       />
     </MapView>
   );
