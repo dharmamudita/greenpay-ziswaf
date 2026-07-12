@@ -387,9 +387,10 @@ const getStyles = (colors, isDark) => StyleSheet.create({
     flex: 1,
     color: colors.text,
     fontSize: 16,
-    paddingVertical: Spacing.md + 4,
+    paddingVertical: Platform.OS === 'ios' ? Spacing.md + 4 : Spacing.md,
     paddingHorizontal: Spacing.md,
     fontWeight: '600',
+    minHeight: 54,
   },
   eyeBtn: {
     padding: Spacing.md,
