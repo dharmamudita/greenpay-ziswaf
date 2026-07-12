@@ -49,7 +49,7 @@ export default function AccountSettingScreen() {
 
   const copyPassportId = async () => {
     await Clipboard.setStringAsync(passportIdStr);
-    Alert.alert('Disalin!', `ID ${passportIdStr} berhasil disalin ke clipboard.`);
+    Alert.alert(t('account.copied', {defaultValue: 'Disalin!'}), t('account.copied_desc', {defaultValue: `ID ${passportIdStr} berhasil disalin ke clipboard.`, id: passportIdStr}));
   };
 
   useEffect(() => {
@@ -78,15 +78,15 @@ export default function AccountSettingScreen() {
     }
 
     Alert.alert(
-      'Ubah Foto Profil',
-      'Pilih sumber foto Anda',
+      t('account.change_avatar', {defaultValue: 'Ubah Foto Profil'}),
+      t('account.choose_source', {defaultValue: 'Pilih sumber foto Anda'}),
       [
         {
-          text: 'Buka Kamera',
+          text: t('account.open_camera', {defaultValue: 'Buka Kamera'}),
           onPress: async () => {
             const permission = await ImagePicker.requestCameraPermissionsAsync();
             if (!permission.granted) {
-              Alert.alert('Izin Ditolak', 'Dibutuhkan akses kamera.');
+              Alert.alert(t('bank_sampah.permission_denied', {defaultValue: 'Izin Ditolak'}), t('account.camera_req', {defaultValue: 'Dibutuhkan akses kamera.'}));
               return;
             }
             const result = await ImagePicker.launchCameraAsync({
@@ -99,11 +99,11 @@ export default function AccountSettingScreen() {
           }
         },
         {
-          text: 'Pilih dari Galeri',
+          text: t('account.choose_gallery', {defaultValue: 'Pilih dari Galeri'}),
           onPress: async () => {
             const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (!permission.granted) {
-              Alert.alert('Izin Ditolak', 'Anda perlu mengizinkan akses galeri.');
+              Alert.alert(t('bank_sampah.permission_denied', {defaultValue: 'Izin Ditolak'}), t('account.gallery_req', {defaultValue: 'Anda perlu mengizinkan akses galeri.'}));
               return;
             }
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -115,7 +115,7 @@ export default function AccountSettingScreen() {
             processImageResult(result);
           }
         },
-        { text: 'Batal', style: 'cancel' }
+        { text: t('admin.cancel', {defaultValue: 'Batal'}), style: 'cancel' }
       ]
     );
   };
@@ -134,10 +134,10 @@ export default function AccountSettingScreen() {
       const imageUrl = await uploadToCloudinary(previewUri);
       await api.put('/users/me', { photo_url: imageUrl });
       await refreshProfile();
-      Alert.alert('Sukses', 'Foto profil berhasil diperbarui.');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('account.avatar_updated', {defaultValue: 'Foto profil berhasil diperbarui.'}));
     } catch (error) {
       console.error(error);
-      Alert.alert('Gagal', 'Terjadi kesalahan saat mengunggah foto profil.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), t('account.avatar_fail', {defaultValue: 'Terjadi kesalahan saat mengunggah foto profil.'}));
     } finally {
       setUploadingAvatar(false);
     }
@@ -147,7 +147,7 @@ export default function AccountSettingScreen() {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
-        Alert.alert('Izin Ditolak', 'Dibutuhkan akses galeri untuk foto sampul.');
+        Alert.alert(t('bank_sampah.permission_denied', {defaultValue: 'Izin Ditolak'}), t('account.cover_req', {defaultValue: 'Dibutuhkan akses galeri untuk foto sampul.'}));
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -161,11 +161,11 @@ export default function AccountSettingScreen() {
         const imageUrl = await uploadToCloudinary(result.assets[0].uri);
         await api.put('/users/me', { cover_photo_url: imageUrl });
         await refreshProfile();
-        Alert.alert('Sukses', 'Foto sampul berhasil diperbarui.');
+        Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('account.cover_updated', {defaultValue: 'Foto sampul berhasil diperbarui.'}));
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('Gagal', 'Gagal mengunggah foto sampul.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), t('account.cover_fail', {defaultValue: 'Gagal mengunggah foto sampul.'}));
     } finally {
       setUploadingCover(false);
     }
@@ -173,16 +173,16 @@ export default function AccountSettingScreen() {
 
   const handleUpdateProfile = async () => {
     if (!name) {
-      Alert.alert('Gagal', 'Nama tidak boleh kosong.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), t('account.err_name', {defaultValue: 'Nama tidak boleh kosong.'}));
       return;
     }
     setLoadingProfile(true);
     try {
       await api.put('/users/me', { display_name: name, phone, address });
       await refreshProfile();
-      Alert.alert('Sukses', 'Data diri berhasil diperbarui.');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('account.profile_updated', {defaultValue: 'Data diri berhasil diperbarui.'}));
     } catch (err) {
-      Alert.alert('Gagal', err.response?.data?.error || 'Gagal memperbarui profil.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), err.response?.data?.error || t('account.profile_fail', {defaultValue: 'Gagal memperbarui profil.'}));
     } finally {
       setLoadingProfile(false);
     }
@@ -190,7 +190,7 @@ export default function AccountSettingScreen() {
 
   const handleUpdateEmail = async () => {
     if (!email) {
-      Alert.alert('Gagal', 'Email tidak boleh kosong.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), t('account.err_email', {defaultValue: 'Email tidak boleh kosong.'}));
       return;
     }
     setLoadingEmail(true);
@@ -199,7 +199,7 @@ export default function AccountSettingScreen() {
       setOtpType('change_email');
       setOtpVisible(true);
     } catch (err) {
-      Alert.alert('Gagal', err.response?.data?.error || 'Gagal mengirim OTP ke email baru.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), err.response?.data?.error || t('account.email_otp_fail', {defaultValue: 'Gagal mengirim OTP ke email baru.'}));
     } finally {
       setLoadingEmail(false);
     }
@@ -207,7 +207,7 @@ export default function AccountSettingScreen() {
 
   const handleChangePassword = async () => {
     if (!oldPassword || !newPassword) {
-      Alert.alert('Gagal', 'Password lama dan baru harus diisi.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), t('account.err_pass', {defaultValue: 'Password lama dan baru harus diisi.'}));
       return;
     }
     setLoadingPassword(true);
@@ -216,7 +216,7 @@ export default function AccountSettingScreen() {
       setOtpType('change_password');
       setOtpVisible(true);
     } catch (err) {
-      Alert.alert('Gagal', err.response?.data?.error || 'Gagal mengirim OTP keamanan.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), err.response?.data?.error || t('account.sec_otp_fail', {defaultValue: 'Gagal mengirim OTP keamanan.'}));
     } finally {
       setLoadingPassword(false);
     }
@@ -234,12 +234,12 @@ export default function AccountSettingScreen() {
       if (otpType === 'change_email') {
         await api.put('/users/me', { email });
         await refreshProfile();
-        Alert.alert('Sukses', 'Email berhasil diperbarui.');
+        Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('account.email_updated', {defaultValue: 'Email berhasil diperbarui.'}));
       } else if (otpType === 'change_password') {
         await api.put('/users/me/password', { oldPassword, newPassword });
         setOldPassword('');
         setNewPassword('');
-        Alert.alert('Sukses', 'Password berhasil diubah.');
+        Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('account.pass_updated', {defaultValue: 'Password berhasil diubah.'}));
       }
       
       setOtpVisible(false);

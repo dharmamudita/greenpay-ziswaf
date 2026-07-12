@@ -36,7 +36,7 @@ export default function ZiswafDetailScreen() {
       const found = res.data.find(p => p.id === id);
       if (found) setProgram(found);
       else {
-        Alert.alert('Error', 'Program tidak ditemukan.');
+        Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('ziswaf.prog_not_found', {defaultValue: 'Program tidak ditemukan.'}));
         router.back();
       }
     } catch (error) {
@@ -48,8 +48,8 @@ export default function ZiswafDetailScreen() {
 
   const handleDonate = async () => {
     if (!isAuthenticated) {
-      Alert.alert('Login Diperlukan', 'Silakan login terlebih dahulu untuk berdonasi.', [
-        { text: 'Batal', style: 'cancel' },
+      Alert.alert(t('ziswaf.login_req', {defaultValue: 'Login Diperlukan'}), t('ziswaf.login_msg', {defaultValue: 'Silakan login terlebih dahulu untuk berdonasi.'}), [
+        { text: t('admin.cancel', {defaultValue: 'Batal'}), style: 'cancel' },
         { text: 'Login', onPress: () => router.push('/(auth)/login') }
       ]);
       return;
@@ -57,7 +57,7 @@ export default function ZiswafDetailScreen() {
     
     const donAmount = parseInt(amount);
     if (!donAmount || donAmount < 10000) {
-      return Alert.alert('Error', 'Minimal donasi adalah Rp 10.000');
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('ziswaf.min_donate', {defaultValue: 'Minimal donasi adalah Rp 10.000'}));
     }
 
     setDonating(true);
@@ -77,12 +77,12 @@ export default function ZiswafDetailScreen() {
       } else {
         const result = await WebBrowser.openBrowserAsync(redirect_url);
         if (result.type === 'cancel' || result.type === 'dismiss') {
-          Alert.alert('Info', 'Anda menutup halaman pembayaran.');
+          Alert.alert(t('distrik.info', {defaultValue: 'Info'}), t('ziswaf.close_payment', {defaultValue: 'Anda menutup halaman pembayaran.'}));
         }
       }
     } catch (error) {
       console.log('Payment error:', error);
-      Alert.alert('Error', 'Gagal memproses pembayaran. Coba lagi.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('ziswaf.pay_fail', {defaultValue: 'Gagal memproses pembayaran. Coba lagi.'}));
     } finally {
       setDonating(false);
       setAmount('');

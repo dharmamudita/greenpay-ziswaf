@@ -54,23 +54,23 @@ export default function DistrikProfileScreen() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.address || !formData.phone) {
-      return Alert.alert('Error', 'Nama, alamat, dan nomor telepon wajib diisi.');
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_req_fields', {defaultValue: 'Nama, alamat, dan nomor telepon wajib diisi.'}));
     }
     setSaving(true);
     try {
       await api.put('/distrik/profile', formData);
-      Alert.alert('Sukses', 'Profil Bank Sampah berhasil diperbarui!');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('distrik.success_profile', {defaultValue: 'Profil Bank Sampah berhasil diperbarui!'}));
       router.back();
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Gagal memperbarui profil.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_profile', {defaultValue: 'Gagal memperbarui profil.'}));
     } finally {
       setSaving(false);
     }
   };
 
   const handleGetLocation = () => {
-    Alert.alert('Info', 'Fitur GPS otomatis sedang dinonaktifkan. Silakan geser PIN pada peta secara manual.');
+    Alert.alert(t('distrik.info', {defaultValue: 'Info'}), t('distrik.gps_disabled', {defaultValue: 'Fitur GPS otomatis sedang dinonaktifkan. Silakan geser PIN pada peta secara manual.'}));
   };
 
   if (loading) {
@@ -88,23 +88,23 @@ export default function DistrikProfileScreen() {
 
 
         <View style={dynamicStyles.formGroup}>
-          <Text style={dynamicStyles.label}>Nama Bank Sampah *</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.bank_name', {defaultValue: 'Nama Bank Sampah *'})}</Text>
           <TextInput
             style={dynamicStyles.input}
             value={formData.name}
             onChangeText={(v) => setFormData({...formData, name: v})}
-            placeholder="Misal: Bank Sampah Hijau Lestari"
+            placeholder={t('distrik.bank_name_ph', {defaultValue: 'Misal: Bank Sampah Hijau Lestari'})}
             placeholderTextColor={colors.textMuted}
           />
         </View>
 
         <View style={dynamicStyles.formGroup}>
-          <Text style={dynamicStyles.label}>Nomor Telepon *</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.phone', {defaultValue: 'Nomor Telepon *'})}</Text>
           <TextInput
             style={dynamicStyles.input}
             value={formData.phone}
             onChangeText={(v) => setFormData({...formData, phone: v})}
-            placeholder="Misal: 08123456789"
+            placeholder={t('distrik.phone_ph', {defaultValue: 'Misal: 08123456789'})}
             keyboardType="phone-pad"
             placeholderTextColor={colors.textMuted}
           />
@@ -122,19 +122,19 @@ export default function DistrikProfileScreen() {
         </View>
 
         <View style={dynamicStyles.formGroup}>
-          <Text style={dynamicStyles.label}>Alamat Lengkap *</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.address', {defaultValue: 'Alamat Lengkap *'})}</Text>
           <TextInput
             style={[dynamicStyles.input, { height: 80, textAlignVertical: 'top' }]}
             value={formData.address}
             onChangeText={(v) => setFormData({...formData, address: v})}
-            placeholder="Alamat lengkap distrik..."
+            placeholder={t('distrik.address_ph', {defaultValue: 'Alamat lengkap distrik...'})}
             multiline
             placeholderTextColor={colors.textMuted}
           />
         </View>
 
         <View style={dynamicStyles.formGroup}>
-          <Text style={dynamicStyles.label}>Koordinat Peta (GPS) *</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.map_coord', {defaultValue: 'Koordinat Peta (GPS) *'})}</Text>
           <Text style={{ color: colors.textMuted, fontSize: 12, marginBottom: Spacing.sm }}>
             {t('distrik.map_hint', {defaultValue: 'Pastikan titik lokasi di bawah ini akurat agar pengguna tidak tersasar.'})}
           </Text>

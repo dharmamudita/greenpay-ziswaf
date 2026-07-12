@@ -57,7 +57,7 @@ export default function RegisterDistrikScreen() {
 
   const handleSubmit = async () => {
     if (!form.name || !form.address || !form.phone) {
-      Alert.alert('Error', 'Semua kolom wajib diisi!');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('reg_distrik.err_empty', {defaultValue: 'Semua kolom wajib diisi!'}));
       return;
     }
 
@@ -66,8 +66,8 @@ export default function RegisterDistrikScreen() {
       await api.post('/auth/request-otp', { email: user.email, type: 'register_distrik' });
       setOtpVisible(true);
     } catch (error) {
-      console.log('Error requesting OTP:', error.response?.data || error);
-      Alert.alert('Error', error.response?.data?.error || 'Gagal mengirim OTP.');
+      console.error(error);
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), error.response?.data?.error || t('reg_distrik.err_otp', {defaultValue: 'Gagal mengirim OTP.'}));
     } finally {
       setSubmitting(false);
     }
@@ -79,9 +79,10 @@ export default function RegisterDistrikScreen() {
     setOtpError('');
     try {
       await api.post('/auth/verify-otp', { email: user.email, otp, type: 'register_distrik' });
-      await api.post('/distrik/register', form);
+      await api.post('/distrik/register', { name: form.name, address: form.address, phone: form.phone, otp });
       setOtpVisible(false);
-      Alert.alert('Sukses', 'Pengajuan berhasil dikirim! Menunggu verifikasi admin.');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('reg_distrik.success_msg', {defaultValue: 'Pengajuan berhasil dikirim! Menunggu verifikasi admin.'}));
+      await refreshProfile(); 
       checkStatus(); 
     } catch (error) {
       setOtpError(error.response?.data?.error || 'OTP tidak valid.');

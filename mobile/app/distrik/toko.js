@@ -61,15 +61,15 @@ export default function TokoRewardManagerScreen() {
   }, []);
 
   const handleVerifyVoucher = async () => {
-    if (!voucherCode.trim()) return Alert.alert('Error', 'Masukkan kode voucher terlebih dahulu.');
+    if (!voucherCode.trim()) return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_empty_code', {defaultValue: 'Masukkan kode voucher terlebih dahulu.'}));
     setVerifying(true);
     try {
       const res = await api.post('/distrik/rewards/verify', { voucher_code: voucherCode.trim() });
-      Alert.alert('Sukses!', 'Voucher valid dan berhasil ditukarkan. Silakan berikan hadiah kepada pengguna.');
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses!'}), t('distrik.success_verify_code', {defaultValue: 'Voucher valid dan berhasil ditukarkan. Silakan berikan hadiah kepada pengguna.'}));
       setVoucherCode('');
       fetchRewardsAndHistory();
     } catch (error) {
-      Alert.alert('Gagal', error.response?.data?.error || 'Kode voucher tidak valid atau sudah digunakan.');
+      Alert.alert(t('admin.failed', {defaultValue: 'Gagal'}), error.response?.data?.error || t('distrik.err_invalid_code', {defaultValue: 'Kode voucher tidak valid atau sudah digunakan.'}));
     } finally {
       setVerifying(false);
     }
@@ -80,25 +80,26 @@ export default function TokoRewardManagerScreen() {
       await api.delete(`/distrik/toko/rewards/${id}`);
       setRewards(rewards.filter(r => r.id !== id));
     } catch (error) {
-      Alert.alert('Error', 'Gagal menghapus reward.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_del_reward', {defaultValue: 'Gagal menghapus reward.'}));
     }
   };
 
   const handleDelete = (id) => {
+    const confirmMsg = t('distrik.confirm_del_reward', {defaultValue: 'Apakah Anda yakin ingin menghapus reward ini secara permanen?'});
     if (Platform.OS === 'web') {
-      if (window.confirm('Apakah Anda yakin ingin menghapus reward ini secara permanen?')) {
+      if (window.confirm(confirmMsg)) {
         executeDelete(id);
       }
       return;
     }
     
     Alert.alert(
-      'Hapus Reward',
-      'Apakah Anda yakin ingin menghapus reward ini secara permanen?',
+      t('distrik.del_reward_title', {defaultValue: 'Hapus Reward'}),
+      confirmMsg,
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t('admin.cancel', {defaultValue: 'Batal'}), style: 'cancel' },
         { 
-          text: 'Hapus', 
+          text: t('distrik.delete', {defaultValue: 'Hapus'}), 
           style: 'destructive',
           onPress: () => executeDelete(id)
         }
@@ -123,13 +124,13 @@ export default function TokoRewardManagerScreen() {
         setFormData({ ...formData, image_url: dataUri });
       }
     } catch (error) {
-      Alert.alert('Error', 'Gagal membuka galeri foto.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_gallery', {defaultValue: 'Gagal membuka galeri foto.'}));
     }
   };
 
   const handleSaveReward = async () => {
-    if (!formData.name || !formData.points_cost) {
-      return Alert.alert('Error', 'Nama dan Harga Poin wajib diisi.');
+    if (!formData.name.trim() || !formData.points_cost) {
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_name_price', {defaultValue: 'Nama dan Harga Poin wajib diisi.'}));
     }
     setSaving(true);
     try {
@@ -142,7 +143,7 @@ export default function TokoRewardManagerScreen() {
       setFormData({ name: '', points_cost: '', stock: '', image_url: '', category: 'Produk' });
       fetchRewardsAndHistory(); // Refresh list
     } catch (error) {
-      Alert.alert('Error', 'Gagal menambahkan reward baru.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('distrik.err_add_reward', {defaultValue: 'Gagal menambahkan reward baru.'}));
     } finally {
       setSaving(false);
     }
@@ -173,7 +174,7 @@ export default function TokoRewardManagerScreen() {
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <TextInput 
                 style={dynamicStyles.verifyInput} 
-                placeholder="Masukkan Kode (Misal: GP-12345)" 
+                placeholder={t('distrik.code_ph', {defaultValue: 'Masukkan Kode (Misal: GP-12345)'})} 
                 placeholderTextColor="rgba(255,255,255,0.6)"
                 value={voucherCode}
                 onChangeText={setVoucherCode}
@@ -191,13 +192,13 @@ export default function TokoRewardManagerScreen() {
               style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'etalase' ? colors.surface : 'transparent', ...(activeTab === 'etalase' ? Shadows.sm : {}) }}
               onPress={() => setActiveTab('etalase')}
             >
-              <Text style={{ fontWeight: activeTab === 'etalase' ? '700' : '500', color: activeTab === 'etalase' ? colors.text : colors.textMuted }}>Etalase Hadiah</Text>
+              <Text style={{ fontWeight: activeTab === 'etalase' ? '700' : '500', color: activeTab === 'etalase' ? colors.text : colors.textMuted }}>{t('distrik.tab_etalase', {defaultValue: 'Etalase Hadiah'})}</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'history' ? colors.surface : 'transparent', ...(activeTab === 'history' ? Shadows.sm : {}) }}
               onPress={() => setActiveTab('history')}
             >
-              <Text style={{ fontWeight: activeTab === 'history' ? '700' : '500', color: activeTab === 'history' ? colors.text : colors.textMuted }}>Riwayat Penukaran</Text>
+              <Text style={{ fontWeight: activeTab === 'history' ? '700' : '500', color: activeTab === 'history' ? colors.text : colors.textMuted }}>{t('distrik.tab_history', {defaultValue: 'Riwayat Penukaran'})}</Text>
             </TouchableOpacity>
           </View>
 
@@ -205,7 +206,7 @@ export default function TokoRewardManagerScreen() {
             <View>
               <View style={dynamicStyles.headerRow}>
                 <View style={{ flex: 1, paddingRight: 16 }}>
-                  <Text style={dynamicStyles.title}>Etalase Hadiah (Reward)</Text>
+                  <Text style={dynamicStyles.title}>{t('distrik.etalase_title', {defaultValue: 'Etalase Hadiah (Reward)'})}</Text>
                   <Text style={dynamicStyles.subtitle}>{t('distrik.toko_subtitle', {defaultValue: 'Pajang hadiah Anda di sini. Pengguna akan menukarkan poin GP mereka dengan hadiah ini.'})}</Text>
                 </View>
                 <TouchableOpacity style={dynamicStyles.addBtn} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
@@ -220,7 +221,7 @@ export default function TokoRewardManagerScreen() {
                     <Ionicons name="gift-outline" size={48} color={Colors.gold[500]} />
                   </View>
                   <Text style={dynamicStyles.emptyTitle}>{t('distrik.toko_empty', {defaultValue: 'Etalase Masih Kosong'})}</Text>
-                  <Text style={dynamicStyles.emptySub}>Tambahkan hadiah/reward pertama Anda sekarang dengan menekan tombol + di atas.</Text>
+                  <Text style={dynamicStyles.emptySub}>{t('distrik.toko_empty_sub', {defaultValue: 'Tambahkan hadiah/reward pertama Anda sekarang dengan menekan tombol + di atas.'})}</Text>
                 </View>
               ) : (
                 <View style={dynamicStyles.productList}>
@@ -237,7 +238,7 @@ export default function TokoRewardManagerScreen() {
                           <Text style={dynamicStyles.productPrice}>{reward.points_cost} GP</Text>
                         </View>
                         <View style={dynamicStyles.stockBadge}>
-                          <Text style={dynamicStyles.productStock}>Sisa Stok: {reward.stock} pcs</Text>
+                          <Text style={dynamicStyles.productStock}>{t('distrik.stock_left', {defaultValue: 'Sisa Stok:'})} {reward.stock} pcs</Text>
                         </View>
                       </View>
                       <View style={dynamicStyles.productActions}>
@@ -254,8 +255,8 @@ export default function TokoRewardManagerScreen() {
             <View>
               <View style={dynamicStyles.headerRow}>
                 <View style={{ flex: 1, paddingRight: 16 }}>
-                  <Text style={dynamicStyles.title}>Riwayat Penukaran</Text>
-                  <Text style={dynamicStyles.subtitle}>Daftar semua voucher yang telah diverifikasi dan diklaim oleh pengguna.</Text>
+                  <Text style={dynamicStyles.title}>{t('distrik.tab_history', {defaultValue: 'Riwayat Penukaran'})}</Text>
+                  <Text style={dynamicStyles.subtitle}>{t('distrik.history_redeem_sub', {defaultValue: 'Daftar semua voucher yang telah diverifikasi dan diklaim oleh pengguna.'})}</Text>
                 </View>
               </View>
 
@@ -264,8 +265,8 @@ export default function TokoRewardManagerScreen() {
                   <View style={dynamicStyles.emptyIconWrap}>
                     <Ionicons name="receipt-outline" size={48} color={Colors.gold[500]} />
                   </View>
-                  <Text style={dynamicStyles.emptyTitle}>Belum Ada Riwayat</Text>
-                  <Text style={dynamicStyles.emptySub}>Belum ada pengguna yang menukarkan voucher hadiah di Distrik Anda.</Text>
+                  <Text style={dynamicStyles.emptyTitle}>{t('distrik.no_history_title', {defaultValue: 'Belum Ada Riwayat'})}</Text>
+                  <Text style={dynamicStyles.emptySub}>{t('distrik.no_history_redeem', {defaultValue: 'Belum ada pengguna yang menukarkan voucher hadiah di Distrik Anda.'})}</Text>
                 </View>
               ) : (
                 <View style={dynamicStyles.productList}>
@@ -283,12 +284,12 @@ export default function TokoRewardManagerScreen() {
                       
                       <View style={{ flex: 1 }}>
                         <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 2 }}>{item.user_name}</Text>
-                        <Text style={{ fontSize: 13, color: colors.textMuted, marginBottom: 4 }}>Telah mengklaim: <Text style={{ fontWeight: '600', color: colors.text }}>{item.reward_name}</Text></Text>
+                        <Text style={{ fontSize: 13, color: colors.textMuted, marginBottom: 4 }}>{t('distrik.has_claimed', {defaultValue: 'Telah mengklaim:'})} <Text style={{ fontWeight: '600', color: colors.text }}>{item.reward_name}</Text></Text>
                         <Text style={{ fontSize: 11, color: colors.textMuted }}>{new Date(item.updated_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
                       </View>
                       
                       <View style={{ backgroundColor: Colors.gold[50], paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: Colors.gold[200], borderStyle: 'dashed' }}>
-                        <Text style={{ fontSize: 10, color: Colors.gold[700], marginBottom: 2, textAlign: 'center', fontWeight: '700' }}>KODE</Text>
+                        <Text style={{ fontSize: 10, color: Colors.gold[700], marginBottom: 2, textAlign: 'center', fontWeight: '700' }}>{t('distrik.code', {defaultValue: 'KODE'})}</Text>
                         <Text style={{ fontSize: 14, fontWeight: '900', color: Colors.gold[800], letterSpacing: 1 }}>{item.voucher_code}</Text>
                       </View>
                     </View>
@@ -307,7 +308,7 @@ export default function TokoRewardManagerScreen() {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={dynamicStyles.modalOverlay}>
           <View style={dynamicStyles.modalContent}>
             <View style={dynamicStyles.modalHeader}>
-              <Text style={dynamicStyles.modalTitle}>Tambah Hadiah (Reward)</Text>
+              <Text style={dynamicStyles.modalTitle}>{t('distrik.add_reward_title', {defaultValue: 'Tambah Hadiah (Reward)'})}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)} style={dynamicStyles.closeBtn}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
@@ -329,12 +330,12 @@ export default function TokoRewardManagerScreen() {
               </View>
 
               <View style={dynamicStyles.formGroup}>
-                <Text style={dynamicStyles.label}>Nama Hadiah *</Text>
-                <TextInput style={dynamicStyles.input} placeholder="Misal: Tumbler Bambu" placeholderTextColor={colors.textMuted} value={formData.name} onChangeText={t => setFormData({...formData, name: t})} />
+                <Text style={dynamicStyles.label}>{t('distrik.reward_name', {defaultValue: 'Nama Hadiah *'})}</Text>
+                <TextInput style={dynamicStyles.input} placeholder={t('distrik.reward_name_ph', {defaultValue: 'Misal: Tumbler Bambu'})} placeholderTextColor={colors.textMuted} value={formData.name} onChangeText={t => setFormData({...formData, name: t})} />
               </View>
 
               <View style={dynamicStyles.formGroup}>
-                <Text style={dynamicStyles.label}>Kategori *</Text>
+                <Text style={dynamicStyles.label}>{t('distrik.category', {defaultValue: 'Kategori *'})}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
                   {['Aksesoris', 'Peralatan', 'Perawatan', 'Dapur', 'Dekorasi'].map(cat => (
                     <TouchableOpacity
@@ -350,7 +351,7 @@ export default function TokoRewardManagerScreen() {
 
               <View style={{ flexDirection: 'row', gap: 16 }}>
                 <View style={[dynamicStyles.formGroup, { flex: 1 }]}>
-                  <Text style={dynamicStyles.label}>Harga (Poin GP) *</Text>
+                  <Text style={dynamicStyles.label}>{t('distrik.price_gp', {defaultValue: 'Harga (Poin GP) *'})}</Text>
                   <TextInput style={dynamicStyles.input} placeholder="500" placeholderTextColor={colors.textMuted} keyboardType="numeric" value={formData.points_cost} onChangeText={t => setFormData({...formData, points_cost: t})} />
                 </View>
                 <View style={[dynamicStyles.formGroup, { flex: 1 }]}>
@@ -362,7 +363,7 @@ export default function TokoRewardManagerScreen() {
 
             <TouchableOpacity style={[dynamicStyles.saveBtn, saving && { opacity: 0.7 }]} onPress={handleSaveReward} disabled={saving} activeOpacity={0.9}>
               <LinearGradient colors={[Colors.gold[500], Colors.gold[600]]} style={StyleSheet.absoluteFillObject} start={{x:0, y:0}} end={{x:1, y:1}} />
-              {saving ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.saveBtnText}>Simpan & Publikasikan</Text>}
+              {saving ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.saveBtnText}>{t('distrik.save_publish', {defaultValue: 'Simpan & Publikasikan'})}</Text>}
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
