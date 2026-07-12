@@ -107,7 +107,7 @@ export default function VerifyDepositScreen() {
         
         <View style={dynamicStyles.headerInfo}>
           <Text style={dynamicStyles.pageTitle}>{t('distrik.pending_deposit', {defaultValue: 'Setoran Menunggu Verifikasi'})}</Text>
-          <Text style={dynamicStyles.pageDesc}>Tinjau dan setujui sampah yang disetorkan warga ke lokasi Anda agar mereka mendapatkan poin.</Text>
+          <Text style={dynamicStyles.pageDesc}>{t('distrik.verify_desc', {defaultValue: 'Tinjau dan setujui sampah yang disetorkan warga ke lokasi Anda agar mereka mendapatkan poin.'})}</Text>
         </View>
 
         {pendingDeposits.length === 0 ? (
@@ -115,8 +115,8 @@ export default function VerifyDepositScreen() {
             <View style={dynamicStyles.emptyIconWrap}>
               <Ionicons name="checkmark-done-circle" size={48} color={Colors.green[500]} />
             </View>
-            <Text style={dynamicStyles.emptyTitle}>Gudang Bersih!</Text>
-            <Text style={dynamicStyles.emptyDesc}>Tidak ada antrean setoran sampah baru saat ini.</Text>
+            <Text style={dynamicStyles.emptyTitle}>{t('distrik.empty_warehouse', {defaultValue: 'Gudang Bersih!'})}</Text>
+            <Text style={dynamicStyles.emptyDesc}>{t('distrik.no_queue', {defaultValue: 'Tidak ada antrean setoran sampah baru saat ini.'})}</Text>
           </View>
         ) : (
           <View style={dynamicStyles.listContainer}>
@@ -137,7 +137,7 @@ export default function VerifyDepositScreen() {
                     </View>
                   </View>
                   <View style={dynamicStyles.badgePending}>
-                    <Text style={dynamicStyles.badgePendingText}>Pending</Text>
+                    <Text style={dynamicStyles.badgePendingText}>{t('distrik.pending', {defaultValue: 'Pending'})}</Text>
                   </View>
                 </View>
 
@@ -148,22 +148,22 @@ export default function VerifyDepositScreen() {
                   
                   <View style={dynamicStyles.detailsRow}>
                     <View style={dynamicStyles.detailItem}>
-                      <Text style={dynamicStyles.detailLabel}>Jenis Sampah</Text>
+                      <Text style={dynamicStyles.detailLabel}>{t('distrik.waste_type', {defaultValue: 'Jenis Sampah'})}</Text>
                       <Text style={dynamicStyles.detailValue}>{item.waste_type}</Text>
                     </View>
                     <View style={dynamicStyles.detailItem}>
-                      <Text style={dynamicStyles.detailLabel}>Berat</Text>
+                      <Text style={dynamicStyles.detailLabel}>{t('distrik.weight', {defaultValue: 'Berat'})}</Text>
                       <Text style={dynamicStyles.detailValue}>{parseFloat(item.weight_kg)} Kg</Text>
                     </View>
                     <View style={dynamicStyles.detailItem}>
-                      <Text style={dynamicStyles.detailLabel}>Poin (Estimasi)</Text>
+                      <Text style={dynamicStyles.detailLabel}>{t('distrik.est_points', {defaultValue: 'Poin (Estimasi)'})}</Text>
                       <Text style={[dynamicStyles.detailValue, { color: Colors.gold[500] }]}>+{item.points_earned} GP</Text>
                     </View>
                   </View>
                   
                   {item.notes ? (
                     <View style={dynamicStyles.notesBox}>
-                      <Text style={dynamicStyles.notesLabel}>Catatan:</Text>
+                      <Text style={dynamicStyles.notesLabel}>{t('distrik.notes', {defaultValue: 'Catatan:'})}</Text>
                       <Text style={dynamicStyles.notesText}>{item.notes}</Text>
                     </View>
                   ) : null}
@@ -175,7 +175,7 @@ export default function VerifyDepositScreen() {
                     onPress={() => handleVerify(item.id, 'rejected')}
                   >
                     <Ionicons name="close-circle" size={20} color={Colors.danger} />
-                    <Text style={[dynamicStyles.actionBtnText, { color: Colors.danger }]}>Tolak</Text>
+                    <Text style={[dynamicStyles.actionBtnText, { color: Colors.danger }]}>{t('distrik.reject', {defaultValue: 'Tolak'})}</Text>
                   </TouchableOpacity>
                   
                   <TouchableOpacity 
@@ -183,7 +183,7 @@ export default function VerifyDepositScreen() {
                     onPress={() => handleVerify(item.id, 'verified')}
                   >
                     <Ionicons name="checkmark-circle" size={20} color={Colors.white} />
-                    <Text style={[dynamicStyles.actionBtnText, { color: Colors.white }]}>Verifikasi & Beri Poin</Text>
+                    <Text style={[dynamicStyles.actionBtnText, { color: Colors.white }]}>{t('distrik.verify_btn', {defaultValue: 'Verifikasi & Beri Poin'})}</Text>
                   </TouchableOpacity>
                 </View>
               </View>

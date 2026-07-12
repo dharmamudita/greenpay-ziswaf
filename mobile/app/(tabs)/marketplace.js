@@ -81,8 +81,8 @@ export default function MarketplaceScreen() {
         const res = await api.post('/marketplace/redeem', { reward_id: id });
         setSuccessModal({ 
           visible: true, 
-          title: 'Penukaran Berhasil!', 
-          message: 'Tunjukkan kode voucher ini ke petugas Bank Sampah untuk mengambil hadiah Anda.', 
+          title: t('marketplace.success_reward_title', {defaultValue: 'Penukaran Berhasil!'}), 
+          message: t('marketplace.success_reward_msg', {defaultValue: 'Tunjukkan kode voucher ini ke petugas Bank Sampah untuk mengambil hadiah Anda.'}), 
           code: res.data.voucher_code 
         });
       } else {
@@ -232,7 +232,7 @@ export default function MarketplaceScreen() {
                       <ActivityIndicator size="small" color={Colors.white} />
                     ) : (
                       <Text style={dynamicStyles.buyBtnText}>
-                        {p.stock <= 0 ? t('marketplace.out_of_stock') : (p.item_type === 'reward' ? 'Tukar GP' : t('marketplace.buy'))}
+                        {p.stock <= 0 ? t('marketplace.out_of_stock') : (p.item_type === 'reward' ? t('marketplace.redeem', {defaultValue: 'Tukar GP'}) : t('marketplace.buy'))}
                       </Text>
                     )}
                   </TouchableOpacity>
