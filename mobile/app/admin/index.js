@@ -45,8 +45,8 @@ export default function AdminDashboardScreen() {
   const adminMenu = [
     {
       id: 'verify_distrik',
-      title: 'Verifikasi Distrik',
-      desc: 'Setujui pengajuan pendaftaran pengelola Distrik.',
+      title: t('admin.menu_verify_distrik', {defaultValue: 'Verifikasi Distrik'}),
+      desc: t('admin.menu_verify_desc', {defaultValue: 'Setujui pengajuan pendaftaran pengelola Distrik.'}),
       icon: 'shield-checkmark',
       route: '/admin/verify-distrik',
       color: Colors.error,
@@ -55,8 +55,8 @@ export default function AdminDashboardScreen() {
     },
     {
       id: 'users',
-      title: 'Data Pengguna',
-      desc: 'Pantau aktivitas, blokir, atau ubah peran akun.',
+      title: t('admin.menu_users', {defaultValue: 'Data Pengguna'}),
+      desc: t('admin.menu_users_desc', {defaultValue: 'Pantau aktivitas, blokir, atau ubah peran akun.'}),
       icon: 'people',
       route: '/admin/users',
       color: Colors.info,
@@ -65,20 +65,20 @@ export default function AdminDashboardScreen() {
     },
     {
       id: 'ziswaf',
-      title: 'Kelola ZISWAF',
-      desc: 'Manajemen donasi, zakat, dan pelaporan program.',
+      title: t('admin.menu_ziswaf', {defaultValue: 'Kelola ZISWAF'}),
+      desc: t('admin.menu_ziswaf_desc', {defaultValue: 'Manajemen donasi, zakat, dan pelaporan program.'}),
       icon: 'heart',
-      route: '/admin/ziswaf', // Arahkan ke halaman ZISWAF yang baru
+      route: '/admin/ziswaf',
       color: Colors.gold[500],
       bg: isDark ? 'rgba(245, 158, 11, 0.15)' : Colors.gold[50],
       ring: isDark ? 'rgba(245, 158, 11, 0.3)' : Colors.gold[100]
     },
     {
       id: 'notifications',
-      title: 'Buat Notifikasi',
-      desc: 'Kirim pengumuman massal atau personal ke pengguna.',
+      title: t('admin.menu_notifications', {defaultValue: 'Buat Notifikasi'}),
+      desc: t('admin.menu_notif_desc', {defaultValue: 'Kirim pengumuman massal atau personal ke pengguna.'}),
       icon: 'megaphone',
-      route: '/admin/notifications', // Halaman baru untuk Notifikasi
+      route: '/admin/notifications',
       color: Colors.purple,
       bg: isDark ? 'rgba(168, 85, 247, 0.15)' : '#F3E8FF',
       ring: isDark ? 'rgba(168, 85, 247, 0.3)' : '#E9D5FF'

@@ -74,7 +74,7 @@ export default function RegisterDistrikScreen() {
   };
 
   const handleVerifyOtp = async () => {
-    if (otp.length < 6) return setOtpError('OTP harus 6 digit.');
+    if (otp.length < 6) return setOtpError(t('auth.otp_6_digit', {defaultValue: 'OTP harus 6 digit.'}));
     setLoadingOtp(true);
     setOtpError('');
     try {
@@ -85,7 +85,7 @@ export default function RegisterDistrikScreen() {
       await refreshProfile(); 
       checkStatus(); 
     } catch (error) {
-      setOtpError(error.response?.data?.error || 'OTP tidak valid.');
+      setOtpError(error.response?.data?.error || t('auth.invalid_otp', {defaultValue: 'OTP tidak valid.'}));
     } finally {
       setLoadingOtp(false);
     }

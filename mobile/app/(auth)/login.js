@@ -154,7 +154,7 @@ export default function LoginScreen() {
       await setAuthState(data.token, data.user);
       router.replace('/(tabs)');
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal masuk. Periksa email dan password Anda.');
+      setError(err.response?.data?.error || t('auth.login_fail', {defaultValue: 'Gagal masuk. Periksa email dan password Anda.'}));
     } finally {
       setLoading(false);
     }
@@ -238,7 +238,7 @@ export default function LoginScreen() {
               
               <View style={dynamicStyles.dividerContainer}>
                 <View style={dynamicStyles.dividerLine} />
-                <Text style={dynamicStyles.dividerText}>ATAU MASUK DENGAN</Text>
+                <Text style={dynamicStyles.dividerText}>{t('auth.or_login_with', {defaultValue: 'ATAU MASUK DENGAN'})}</Text>
                 <View style={dynamicStyles.dividerLine} />
               </View>
 

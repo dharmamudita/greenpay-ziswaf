@@ -179,7 +179,7 @@ export default function AdminZiswafScreen() {
               <View style={dynamicStyles.progressWrap}>
                 <View style={dynamicStyles.progressTextRow}>
                   <Text style={dynamicStyles.collectedText}>{fmtCurrency(prog.collected_amount)}</Text>
-                  <Text style={dynamicStyles.targetText}>dari {fmtCurrency(prog.target_amount)}</Text>
+                  <Text style={dynamicStyles.targetText}>{t('admin.from', {defaultValue: 'dari'})} {fmtCurrency(prog.target_amount)}</Text>
                 </View>
                 <View style={dynamicStyles.progressBarBg}>
                   <View style={[dynamicStyles.progressBarFill, { width: `${percent}%` }]} />

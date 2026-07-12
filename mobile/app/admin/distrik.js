@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +12,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 export default function DistrikDashboard() {
   const { isDistrik, isAdmin } = useAuth();
+  const { t } = useTranslation();
   const [pendingDeposits, setPendingDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
@@ -65,7 +67,7 @@ export default function DistrikDashboard() {
           </View>
         </View>
         <View style={dynamicStyles.statusBadge}>
-          <Text style={dynamicStyles.statusBadgeText}>Menunggu</Text>
+          <Text style={dynamicStyles.statusBadgeText}>{t('distrik.pending', {defaultValue: 'Menunggu'})}</Text>
         </View>
       </View>
       
@@ -79,11 +81,11 @@ export default function DistrikDashboard() {
       {/* Body Section */}
       <View style={dynamicStyles.ticketBody}>
         <View style={dynamicStyles.detailCol}>
-          <Text style={dynamicStyles.label}>Jenis Sampah</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.waste_type', {defaultValue: 'Jenis Sampah'})}</Text>
           <Text style={dynamicStyles.value}>{item.waste_type}</Text>
         </View>
         <View style={dynamicStyles.detailColRight}>
-          <Text style={dynamicStyles.label}>Berat</Text>
+          <Text style={dynamicStyles.label}>{t('distrik.weight', {defaultValue: 'Berat'})}</Text>
           <Text style={dynamicStyles.valueWeight}>{item.weight_kg} Kg</Text>
         </View>
       </View>
@@ -101,7 +103,7 @@ export default function DistrikDashboard() {
           disabled={processingId === item.id}
           activeOpacity={0.7}
         >
-          <Text style={dynamicStyles.rejectBtnText}>Tolak</Text>
+          <Text style={dynamicStyles.rejectBtnText}>{t('distrik.reject', {defaultValue: 'Tolak'})}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -115,7 +117,7 @@ export default function DistrikDashboard() {
           ) : (
             <>
               <Ionicons name="checkmark-circle" size={18} color="white" style={{ marginRight: 6 }} />
-              <Text style={dynamicStyles.acceptBtnText}>Terima & Beri Poin</Text>
+              <Text style={dynamicStyles.acceptBtnText}>{t('distrik.verify_btn', {defaultValue: 'Terima & Beri Poin'})}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -130,8 +132,8 @@ export default function DistrikDashboard() {
           <View style={dynamicStyles.lockIconBox}>
             <Ionicons name="lock-closed" size={48} color={Colors.white} />
           </View>
-          <Text style={dynamicStyles.accessTitle}>Akses Ditolak</Text>
-          <Text style={dynamicStyles.accessDesc}>Halaman ini khusus untuk Petugas Distrik dan Admin.</Text>
+          <Text style={dynamicStyles.accessTitle}>{t('admin.access_denied', {defaultValue: 'Akses Ditolak'})}</Text>
+          <Text style={dynamicStyles.accessDesc}>{t('admin.distrik_access_desc', {defaultValue: 'Halaman ini khusus untuk Petugas Distrik dan Admin.'})}</Text>
         </View>
       </SafeAreaView>
     );
@@ -156,8 +158,8 @@ export default function DistrikDashboard() {
               <View style={dynamicStyles.emptyIconWrap}>
                 <Ionicons name="checkmark-done" size={64} color={Colors.green[500]} />
               </View>
-              <Text style={dynamicStyles.emptyTitle}>Kerja Bagus!</Text>
-              <Text style={dynamicStyles.emptyText}>Semua antrean setoran sampah sudah bersih diverifikasi.</Text>
+              <Text style={dynamicStyles.emptyTitle}>{t('admin.good_job', {defaultValue: 'Kerja Bagus!'})}</Text>
+              <Text style={dynamicStyles.emptyText}>{t('admin.all_verified', {defaultValue: 'Semua antrean setoran sampah sudah bersih diverifikasi.'})}</Text>
             </View>
           )}
           refreshing={loading}

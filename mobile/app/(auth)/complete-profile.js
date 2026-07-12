@@ -6,11 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Spacing } from '../../theme/spacing';
+import { useTranslation } from 'react-i18next';
 
 const CompleteProfile = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { setAuthState } = useAuth();
+  const { t } = useTranslation();
   
   const initialEmail = params.email || '';
   const initialName = params.name || '';
@@ -26,17 +28,17 @@ const CompleteProfile = () => {
     setError('');
     
     if (!name || !password || !confirmPassword) {
-      setError('Semua kolom wajib diisi.');
+      setError(t('auth.all_fields_req', {defaultValue: 'Semua kolom wajib diisi.'}));
       return;
     }
 
     if (password.length < 6) {
-      setError('Kata sandi minimal 6 karakter.');
+      setError(t('auth.pass_min', {defaultValue: 'Kata sandi minimal 6 karakter.'}));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Kata sandi dan konfirmasi tidak cocok.');
+      setError(t('auth.pass_mismatch', {defaultValue: 'Kata sandi dan konfirmasi tidak cocok.'}));
       return;
     }
 
@@ -48,13 +50,13 @@ const CompleteProfile = () => {
         password: password,
       });
 
-      Alert.alert('Pendaftaran Berhasil', 'Akun Anda telah dibuat!');
+      Alert.alert(t('auth.register_success', {defaultValue: 'Pendaftaran Berhasil'}), t('auth.account_created', {defaultValue: 'Akun Anda telah dibuat!'}));
 
       await setAuthState(res.data.token, res.data.user);
       router.replace('/(tabs)');
 
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal mendaftarkan akun.');
+      setError(err.response?.data?.error || t('auth.register_fail', {defaultValue: 'Gagal mendaftarkan akun.'}));
     } finally {
       setLoading(false);
     }
@@ -70,8 +72,8 @@ const CompleteProfile = () => {
           </TouchableOpacity>
 
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>Lengkapi Profil</Text>
-            <Text style={styles.subtitle}>Satu langkah lagi! Lengkapi nama dan buat kata sandi untuk akun Anda.</Text>
+            <Text style={styles.title}>{t('auth.complete_profile', {defaultValue: 'Lengkapi Profil'})}</Text>
+            <Text style={styles.subtitle}>{t('auth.complete_subtitle', {defaultValue: 'Satu langkah lagi! Lengkapi nama dan buat kata sandi untuk akun Anda.'})}</Text>
           </View>
 
           {error ? (
@@ -83,7 +85,7 @@ const CompleteProfile = () => {
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('auth.email', {defaultValue: 'Email'})}</Text>
               <View style={[styles.inputWrap, { backgroundColor: '#E5E7EB' }]}>
                 <Ionicons name="mail-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
                 <TextInput 
@@ -95,12 +97,12 @@ const CompleteProfile = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Nama Lengkap</Text>
+              <Text style={styles.label}>{t('auth.full_name', {defaultValue: 'Nama Lengkap'})}</Text>
               <View style={styles.inputWrap}>
                 <Ionicons name="person-outline" size={20} color="#4B5563" style={styles.inputIcon} />
                 <TextInput 
                   style={styles.input} 
-                  placeholder="Masukkan nama lengkap" 
+                  placeholder={t('auth.full_name_ph', {defaultValue: 'Masukkan nama lengkap'})} 
                   value={name} 
                   onChangeText={setName} 
                 />
@@ -108,12 +110,12 @@ const CompleteProfile = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Buat Kata Sandi</Text>
+              <Text style={styles.label}>{t('auth.create_pass', {defaultValue: 'Buat Kata Sandi'})}</Text>
               <View style={styles.inputWrap}>
                 <Ionicons name="lock-closed-outline" size={20} color="#4B5563" style={styles.inputIcon} />
                 <TextInput 
                   style={[styles.input, { flex: 1 }]} 
-                  placeholder="Min. 6 karakter" 
+                  placeholder={t('auth.min_chars', {defaultValue: 'Min. 6 karakter'})} 
                   value={password} 
                   onChangeText={setPassword} 
                   secureTextEntry={!showPassword} 
@@ -125,12 +127,12 @@ const CompleteProfile = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Konfirmasi Kata Sandi</Text>
+              <Text style={styles.label}>{t('auth.confirm_pass', {defaultValue: 'Konfirmasi Kata Sandi'})}</Text>
               <View style={styles.inputWrap}>
                 <Ionicons name="lock-closed-outline" size={20} color="#4B5563" style={styles.inputIcon} />
                 <TextInput 
                   style={styles.input} 
-                  placeholder="Ulangi kata sandi" 
+                  placeholder={t('auth.repeat_pass', {defaultValue: 'Ulangi kata sandi'})} 
                   value={confirmPassword} 
                   onChangeText={setConfirmPassword} 
                   secureTextEntry={!showPassword} 
@@ -146,7 +148,7 @@ const CompleteProfile = () => {
               {loading ? (
                 <ActivityIndicator color="#FFF" />
               ) : (
-                <Text style={styles.submitBtnText}>Simpan & Masuk</Text>
+                <Text style={styles.submitBtnText}>{t('auth.save_login', {defaultValue: 'Simpan & Masuk'})}</Text>
               )}
             </TouchableOpacity>
           </View>

@@ -48,7 +48,7 @@ export default function VerifyDepositScreen() {
   }, []);
 
   const handleVerify = async (id, status) => {
-    const actionText = status === 'verified' ? 'Verifikasi (Setujui)' : 'Tolak';
+    const actionText = status === 'verified' ? t('distrik.action_verify', {defaultValue: 'Verifikasi (Setujui)'}) : t('distrik.action_reject', {defaultValue: 'Tolak'});
     
     const executeVerify = async () => {
       try {
@@ -82,9 +82,9 @@ export default function VerifyDepositScreen() {
         t('admin.confirm', {defaultValue: 'Konfirmasi'}),
         confirmMsg,
         [
-          { text: 'Batal', style: 'cancel' },
+          { text: t('admin.cancel', {defaultValue: 'Batal'}), style: 'cancel' },
           { 
-            text: 'Ya, Lanjutkan', 
+            text: t('admin.yes_continue', {defaultValue: 'Ya, Lanjutkan'}), 
             style: status === 'verified' ? 'default' : 'destructive',
             onPress: executeVerify
           }

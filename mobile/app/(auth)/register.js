@@ -165,7 +165,7 @@ export default function RegisterScreen() {
   };
 
   const handleVerifyOtp = async () => {
-    if (otp.length < 6) return setError('OTP harus 6 digit.');
+    if (otp.length < 6) return setError(t('auth.otp_6_digit', {defaultValue: 'OTP harus 6 digit.'}));
     setLoadingOtp(true);
     setError('');
     try {
@@ -258,10 +258,10 @@ export default function RegisterScreen() {
               </View>
 
               <View style={dynamicStyles.inputGroup}>
-                <Text style={dynamicStyles.label}>Konfirmasi Password</Text>
+                <Text style={dynamicStyles.label}>{t('auth.confirm_pass', {defaultValue: 'Konfirmasi Password'})}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
-                  <TextInput style={dynamicStyles.input} placeholder="Ulangi password" placeholderTextColor={colors.textMuted} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={!showPassword} />
+                  <TextInput style={dynamicStyles.input} placeholder={t('auth.repeat_pass', {defaultValue: 'Ulangi password'})} placeholderTextColor={colors.textMuted} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={!showPassword} />
                 </View>
               </View>
 
@@ -274,7 +274,7 @@ export default function RegisterScreen() {
               
               <View style={dynamicStyles.dividerContainer}>
                 <View style={dynamicStyles.dividerLine} />
-                <Text style={dynamicStyles.dividerText}>ATAU DAFTAR DENGAN</Text>
+                <Text style={dynamicStyles.dividerText}>{t('auth.or_register_with', {defaultValue: 'ATAU DAFTAR DENGAN'})}</Text>
                 <View style={dynamicStyles.dividerLine} />
               </View>
 
@@ -314,7 +314,7 @@ export default function RegisterScreen() {
           </View>
 
           <View style={dynamicStyles.footer}>
-            <Text style={dynamicStyles.footerPolicy}>Dengan mendaftar Anda setuju dengan S&K.</Text>
+            <Text style={dynamicStyles.footerPolicy}>{t('auth.agree_tos', {defaultValue: 'Dengan mendaftar Anda setuju dengan S&K.'})}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={dynamicStyles.footerText}>{t('auth.have_account').split('?')[0]}? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
@@ -334,7 +334,7 @@ export default function RegisterScreen() {
             <TouchableOpacity onPress={() => setSkVisible(false)} style={dynamicStyles.modalCloseBtn}>
               <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={dynamicStyles.modalTitle}>Syarat & Ketentuan</Text>
+            <Text style={dynamicStyles.modalTitle}>{t('auth.tos_title', {defaultValue: 'Syarat & Ketentuan'})}</Text>
           </View>
 
           <ScrollView 
@@ -343,7 +343,7 @@ export default function RegisterScreen() {
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={true}
           >
-            <Text style={dynamicStyles.skHeroTitle}>Perjanjian Pengguna</Text>
+            <Text style={dynamicStyles.skHeroTitle}>{t('auth.user_agreement', {defaultValue: 'Perjanjian Pengguna'})}</Text>
             <Text style={dynamicStyles.skSubTitle}>GreenPay ZISWAF</Text>
             
             <Text style={dynamicStyles.skText}>
@@ -388,7 +388,7 @@ export default function RegisterScreen() {
               activeOpacity={0.8}
             >
               <Text style={[dynamicStyles.skBtnText, { color: isScrolledToBottom ? Colors.white : colors.textMuted }]}>
-                {isScrolledToBottom ? 'Saya Setuju & Daftar' : 'Scroll ke bawah untuk setuju'}
+                {isScrolledToBottom ? t('auth.agree_register', {defaultValue: 'Saya Setuju & Daftar'}) : t('auth.scroll_agree', {defaultValue: 'Scroll ke bawah untuk setuju'})}
               </Text>
             </TouchableOpacity>
           </View>
@@ -416,9 +416,9 @@ export default function RegisterScreen() {
                 <Ionicons name="shield-checkmark" size={32} color={Colors.green[500]} />
               </View>
               
-              <Text style={dynamicStyles.otpTitle}>Verifikasi Keamanan</Text>
+              <Text style={dynamicStyles.otpTitle}>{t('auth.security_verify', {defaultValue: 'Verifikasi Keamanan'})}</Text>
               <Text style={dynamicStyles.otpDesc}>
-                Masukkan 6-digit kode unik yang telah dikirim ke{'\n'}
+                {t('auth.otp_desc', {defaultValue: 'Masukkan 6-digit kode unik yang telah dikirim ke'})}{'\n'}
                 <Text style={dynamicStyles.otpEmail}>{email}</Text>
               </Text>
 
@@ -438,10 +438,10 @@ export default function RegisterScreen() {
                 />
               </View>
 
-              <Button title="Buka & Daftar" onPress={handleVerifyOtp} loading={loadingOtp} style={{ width: '100%', marginBottom: Spacing.lg }} />
+              <Button title={t('auth.open_register', {defaultValue: 'Buka & Daftar'})} onPress={handleVerifyOtp} loading={loadingOtp} style={{ width: '100%', marginBottom: Spacing.lg }} />
               
               <TouchableOpacity onPress={() => setOtpVisible(false)} disabled={loadingOtp}>
-                <Text style={dynamicStyles.otpCancelText}>Batal</Text>
+                <Text style={dynamicStyles.otpCancelText}>{t('admin.cancel', {defaultValue: 'Batal'})}</Text>
               </TouchableOpacity>
             </View>
 

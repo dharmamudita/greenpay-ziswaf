@@ -89,9 +89,9 @@ export default function VerifyDistrikScreen() {
         t('admin.confirm', {defaultValue: 'Konfirmasi'}),
         confirmMsg,
         [
-          { text: 'Batal', style: 'cancel' },
+          { text: t('admin.cancel', {defaultValue: 'Batal'}), style: 'cancel' },
           { 
-            text: 'Ya, Lanjutkan', 
+            text: t('admin.yes_continue', {defaultValue: 'Ya, Lanjutkan'}), 
             style: status === 'approved' ? 'default' : 'destructive',
             onPress: executeVerify
           }

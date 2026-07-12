@@ -34,10 +34,10 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/forgot-password', { email });
-      Alert.alert('Sukses', t('forgot_password.success_otp_sent'));
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('forgot_password.success_otp_sent'));
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal mengirim email reset password.');
+      setError(err.response?.data?.error || t('auth.forgot_fail', {defaultValue: 'Gagal mengirim email reset password.'}));
     } finally {
       setLoading(false);
     }
@@ -56,11 +56,11 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/reset-password', { email, otp, newPassword });
-      Alert.alert('Berhasil', t('forgot_password.success_reset'), [
+      Alert.alert(t('admin.success', {defaultValue: 'Berhasil'}), t('forgot_password.success_reset'), [
         { text: 'OK', onPress: () => router.replace('/(auth)/login') }
       ]);
     } catch (err) {
-      setError(err.response?.data?.error || 'Gagal mereset password.');
+      setError(err.response?.data?.error || t('auth.reset_fail', {defaultValue: 'Gagal mereset password.'}));
     } finally {
       setLoading(false);
     }
