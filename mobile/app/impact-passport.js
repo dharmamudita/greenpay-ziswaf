@@ -401,9 +401,10 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   sectionTitle: { fontSize: 22, fontWeight: '800', color: colors.text, letterSpacing: -0.5 },
   sectionSub: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
   
-  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
+  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   badgeCardWrap: {
-    width: '47.5%',
+    width: '48%',
+    marginBottom: 16,
     position: 'relative',
   },
   badgeCardGlow: {

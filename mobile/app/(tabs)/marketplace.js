@@ -376,12 +376,13 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   prodGrid: { 
     flexDirection: 'row', 
     flexWrap: 'wrap', 
-    gap: 16,
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
   },
   
   prodCard: { 
-    width: '47.5%', // Slightly less than 50% to account for gap
+    width: '48%', 
+    marginBottom: 16,
     backgroundColor: colors.surface, 
     borderRadius: BorderRadius.xl, 
     borderWidth: 1, 

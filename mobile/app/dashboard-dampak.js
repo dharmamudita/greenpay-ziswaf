@@ -254,9 +254,10 @@ const getStyles = (colors, isDark) => StyleSheet.create({
   },
   
   // Data Grid Widgets
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.md },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   statCardWrap: { 
-    width: '47.5%', 
+    width: '48%', 
+    marginBottom: Spacing.md,
     borderRadius: BorderRadius['2xl'], 
     ...Shadows.md,
     shadowColor: isDark ? Colors.black : Colors.green[900],
