@@ -72,10 +72,9 @@ router.post('/scan-waste', checkAiConfig, async (req, res) => {
     const { imageUrl } = req.body;
     if (!imageUrl) return res.status(400).json({ error: 'URL gambar diperlukan.' });
 
-    const imageResponse = await fetch(imageUrl);
-    const arrayBuffer = await imageResponse.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const mimeType = imageResponse.headers.get('content-type') || 'image/jpeg';
+    const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const buffer = Buffer.from(imageResponse.data);
+    const mimeType = imageResponse.headers['content-type'] || 'image/jpeg';
 
     const prompt = `Analisis gambar sampah ini. Berikan JSON murni TANPA markdown:
 {"detected_items":"...","waste_category":"Plastik/Kertas/Logam/Kaca/Organik","estimated_weight_kg":0.5,"estimated_points":150,"fun_fact":"..."}

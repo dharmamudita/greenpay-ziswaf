@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 const { JWT_SECRET } = require('../middleware/auth');
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 const router = express.Router();
 
@@ -26,16 +27,9 @@ router.post('/request-otp', async (req, res) => {
       }
       
       try {
-        const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
-        const params = new URLSearchParams();
-        params.append('secret', (process.env.RECAPTCHA_SECRET_KEY || '').trim());
-        params.append('response', captchaToken);
-
-        const recaptchaRes = await fetch(verifyUrl, { 
-          method: 'POST',
-          body: params
-        });
-        const recaptchaData = await recaptchaRes.json();
+        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
+        const recaptchaRes = await axios.post(verifyUrl);
+        const recaptchaData = recaptchaRes.data;
         
         console.log("reCAPTCHA response:", recaptchaData);
         
