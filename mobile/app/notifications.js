@@ -12,14 +12,17 @@ import api from '../services/api';
 export default function NotificationsScreen() {
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('Semua');
+  const { t, i18n } = useTranslation();
+  const [activeTab, setActiveTab] = useState('all');
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const dynamicStyles = getStyles(colors, isDark);
 
-  const filterTabs = ['Semua', 'Sistem']; // Simplified for now since we only have system broadcast
+  const filterTabs = [
+    { id: 'all', label: t('notifications.tab_all', {defaultValue: 'Semua'}) },
+    { id: 'system', label: t('notifications.tab_system', {defaultValue: 'Sistem'}) }
+  ];
 
   const fetchNotifications = async () => {
     try {
@@ -71,16 +74,28 @@ export default function NotificationsScreen() {
     const d = new Date(dateString);
     const today = new Date();
     if (d.toDateString() === today.toDateString()) {
-      return `Hari ini, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      return `${t('notifications.today', {defaultValue: 'Hari ini'})}, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     }
-    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    const locale = i18n.language === 'id' ? 'id-ID' : 'en-US';
+    return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   const filteredNotifs = notifications.filter(n => {
-    if (activeTab === 'Semua') return true;
-    if (activeTab === 'Sistem' && n.type === 'system') return true;
+    if (activeTab === 'all') return true;
+    if (activeTab === 'system' && n.type === 'system') return true;
     return false;
   });
+
+  const translateTitle = (title) => {
+    const map = {
+      'Setoran Sampah Diverifikasi': t('notifications.waste_verified', {defaultValue: 'Setoran Sampah Diverifikasi'}),
+      'Setoran Sampah Ditolak': t('notifications.waste_rejected', {defaultValue: 'Setoran Sampah Ditolak'}),
+      'Tukar Reward Sukses': t('notifications.reward_success', {defaultValue: 'Tukar Reward Sukses'}),
+      'Status Distrik Diperbarui': t('notifications.district_updated', {defaultValue: 'Status Distrik Diperbarui'}),
+      'Penyaluran ZISWAF': t('notifications.ziswaf_distributed', {defaultValue: 'Penyaluran ZISWAF'})
+    };
+    return map[title] || title;
+  };
 
   return (
     <View style={dynamicStyles.container}>
@@ -100,12 +115,12 @@ export default function NotificationsScreen() {
       <View style={dynamicStyles.tabsContainer}>
         {filterTabs.map((tab) => (
           <TouchableOpacity 
-            key={tab} 
-            style={[dynamicStyles.tabBtn, activeTab === tab && dynamicStyles.tabBtnActive]}
-            onPress={() => setActiveTab(tab)}
+            key={tab.id} 
+            style={[dynamicStyles.tabBtn, activeTab === tab.id && dynamicStyles.tabBtnActive]}
+            onPress={() => setActiveTab(tab.id)}
           >
-            <Text style={[dynamicStyles.tabText, activeTab === tab && dynamicStyles.tabTextActive]}>
-              {tab}
+            <Text style={[dynamicStyles.tabText, activeTab === tab.id && dynamicStyles.tabTextActive]}>
+              {tab.label}
             </Text>
           </TouchableOpacity>
         ))}
@@ -139,11 +154,10 @@ export default function NotificationsScreen() {
                 <View style={[dynamicStyles.iconBox, { backgroundColor: color + (isDark ? '30' : '15') }]}>
                   <Ionicons name={icon} size={24} color={color} />
                 </View>
-                
                 <View style={dynamicStyles.contentBox}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                     <Text style={[dynamicStyles.title, !notif.is_read && dynamicStyles.titleUnread]} numberOfLines={1}>
-                      {notif.title}
+                      {translateTitle(notif.title)}
                     </Text>
                     {!notif.is_read && <View style={dynamicStyles.unreadDot} />}
                   </View>

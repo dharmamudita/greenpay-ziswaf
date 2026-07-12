@@ -572,7 +572,15 @@
   "notifications": {
     "title": "Notifications",
     "empty_title": "No new notifications",
-    "empty_desc": "Notifications regarding your transactions and activities will appear here."
+    "empty_desc": "Notifications regarding your transactions and activities will appear here.",
+    "tab_all": "All",
+    "tab_system": "System",
+    "today": "Today",
+    "waste_verified": "Waste Deposit Verified",
+    "waste_rejected": "Waste Deposit Rejected",
+    "reward_success": "Reward Redemption Success",
+    "district_updated": "District Status Updated",
+    "ziswaf_distributed": "ZISWAF Distribution"
   },
   "reg_distrik": {
     "waiting": "Waiting for Verification",
