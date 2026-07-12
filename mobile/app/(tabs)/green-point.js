@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -200,7 +200,7 @@ export default function GreenPointScreen() {
                   <View style={{ flexDirection: 'row', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, borderStyle: 'dashed' }}>
                     <View style={{ width: 60, height: 60, borderRadius: 8, backgroundColor: isDark ? colors.surface2 : Colors.gray[100], marginRight: 16, overflow: 'hidden' }}>
                       {v.image_url ? (
-                        <Image source={{ uri: v.image_url }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                        <Image source={{ uri: getImageUrl(v.image_url) }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
                       ) : (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                           <Ionicons name="gift" size={24} color={Colors.gold[400]} />

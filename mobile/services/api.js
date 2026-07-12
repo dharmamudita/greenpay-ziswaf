@@ -79,5 +79,14 @@ class ApiService {
   }
 }
 
+export const getImageUrl = (url) => {
+  if (!url) return url;
+  if (url.includes('localhost')) {
+    const host = API_BASE_URL.replace('/api', '');
+    return url.replace(/http:\/\/localhost:\d+/, host);
+  }
+  return url;
+};
+
 const api = new ApiService();
 export default api;

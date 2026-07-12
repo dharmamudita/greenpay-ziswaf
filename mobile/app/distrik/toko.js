@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../../context/ThemeContext';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 
 export default function TokoRewardManagerScreen() {
   const { t } = useTranslation();
@@ -218,7 +218,7 @@ export default function TokoRewardManagerScreen() {
                   {rewards.map(reward => (
                     <View key={reward.id} style={dynamicStyles.productCard}>
                       <Image 
-                        source={{ uri: reward.image_url || 'https://via.placeholder.com/150?text=Reward' }} 
+                        source={{ uri: getImageUrl(reward.image_url) || 'https://via.placeholder.com/150?text=Reward' }} 
                         style={dynamicStyles.productImage} 
                       />
                       <View style={dynamicStyles.productInfo}>

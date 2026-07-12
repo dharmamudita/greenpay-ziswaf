@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../utils/currency';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 
 const categories = ['Semua', 'Aksesoris', 'Peralatan', 'Perawatan', 'Dapur', 'Dekorasi'];
 
@@ -190,7 +190,7 @@ export default function MarketplaceScreen() {
                 {/* Image Area with Floating Badge */}
                 <View style={dynamicStyles.prodImgPlaceholder}>
                   {p.image_url ? (
-                    <Image source={{ uri: p.image_url }} style={dynamicStyles.actualProductImg} />
+                    <Image source={{ uri: getImageUrl(p.image_url) }} style={dynamicStyles.actualProductImg} />
                   ) : (
                     <Ionicons name={getIconForCategory(p.category)} size={48} color={Colors.green[500]} />
                   )}

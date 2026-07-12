@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 import { formatCurrency } from '../../utils/currency';
 import Colors from '../../theme/colors';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
@@ -230,7 +230,7 @@ export default function HomeScreen() {
                       router.push(`/ziswaf/${camp.id}`);
                     }}
                   >
-                    <Image source={{ uri: camp.image_url || 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=500&q=80' }} style={dynamicStyles.campaignImage} />
+                    <Image source={{ uri: getImageUrl(camp.image_url) || 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=500&q=80' }} style={dynamicStyles.campaignImage} />
                     <View style={dynamicStyles.campaignContent}>
                       <Text style={dynamicStyles.campaignTitle} numberOfLines={2}>{camp.title}</Text>
                       <View style={dynamicStyles.progressBarBg}>
