@@ -337,13 +337,19 @@ export default function TokoRewardManagerScreen() {
               <View style={dynamicStyles.formGroup}>
                 <Text style={dynamicStyles.label}>{t('distrik.category', {defaultValue: 'Kategori *'})}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
-                  {['Aksesoris', 'Peralatan', 'Perawatan', 'Dapur', 'Dekorasi'].map(cat => (
+                  {[
+                    { id: 'Aksesoris', label: t('marketplace.accessories', {defaultValue: 'Aksesoris'}) },
+                    { id: 'Peralatan', label: t('marketplace.equipment', {defaultValue: 'Peralatan'}) },
+                    { id: 'Perawatan', label: t('marketplace.care', {defaultValue: 'Perawatan'}) },
+                    { id: 'Dapur', label: t('marketplace.kitchen', {defaultValue: 'Dapur'}) },
+                    { id: 'Dekorasi', label: t('marketplace.decor', {defaultValue: 'Dekorasi'}) }
+                  ].map(cat => (
                     <TouchableOpacity
-                      key={cat}
-                      style={[dynamicStyles.catPill, formData.category === cat && dynamicStyles.catPillActive]}
-                      onPress={() => setFormData({...formData, category: cat})}
+                      key={cat.id}
+                      style={[dynamicStyles.catPill, formData.category === cat.id && dynamicStyles.catPillActive]}
+                      onPress={() => setFormData({...formData, category: cat.id})}
                     >
-                      <Text style={[dynamicStyles.catPillText, formData.category === cat && dynamicStyles.catPillTextActive]}>{cat}</Text>
+                      <Text style={[dynamicStyles.catPillText, formData.category === cat.id && dynamicStyles.catPillTextActive]}>{cat.label}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
