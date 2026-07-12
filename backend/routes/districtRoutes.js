@@ -472,7 +472,7 @@ router.get('/rewards/history', authenticateToken, requireRole('distrik'), async 
        JOIN rewards r ON rr.reward_id = r.id 
        JOIN users u ON rr.user_id = u.id 
        WHERE r.created_by = $1 AND rr.status = 'completed'
-       ORDER BY rr.updated_at DESC`,
+       ORDER BY rr.created_at DESC`,
       [req.user.id]
     );
     res.json(result.rows);
