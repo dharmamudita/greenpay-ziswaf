@@ -139,7 +139,7 @@ export default function RegisterDistrikScreen() {
               <Ionicons name="home-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
               <TextInput
                 style={dynamicStyles.input}
-                placeholder="Contoh: Bank Sampah Berkah"
+                placeholder={t('reg_distrik.name_ph', {defaultValue: 'Contoh: Bank Sampah Berkah'})}
                 placeholderTextColor={colors.textMuted}
                 value={form.name}
                 onChangeText={(text) => setForm({ ...form, name: text })}
@@ -153,7 +153,7 @@ export default function RegisterDistrikScreen() {
               <Ionicons name="location-outline" size={20} color={colors.textMuted} style={[dynamicStyles.inputIcon, { marginTop: 14 }]} />
               <TextInput
                 style={[dynamicStyles.input, { height: 80, textAlignVertical: 'top' }]}
-                placeholder="Masukkan alamat lengkap distrik..."
+                placeholder={t('reg_distrik.address_ph', {defaultValue: 'Masukkan alamat lengkap distrik...'})}
                 placeholderTextColor={colors.textMuted}
                 multiline
                 numberOfLines={3}

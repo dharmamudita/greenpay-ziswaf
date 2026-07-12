@@ -200,7 +200,7 @@ export default function LoginScreen() {
                   <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput
                     style={dynamicStyles.input}
-                    placeholder="nama@email.com"
+                    placeholder={t('auth.email_ph', {defaultValue: 'nama@email.com'})}
                     placeholderTextColor={colors.textMuted}
                     value={email}
                     onChangeText={setEmail}
@@ -216,7 +216,7 @@ export default function LoginScreen() {
                   <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput
                     style={[dynamicStyles.input, { flex: 1 }]}
-                    placeholder="Masukkan password"
+                    placeholder={t('auth.password_ph', {defaultValue: 'Masukkan password'})}
                     placeholderTextColor={colors.textMuted}
                     value={password}
                     onChangeText={setPassword}

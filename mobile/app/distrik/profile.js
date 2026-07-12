@@ -116,7 +116,7 @@ export default function DistrikProfileScreen() {
             style={dynamicStyles.input}
             value={formData.operating_hours}
             onChangeText={(v) => setFormData({...formData, operating_hours: v})}
-            placeholder="Misal: Senin-Sabtu 08:00 - 16:00"
+            placeholder={t('distrik.op_hours_ph', {defaultValue: 'Misal: Senin-Sabtu 08:00 - 16:00'})}
             placeholderTextColor={colors.textMuted}
           />
         </View>

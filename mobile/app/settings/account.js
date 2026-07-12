@@ -429,7 +429,7 @@ export default function AccountSettingScreen() {
           <View style={[dynamicStyles.card, Shadows.sm]}>
             <View style={dynamicStyles.inputGroup}>
               <Text style={dynamicStyles.label}>{t('account.email', { defaultValue: 'Email' })}</Text>
-              <TextInput style={dynamicStyles.input} value={email} onChangeText={setEmail} keyboardType="email-address" placeholder="email@contoh.com" placeholderTextColor={colors.textMuted} autoCapitalize="none" />
+              <TextInput style={dynamicStyles.input} value={email} onChangeText={setEmail} keyboardType="email-address" placeholder={t('auth.email_ph', {defaultValue: 'email@contoh.com'})} placeholderTextColor={colors.textMuted} autoCapitalize="none" />
             </View>
             <Button title={t('account.save_email', { defaultValue: 'Simpan Email' })} onPress={handleUpdateEmail} loading={loadingEmail} style={{ marginTop: Spacing.sm }} />
           </View>

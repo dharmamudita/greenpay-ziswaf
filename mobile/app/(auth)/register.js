@@ -234,7 +234,7 @@ export default function RegisterScreen() {
                 <Text style={dynamicStyles.label}>{t('auth.fullname')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="person-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
-                  <TextInput style={dynamicStyles.input} placeholder="Masukkan nama" placeholderTextColor={colors.textMuted} value={name} onChangeText={setName} />
+                  <TextInput style={dynamicStyles.input} placeholder={t('auth.fullname_ph', {defaultValue: 'Masukkan nama'})} placeholderTextColor={colors.textMuted} value={name} onChangeText={setName} />
                 </View>
               </View>
 
@@ -242,7 +242,7 @@ export default function RegisterScreen() {
                 <Text style={dynamicStyles.label}>{t('auth.email')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
-                  <TextInput style={dynamicStyles.input} placeholder="nama@email.com" placeholderTextColor={colors.textMuted} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+                  <TextInput style={dynamicStyles.input} placeholder={t('auth.email_ph', {defaultValue: 'nama@email.com'})} placeholderTextColor={colors.textMuted} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
                 </View>
               </View>
 
@@ -250,7 +250,7 @@ export default function RegisterScreen() {
                 <Text style={dynamicStyles.label}>{t('auth.password')}</Text>
                 <View style={dynamicStyles.inputWrap}>
                   <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
-                  <TextInput style={[dynamicStyles.input, { flex: 1 }]} placeholder="Min. 6 karakter" placeholderTextColor={colors.textMuted} value={password} onChangeText={setPassword} secureTextEntry={!showPassword} />
+                  <TextInput style={[dynamicStyles.input, { flex: 1 }]} placeholder={t('auth.min_6_char', {defaultValue: 'Min. 6 karakter'})} placeholderTextColor={colors.textMuted} value={password} onChangeText={setPassword} secureTextEntry={!showPassword} />
                   <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={dynamicStyles.eyeBtn}>
                     <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color={colors.textMuted} />
                   </TouchableOpacity>
@@ -347,31 +347,31 @@ export default function RegisterScreen() {
             <Text style={dynamicStyles.skSubTitle}>GreenPay ZISWAF</Text>
             
             <Text style={dynamicStyles.skText}>
-              Selamat datang di GreenPay ZISWAF. Dengan mendaftar dan menggunakan aplikasi ini, Anda setuju untuk terikat dengan syarat dan ketentuan berikut:
+              {t('auth.sk_intro', {defaultValue: 'Selamat datang di GreenPay ZISWAF. Dengan mendaftar dan menggunakan aplikasi ini, Anda setuju untuk terikat dengan syarat dan ketentuan berikut:'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>1. Penggunaan Layanan</Text>{'\n'}
-              Aplikasi ini dirancang untuk memfasilitasi transaksi bank sampah dan pembayaran ZISWAF (Zakat, Infaq, Sadaqah, Wakaf). Anda dilarang keras menggunakan aplikasi ini untuk kegiatan ilegal atau penipuan finansial.
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_1_title', {defaultValue: '1. Penggunaan Layanan'})}</Text>{'\n'}
+              {t('auth.sk_1_desc', {defaultValue: 'Aplikasi ini dirancang untuk memfasilitasi transaksi bank sampah dan pembayaran ZISWAF (Zakat, Infaq, Sadaqah, Wakaf). Anda dilarang keras menggunakan aplikasi ini untuk kegiatan ilegal atau penipuan finansial.'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>2. Akurasi Data</Text>{'\n'}
-              Anda berjanji untuk memberikan informasi yang akurat saat pendaftaran. Kami berhak menangguhkan akun jika ditemukan data palsu.
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_2_title', {defaultValue: '2. Akurasi Data'})}</Text>{'\n'}
+              {t('auth.sk_2_desc', {defaultValue: 'Anda berjanji untuk memberikan informasi yang akurat saat pendaftaran. Kami berhak menangguhkan akun jika ditemukan data palsu.'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>3. Transaksi & Saldo</Text>{'\n'}
-              Green Point yang Anda dapatkan dari bank sampah dapat digunakan untuk donasi ZISWAF. Saldo tidak dapat ditukar menjadi uang tunai (fiat) melainkan hanya untuk ekosistem amal di dalam aplikasi.
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_3_title', {defaultValue: '3. Transaksi & Saldo'})}</Text>{'\n'}
+              {t('auth.sk_3_desc', {defaultValue: 'Green Point yang Anda dapatkan dari bank sampah dapat digunakan untuk donasi ZISWAF. Saldo tidak dapat ditukar menjadi uang tunai (fiat) melainkan hanya untuk ekosistem amal di dalam aplikasi.'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>4. Privasi & Keamanan</Text>{'\n'}
-              Kami menjaga kerahasiaan data Anda dengan standar enkripsi tinggi. Namun, Anda bertanggung jawab penuh atas kerahasiaan kata sandi Anda. Jangan berikan akses ke pihak ketiga.
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_4_title', {defaultValue: '4. Privasi & Keamanan'})}</Text>{'\n'}
+              {t('auth.sk_4_desc', {defaultValue: 'Kami menjaga kerahasiaan data Anda dengan standar enkripsi tinggi. Namun, Anda bertanggung jawab penuh atas kerahasiaan kata sandi Anda. Jangan berikan akses ke pihak ketiga.'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>5. Perubahan Ketentuan</Text>{'\n'}
-              Pihak pengembang berhak mengubah syarat dan ketentuan ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Pengguna diharapkan memeriksa halaman ini secara berkala.
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_5_title', {defaultValue: '5. Perubahan Ketentuan'})}</Text>{'\n'}
+              {t('auth.sk_5_desc', {defaultValue: 'Pihak pengembang berhak mengubah syarat dan ketentuan ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Pengguna diharapkan memeriksa halaman ini secara berkala.'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>6. Penolakan Tanggung Jawab (Disclaimer)</Text>{'\n'}
-              Kami tidak bertanggung jawab atas kerugian tidak langsung yang diakibatkan oleh gangguan jaringan, *maintenance* server, atau hal tak terduga (*force majeure*).
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_6_title', {defaultValue: '6. Penolakan Tanggung Jawab (Disclaimer)'})}</Text>{'\n'}
+              {t('auth.sk_6_desc', {defaultValue: 'Kami tidak bertanggung jawab atas kerugian tidak langsung yang diakibatkan oleh gangguan jaringan, *maintenance* server, atau hal tak terduga (*force majeure*).'})}
               {'\n\n'}
-              <Text style={dynamicStyles.skBold}>7. Hukum yang Berlaku</Text>{'\n'}
-              Semua sengketa yang berkaitan dengan aplikasi ini akan diselesaikan berdasarkan asas musyawarah dan hukum yang berlaku di Republik Indonesia.
+              <Text style={dynamicStyles.skBold}>{t('auth.sk_7_title', {defaultValue: '7. Hukum yang Berlaku'})}</Text>{'\n'}
+              {t('auth.sk_7_desc', {defaultValue: 'Semua sengketa yang berkaitan dengan aplikasi ini akan diselesaikan berdasarkan asas musyawarah dan hukum yang berlaku di Republik Indonesia.'})}
               {'\n\n'}
               <Text style={{ color: Colors.green[500], fontStyle: 'italic', fontWeight: 'bold' }}>
-                (Silakan terus scroll hingga ke bagian paling bawah untuk mengaktifkan tombol persetujuan).
+                {t('auth.sk_scroll_info', {defaultValue: '(Silakan terus scroll hingga ke bagian paling bawah untuk mengaktifkan tombol persetujuan).'})}
               </Text>
               {'\n\n\n\n'}
             </Text>
