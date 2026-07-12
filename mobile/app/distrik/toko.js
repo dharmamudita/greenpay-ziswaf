@@ -15,6 +15,8 @@ export default function TokoRewardManagerScreen() {
   const dynamicStyles = getStyles(colors, isDark);
   
   const [rewards, setRewards] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [activeTab, setActiveTab] = useState('etalase');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -33,12 +35,16 @@ export default function TokoRewardManagerScreen() {
     category: 'Produk'
   });
 
-  const fetchRewards = async () => {
+  const fetchRewardsAndHistory = async () => {
     try {
-      const res = await api.get('/distrik/toko/rewards');
-      setRewards(res.data);
+      const [rewRes, histRes] = await Promise.all([
+        api.get('/distrik/toko/rewards'),
+        api.get('/distrik/rewards/history')
+      ]);
+      setRewards(rewRes.data);
+      setHistory(histRes.data);
     } catch (error) {
-      console.log('Error fetching rewards:', error);
+      console.log('Error fetching data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -46,12 +52,12 @@ export default function TokoRewardManagerScreen() {
   };
 
   useEffect(() => {
-    fetchRewards();
+    fetchRewardsAndHistory();
   }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchRewards();
+    fetchRewardsAndHistory();
   }, []);
 
   const handleVerifyVoucher = async () => {
@@ -61,6 +67,7 @@ export default function TokoRewardManagerScreen() {
       const res = await api.post('/distrik/rewards/verify', { voucher_code: voucherCode.trim() });
       Alert.alert('Sukses!', 'Voucher valid dan berhasil ditukarkan. Silakan berikan hadiah kepada pengguna.');
       setVoucherCode('');
+      fetchRewardsAndHistory();
     } catch (error) {
       Alert.alert('Gagal', error.response?.data?.error || 'Kode voucher tidak valid atau sudah digunakan.');
     } finally {
@@ -124,7 +131,7 @@ export default function TokoRewardManagerScreen() {
       });
       setModalVisible(false);
       setFormData({ name: '', points_cost: '', stock: '', image_url: '', category: 'Produk' });
-      fetchRewards(); // Refresh list
+      fetchRewardsAndHistory(); // Refresh list
     } catch (error) {
       Alert.alert('Error', 'Gagal menambahkan reward baru.');
     } finally {
@@ -169,50 +176,116 @@ export default function TokoRewardManagerScreen() {
             </View>
           </View>
 
-          <View style={dynamicStyles.headerRow}>
-            <View style={{ flex: 1, paddingRight: 16 }}>
-              <Text style={dynamicStyles.title}>Etalase Hadiah (Reward)</Text>
-              <Text style={dynamicStyles.subtitle}>{t('distrik.toko_subtitle', {defaultValue: 'Pajang hadiah Anda di sini. Pengguna akan menukarkan poin GP mereka dengan hadiah ini.'})}</Text>
-            </View>
-            <TouchableOpacity style={dynamicStyles.addBtn} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
-              <LinearGradient colors={[Colors.gold[500], Colors.gold[600]]} style={StyleSheet.absoluteFillObject} borderRadius={28} />
-              <Ionicons name="add" size={28} color={Colors.white} />
+          {/* Custom Tabs */}
+          <View style={{ flexDirection: 'row', backgroundColor: isDark ? colors.surface2 : Colors.gray[100], borderRadius: 12, padding: 4, marginBottom: Spacing.xl, marginTop: Spacing.lg }}>
+            <TouchableOpacity 
+              style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'etalase' ? colors.surface : 'transparent', ...(activeTab === 'etalase' ? Shadows.sm : {}) }}
+              onPress={() => setActiveTab('etalase')}
+            >
+              <Text style={{ fontWeight: activeTab === 'etalase' ? '700' : '500', color: activeTab === 'etalase' ? colors.text : colors.textMuted }}>Etalase Hadiah</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'history' ? colors.surface : 'transparent', ...(activeTab === 'history' ? Shadows.sm : {}) }}
+              onPress={() => setActiveTab('history')}
+            >
+              <Text style={{ fontWeight: activeTab === 'history' ? '700' : '500', color: activeTab === 'history' ? colors.text : colors.textMuted }}>Riwayat Penukaran</Text>
             </TouchableOpacity>
           </View>
 
-          {rewards.length === 0 ? (
-            <View style={dynamicStyles.emptyState}>
-              <View style={dynamicStyles.emptyIconWrap}>
-                <Ionicons name="gift-outline" size={48} color={Colors.gold[500]} />
+          {activeTab === 'etalase' ? (
+            <View>
+              <View style={dynamicStyles.headerRow}>
+                <View style={{ flex: 1, paddingRight: 16 }}>
+                  <Text style={dynamicStyles.title}>Etalase Hadiah (Reward)</Text>
+                  <Text style={dynamicStyles.subtitle}>{t('distrik.toko_subtitle', {defaultValue: 'Pajang hadiah Anda di sini. Pengguna akan menukarkan poin GP mereka dengan hadiah ini.'})}</Text>
+                </View>
+                <TouchableOpacity style={dynamicStyles.addBtn} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+                  <LinearGradient colors={[Colors.gold[500], Colors.gold[600]]} style={StyleSheet.absoluteFillObject} borderRadius={28} />
+                  <Ionicons name="add" size={28} color={Colors.white} />
+                </TouchableOpacity>
               </View>
-              <Text style={dynamicStyles.emptyTitle}>{t('distrik.toko_empty', {defaultValue: 'Etalase Masih Kosong'})}</Text>
-              <Text style={dynamicStyles.emptySub}>Tambahkan hadiah/reward pertama Anda sekarang dengan menekan tombol + di atas.</Text>
+
+              {rewards.length === 0 ? (
+                <View style={dynamicStyles.emptyState}>
+                  <View style={dynamicStyles.emptyIconWrap}>
+                    <Ionicons name="gift-outline" size={48} color={Colors.gold[500]} />
+                  </View>
+                  <Text style={dynamicStyles.emptyTitle}>{t('distrik.toko_empty', {defaultValue: 'Etalase Masih Kosong'})}</Text>
+                  <Text style={dynamicStyles.emptySub}>Tambahkan hadiah/reward pertama Anda sekarang dengan menekan tombol + di atas.</Text>
+                </View>
+              ) : (
+                <View style={dynamicStyles.productList}>
+                  {rewards.map(reward => (
+                    <View key={reward.id} style={dynamicStyles.productCard}>
+                      <Image 
+                        source={{ uri: reward.image_url || 'https://via.placeholder.com/150?text=Reward' }} 
+                        style={dynamicStyles.productImage} 
+                      />
+                      <View style={dynamicStyles.productInfo}>
+                        <Text style={dynamicStyles.productName} numberOfLines={2}>{reward.name}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                          <Ionicons name="leaf" size={14} color={Colors.gold[600]} style={{ marginRight: 4 }} />
+                          <Text style={dynamicStyles.productPrice}>{reward.points_cost} GP</Text>
+                        </View>
+                        <View style={dynamicStyles.stockBadge}>
+                          <Text style={dynamicStyles.productStock}>Sisa Stok: {reward.stock} pcs</Text>
+                        </View>
+                      </View>
+                      <View style={dynamicStyles.productActions}>
+                        <TouchableOpacity style={[dynamicStyles.actionBtn, { backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : Colors.error + '15' }]} onPress={() => handleDelete(reward.id)}>
+                          <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           ) : (
-            <View style={dynamicStyles.productList}>
-              {rewards.map(reward => (
-                <View key={reward.id} style={dynamicStyles.productCard}>
-                  <Image 
-                    source={{ uri: reward.image_url || 'https://via.placeholder.com/150?text=Reward' }} 
-                    style={dynamicStyles.productImage} 
-                  />
-                  <View style={dynamicStyles.productInfo}>
-                    <Text style={dynamicStyles.productName} numberOfLines={2}>{reward.name}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                      <Ionicons name="leaf" size={14} color={Colors.gold[600]} style={{ marginRight: 4 }} />
-                      <Text style={dynamicStyles.productPrice}>{reward.points_cost} GP</Text>
-                    </View>
-                    <View style={dynamicStyles.stockBadge}>
-                      <Text style={dynamicStyles.productStock}>Sisa Stok: {reward.stock} pcs</Text>
-                    </View>
-                  </View>
-                  <View style={dynamicStyles.productActions}>
-                    <TouchableOpacity style={[dynamicStyles.actionBtn, { backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : Colors.error + '15' }]} onPress={() => handleDelete(reward.id)}>
-                      <Ionicons name="trash-outline" size={20} color={Colors.error} />
-                    </TouchableOpacity>
-                  </View>
+            <View>
+              <View style={dynamicStyles.headerRow}>
+                <View style={{ flex: 1, paddingRight: 16 }}>
+                  <Text style={dynamicStyles.title}>Riwayat Penukaran</Text>
+                  <Text style={dynamicStyles.subtitle}>Daftar semua voucher yang telah diverifikasi dan diklaim oleh pengguna.</Text>
                 </View>
-              ))}
+              </View>
+
+              {history.length === 0 ? (
+                <View style={dynamicStyles.emptyState}>
+                  <View style={dynamicStyles.emptyIconWrap}>
+                    <Ionicons name="receipt-outline" size={48} color={Colors.gold[500]} />
+                  </View>
+                  <Text style={dynamicStyles.emptyTitle}>Belum Ada Riwayat</Text>
+                  <Text style={dynamicStyles.emptySub}>Belum ada pengguna yang menukarkan voucher hadiah di Distrik Anda.</Text>
+                </View>
+              ) : (
+                <View style={dynamicStyles.productList}>
+                  {history.map(item => (
+                    <View key={item.id} style={[dynamicStyles.productCard, { padding: 16, alignItems: 'center' }]}>
+                      <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: isDark ? colors.surface2 : Colors.gray[100], marginRight: 12, overflow: 'hidden' }}>
+                        {item.user_photo ? (
+                          <Image source={{ uri: item.user_photo }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                        ) : (
+                          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Ionicons name="person" size={24} color={colors.textMuted} />
+                          </View>
+                        )}
+                      </View>
+                      
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 2 }}>{item.user_name}</Text>
+                        <Text style={{ fontSize: 13, color: colors.textMuted, marginBottom: 4 }}>Telah mengklaim: <Text style={{ fontWeight: '600', color: colors.text }}>{item.reward_name}</Text></Text>
+                        <Text style={{ fontSize: 11, color: colors.textMuted }}>{new Date(item.updated_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
+                      </View>
+                      
+                      <View style={{ backgroundColor: Colors.gold[50], paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: Colors.gold[200], borderStyle: 'dashed' }}>
+                        <Text style={{ fontSize: 10, color: Colors.gold[700], marginBottom: 2, textAlign: 'center', fontWeight: '700' }}>KODE</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '900', color: Colors.gold[800], letterSpacing: 1 }}>{item.voucher_code}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           )}
 

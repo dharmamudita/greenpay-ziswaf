@@ -441,7 +441,7 @@ router.post('/rewards/verify', authenticateToken, requireRole('distrik'), async 
       return res.status(400).json({ error: 'Voucher ini sudah pernah digunakan!' });
     }
     if (record.status !== 'pending') {
-      return res.status(400).json({ error: \`Voucher tidak dapat digunakan. Status: \${record.status}\` });
+      return res.status(400).json({ error: `Voucher tidak dapat digunakan. Status: ${record.status}` });
     }
 
     // 4. Update status to completed
@@ -452,13 +452,32 @@ router.post('/rewards/verify', authenticateToken, requireRole('distrik'), async 
 
     // 5. Notify the user
     await pool.query(
-      \`INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'system')\`,
-      [record.user_id, 'Hadiah Berhasil Diklaim', \`Voucher untuk hadiah '\${record.reward_name}' telah berhasil diklaim di Distrik.\`]
+      `INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, 'system')`,
+      [record.user_id, 'Hadiah Berhasil Diklaim', `Voucher untuk hadiah '${record.reward_name}' telah berhasil diklaim di Distrik.`]
     );
 
     res.json({ message: 'Voucher berhasil diklaim', reward_name: record.reward_name });
   } catch (error) {
     console.error('Error verifying voucher:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal' });
+  }
+});
+
+// GET /api/distrik/rewards/history - Get redemption history for a specific distrik
+router.get('/rewards/history', authenticateToken, requireRole('distrik'), async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT rr.*, r.name as reward_name, u.display_name as user_name, u.photo_url as user_photo 
+       FROM reward_redemptions rr 
+       JOIN rewards r ON rr.reward_id = r.id 
+       JOIN users u ON rr.user_id = u.id 
+       WHERE r.created_by = $1 AND rr.status = 'completed'
+       ORDER BY rr.updated_at DESC`,
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching redemption history:', error);
     res.status(500).json({ error: 'Terjadi kesalahan internal' });
   }
 });
