@@ -431,7 +431,7 @@ export default function AccountSettingScreen() {
               <Text style={dynamicStyles.label}>{t('account.email', { defaultValue: 'Email' })}</Text>
               <TextInput style={dynamicStyles.input} value={email} onChangeText={setEmail} keyboardType="email-address" placeholder="email@contoh.com" placeholderTextColor={colors.textMuted} autoCapitalize="none" />
             </View>
-            <Button title={t('account.save_email', { defaultValue: 'Simpan Email' })} onPress={handleUpdateEmail} loading={loadingEmail} style={{ marginTop: Spacing.sm, backgroundColor: Colors.purple }} />
+            <Button title={t('account.save_email', { defaultValue: 'Simpan Email' })} onPress={handleUpdateEmail} loading={loadingEmail} style={{ marginTop: Spacing.sm }} />
           </View>
 
           {/* Security / Password Section */}
@@ -450,7 +450,7 @@ export default function AccountSettingScreen() {
               <Text style={dynamicStyles.label}>{t('account.new_password', { defaultValue: 'Password Baru' })}</Text>
               <TextInput style={dynamicStyles.input} value={newPassword} onChangeText={setNewPassword} secureTextEntry={!showPassword} placeholder={t('account.new_password')} placeholderTextColor={colors.textMuted} />
             </View>
-            <Button title={t('account.change_password', { defaultValue: 'Ubah Password' })} onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm, backgroundColor: Colors.info }} />
+            <Button title={t('account.change_password', { defaultValue: 'Ubah Password' })} onPress={handleChangePassword} loading={loadingPassword} style={{ marginTop: Spacing.sm }} />
           </View>
 
           </View>
