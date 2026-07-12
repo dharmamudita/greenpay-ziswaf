@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Dimensions, RefreshControl } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +24,7 @@ export default function ZiswafScreen() {
   const [loading, setLoading] = useState(true);
   const [donating, setDonating] = useState(null);
   const [forecasting, setForecasting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   
   // States for Zakat Calculator
   const [income, setIncome] = useState('');
@@ -40,8 +42,16 @@ export default function ZiswafScreen() {
     { id: 'kalkulator', label: t('ziswaf.tab_kalkulator'), icon: 'calculator', color: Colors.purple },
   ];
 
-  useEffect(() => {
-    fetchPrograms();
+  useFocusEffect(
+    useCallback(() => {
+      fetchPrograms();
+    }, [])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchPrograms();
+    setRefreshing(false);
   }, []);
 
   const fetchPrograms = async () => {
@@ -127,7 +137,11 @@ export default function ZiswafScreen() {
   const currentPrograms = programs.filter(p => p.category === activeTab);
 
   return (
-    <ScrollView style={dynamicStyles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={dynamicStyles.screen} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+    >
       
       {/* Header Section */}
       <View style={dynamicStyles.headerContainer}>
