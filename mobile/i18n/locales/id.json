@@ -119,7 +119,11 @@
     "home": "Beranda",
     "ziswaf": "Ziswaf",
     "market": "Pasar",
-    "profile": "Profil"
+    "profile": "Profil",
+    "sampah": "Sampah",
+    "transparan": "Transparan",
+    "dampak": "Dampak",
+    "paspor": "Paspor"
   },
   "profile": {
     "impact_passport": "Paspor Dampak",
@@ -306,6 +310,12 @@
     "empty_desc": "Ayo mulai selamatkan bumi dan kumpulkan Green Point pertamamu.",
     "today": "Hari ini",
     "yesterday": "Kemarin",
+    "history_tab": "Riwayat Poin",
+    "voucher_tab": "Voucher Saya",
+    "voucher_code": "KODE VOUCHER",
+    "claimed": "SUDAH DIKLAIM",
+    "active": "AKTIF",
+    "empty_voucher": "Anda belum menukarkan voucher apapun.",
     "title_highlight": "Point"
   },
   "marketplace": {

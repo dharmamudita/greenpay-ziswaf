@@ -193,7 +193,7 @@ export default function AdminZiswafScreen() {
                   }}
                 >
                   <Ionicons name="add-circle" size={16} color={Colors.white} style={{ marginRight: 4 }} />
-                  <Text style={dynamicStyles.manualBtnText}>Tunai</Text>
+                  <Text style={dynamicStyles.manualBtnText}>{t('admin.cash', {defaultValue: 'Tunai'})}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -204,7 +204,7 @@ export default function AdminZiswafScreen() {
                   }}
                 >
                   <Ionicons name="paper-plane" size={16} color={Colors.white} style={{ marginRight: 4 }} />
-                  <Text style={dynamicStyles.manualBtnText}>Salurkan</Text>
+                  <Text style={dynamicStyles.manualBtnText}>{t('admin.distribute', {defaultValue: 'Salurkan'})}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -217,20 +217,20 @@ export default function AdminZiswafScreen() {
         <View style={dynamicStyles.modalOverlay}>
           <View style={dynamicStyles.modalContent}>
             <View style={dynamicStyles.modalHeader}>
-              <Text style={dynamicStyles.modalTitle}>Tambah Dana Tunai</Text>
+              <Text style={dynamicStyles.modalTitle}>{t('admin.add_cash', {defaultValue: 'Tambah Dana Tunai'})}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Ionicons name="close-circle" size={28} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
             
             {selectedProgram && (
-              <Text style={dynamicStyles.selectedProgText}>Program: {selectedProgram.title}</Text>
+              <Text style={dynamicStyles.selectedProgText}>{t('admin.program_label', {defaultValue: 'Program:'})} {selectedProgram.title}</Text>
             )}
 
-            <Text style={dynamicStyles.inputLabel}>Nominal (Rp)</Text>
+            <Text style={dynamicStyles.inputLabel}>{t('admin.amount_label', {defaultValue: 'Nominal (Rp)'})}</Text>
             <TextInput
               style={dynamicStyles.input}
-              placeholder="Contoh: 50000"
+              placeholder={t('admin.amount_placeholder', {defaultValue: 'Contoh: 50000'})}
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
               value={manualAmount}
@@ -242,7 +242,7 @@ export default function AdminZiswafScreen() {
               onPress={handleAddManual}
               disabled={adding}
             >
-              {adding ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>Simpan Dana</Text>}
+              {adding ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>{t('admin.save_funds', {defaultValue: 'Simpan Dana'})}</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -253,26 +253,26 @@ export default function AdminZiswafScreen() {
         <View style={dynamicStyles.modalOverlay}>
           <View style={dynamicStyles.modalContent}>
             <View style={dynamicStyles.modalHeader}>
-              <Text style={dynamicStyles.modalTitle}>Buat Program ZISWAF</Text>
+              <Text style={dynamicStyles.modalTitle}>{t('admin.create_ziswaf_title', {defaultValue: 'Buat Program ZISWAF'})}</Text>
               <TouchableOpacity onPress={() => setCreateModalVisible(false)}>
                 <Ionicons name="close-circle" size={28} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 400 }}>
-              <Text style={dynamicStyles.inputLabel}>Judul Program</Text>
+              <Text style={dynamicStyles.inputLabel}>{t('admin.prog_title', {defaultValue: 'Judul Program'})}</Text>
               <TextInput
                 style={[dynamicStyles.input, { marginBottom: Spacing.md, fontSize: 14 }]}
-                placeholder="Contoh: Bantuan Banjir Demak"
+                placeholder={t('admin.prog_title_ph', {defaultValue: 'Contoh: Bantuan Banjir Demak'})}
                 placeholderTextColor={colors.textMuted}
                 value={newProgram.title}
                 onChangeText={v => setNewProgram({...newProgram, title: v})}
               />
 
-              <Text style={dynamicStyles.inputLabel}>Deskripsi</Text>
+              <Text style={dynamicStyles.inputLabel}>{t('admin.prog_desc', {defaultValue: 'Deskripsi'})}</Text>
               <TextInput
                 style={[dynamicStyles.input, { marginBottom: Spacing.md, fontSize: 14, minHeight: 80 }]}
-                placeholder="Jelaskan tujuan program ini..."
+                placeholder={t('admin.prog_desc_ph', {defaultValue: 'Jelaskan tujuan program ini...'})}
                 placeholderTextColor={colors.textMuted}
                 multiline
                 textAlignVertical="top"
@@ -280,7 +280,7 @@ export default function AdminZiswafScreen() {
                 onChangeText={v => setNewProgram({...newProgram, description: v})}
               />
 
-              <Text style={dynamicStyles.inputLabel}>Kategori</Text>
+              <Text style={dynamicStyles.inputLabel}>{t('admin.prog_category', {defaultValue: 'Kategori'})}</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: Spacing.md }}>
                 {['zakat', 'infak', 'sedekah', 'wakaf'].map(cat => (
                   <TouchableOpacity
@@ -299,10 +299,10 @@ export default function AdminZiswafScreen() {
                 ))}
               </View>
 
-              <Text style={dynamicStyles.inputLabel}>Target Dana (Rp)</Text>
+              <Text style={dynamicStyles.inputLabel}>{t('admin.prog_target', {defaultValue: 'Target Dana (Rp)'})}</Text>
               <TextInput
                 style={[dynamicStyles.input, { marginBottom: Spacing.xl, fontSize: 14 }]}
-                placeholder="Contoh: 10000000"
+                placeholder={t('admin.prog_target_ph', {defaultValue: 'Contoh: 10000000'})}
                 placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
                 value={newProgram.target_amount}
@@ -315,7 +315,7 @@ export default function AdminZiswafScreen() {
               onPress={handleCreateProgram}
               disabled={creating}
             >
-              {creating ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>Buat Program</Text>}
+              {creating ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>{t('admin.create_btn', {defaultValue: 'Buat Program'})}</Text>}
             </TouchableOpacity>
           </View>
         </View>

@@ -258,25 +258,25 @@ export default function MarketplaceScreen() {
               style={{ alignSelf: 'center', marginBottom: 16 }} 
             />
             <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
-              {confirmModal.product.type === 'reward' ? 'Konfirmasi Tukar Poin' : 'Konfirmasi Pembelian'}
+              {confirmModal.product.type === 'reward' ? t('marketplace.confirm_reward', {defaultValue: 'Konfirmasi Tukar Poin'}) : t('marketplace.confirm_purchase', {defaultValue: 'Konfirmasi Pembelian'})}
             </Text>
             <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
               {confirmModal.product.type === 'reward' 
-                ? `Apakah Anda yakin ingin menukar poin dengan ${confirmModal.product.name}?` 
-                : `Apakah Anda yakin ingin membeli ${confirmModal.product.name}?`}
+                ? t('marketplace.confirm_reward_msg', {defaultValue: 'Apakah Anda yakin ingin menukar poin dengan {{name}}?', name: confirmModal.product.name}) 
+                : t('marketplace.confirm_purchase_msg', {defaultValue: 'Apakah Anda yakin ingin membeli {{name}}?', name: confirmModal.product.name})}
             </Text>
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <TouchableOpacity 
                 style={{ flex: 1, padding: 12, borderRadius: 12, backgroundColor: isDark ? colors.surface2 : Colors.gray[100], alignItems: 'center' }}
                 onPress={() => setConfirmModal({ visible: false, product: null })}
               >
-                <Text style={{ fontWeight: '600', color: colors.text }}>Batal</Text>
+                <Text style={{ fontWeight: '600', color: colors.text }}>{t('marketplace.cancel', {defaultValue: 'Batal'})}</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={{ flex: 1, padding: 12, borderRadius: 12, backgroundColor: confirmModal.product.type === 'reward' ? Colors.gold[500] : Colors.green[500], alignItems: 'center' }}
                 onPress={executePurchase}
               >
-                <Text style={{ fontWeight: '700', color: Colors.white }}>Ya, Lanjutkan</Text>
+                <Text style={{ fontWeight: '700', color: Colors.white }}>{t('marketplace.yes_continue', {defaultValue: 'Ya, Lanjutkan'})}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -299,7 +299,7 @@ export default function MarketplaceScreen() {
             
             {successModal.code && (
               <View style={{ backgroundColor: isDark ? colors.surface2 : Colors.gray[100], padding: 16, borderRadius: 12, width: '100%', alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: isDark ? colors.border : Colors.gray[200], borderStyle: 'dashed' }}>
-                <Text style={{ fontSize: 12, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>Kode Voucher</Text>
+                <Text style={{ fontSize: 12, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>{t('marketplace.voucher_code', {defaultValue: 'Kode Voucher'})}</Text>
                 <Text style={{ fontSize: 24, fontWeight: '900', color: Colors.gold[500], letterSpacing: 4 }}>
                   {successModal.code}
                 </Text>
@@ -310,7 +310,7 @@ export default function MarketplaceScreen() {
               style={{ padding: 14, borderRadius: 12, backgroundColor: Colors.green[500], alignItems: 'center', width: '100%' }}
               onPress={() => setSuccessModal({ visible: false, title: '', message: '', code: null })}
             >
-              <Text style={{ fontWeight: '700', color: Colors.white }}>Tutup</Text>
+              <Text style={{ fontWeight: '700', color: Colors.white }}>{t('marketplace.close', {defaultValue: 'Tutup'})}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -138,13 +138,13 @@ export default function GreenPointScreen() {
             style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'history' ? colors.surface : 'transparent', ...(activeTab === 'history' ? Shadows.sm : {}) }}
             onPress={() => setActiveTab('history')}
           >
-            <Text style={{ fontWeight: activeTab === 'history' ? '700' : '500', color: activeTab === 'history' ? colors.text : colors.textMuted }}>Riwayat Poin</Text>
+            <Text style={{ fontWeight: activeTab === 'history' ? '700' : '500', color: activeTab === 'history' ? colors.text : colors.textMuted }}>{t('green_point.history_tab', {defaultValue: 'Riwayat Poin'})}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: activeTab === 'vouchers' ? colors.surface : 'transparent', ...(activeTab === 'vouchers' ? Shadows.sm : {}) }}
             onPress={() => setActiveTab('vouchers')}
           >
-            <Text style={{ fontWeight: activeTab === 'vouchers' ? '700' : '500', color: activeTab === 'vouchers' ? colors.text : colors.textMuted }}>Voucher Saya</Text>
+            <Text style={{ fontWeight: activeTab === 'vouchers' ? '700' : '500', color: activeTab === 'vouchers' ? colors.text : colors.textMuted }}>{t('green_point.voucher_tab', {defaultValue: 'Voucher Saya'})}</Text>
           </TouchableOpacity>
         </View>
 
@@ -216,12 +216,12 @@ export default function GreenPointScreen() {
                   </View>
                   <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: v.status === 'completed' ? (isDark ? colors.surface2 : Colors.gray[50]) : (isDark ? '#2B2412' : '#FFFBEB') }}>
                     <View>
-                      <Text style={{ fontSize: 11, color: colors.textMuted, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>Kode Voucher</Text>
+                      <Text style={{ fontSize: 11, color: colors.textMuted, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('green_point.voucher_code', {defaultValue: 'Kode Voucher'})}</Text>
                       <Text style={{ fontSize: 18, fontWeight: '900', color: v.status === 'completed' ? colors.textMuted : Colors.gold[600], letterSpacing: 2 }}>{v.voucher_code}</Text>
                     </View>
                     <View style={{ backgroundColor: v.status === 'completed' ? Colors.gray[300] : Colors.gold[500], paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 }}>
                       <Text style={{ color: v.status === 'completed' ? Colors.gray[600] : Colors.white, fontSize: 12, fontWeight: '700' }}>
-                        {v.status === 'completed' ? 'SUDAH DIKLAIM' : 'AKTIF'}
+                        {v.status === 'completed' ? t('green_point.claimed', {defaultValue: 'SUDAH DIKLAIM'}) : t('green_point.active', {defaultValue: 'AKTIF'})}
                       </Text>
                     </View>
                   </View>
@@ -230,7 +230,7 @@ export default function GreenPointScreen() {
             ) : (
               <View style={dynamicStyles.emptyState}>
                 <Ionicons name="ticket-outline" size={64} color={Colors.gray[300]} />
-                <Text style={dynamicStyles.emptyText}>Anda belum menukarkan voucher apapun.</Text>
+                <Text style={dynamicStyles.emptyText}>{t('green_point.empty_voucher', {defaultValue: 'Anda belum menukarkan voucher apapun.'})}</Text>
               </View>
             )}
           </View>
