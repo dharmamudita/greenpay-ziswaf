@@ -75,7 +75,23 @@ export default function TokoRewardManagerScreen() {
     }
   };
 
+  const executeDelete = async (id) => {
+    try {
+      await api.delete(`/distrik/toko/rewards/${id}`);
+      setRewards(rewards.filter(r => r.id !== id));
+    } catch (error) {
+      Alert.alert('Error', 'Gagal menghapus reward.');
+    }
+  };
+
   const handleDelete = (id) => {
+    if (Platform.OS === 'web') {
+      if (window.confirm('Apakah Anda yakin ingin menghapus reward ini secara permanen?')) {
+        executeDelete(id);
+      }
+      return;
+    }
+    
     Alert.alert(
       'Hapus Reward',
       'Apakah Anda yakin ingin menghapus reward ini secara permanen?',
@@ -84,14 +100,7 @@ export default function TokoRewardManagerScreen() {
         { 
           text: 'Hapus', 
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/distrik/toko/rewards/${id}`);
-              setRewards(rewards.filter(r => r.id !== id));
-            } catch (error) {
-              Alert.alert('Error', 'Gagal menghapus reward.');
-            }
-          }
+          onPress: () => executeDelete(id)
         }
       ]
     );
