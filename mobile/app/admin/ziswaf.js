@@ -328,31 +328,31 @@ export default function AdminZiswafScreen() {
         <View style={dynamicStyles.modalOverlay}>
           <View style={dynamicStyles.modalContent}>
             <View style={dynamicStyles.modalHeader}>
-              <Text style={dynamicStyles.modalTitle}>Input Penyaluran</Text>
+              <Text style={dynamicStyles.modalTitle}>{t('admin.input_distribute', {defaultValue: 'Input Penyaluran'})}</Text>
               <TouchableOpacity onPress={() => setDistributeModalVisible(false)}>
                 <Ionicons name="close-circle" size={28} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
             
             {selectedProgram && (
-              <Text style={dynamicStyles.selectedProgText}>Program: {selectedProgram.title}</Text>
+              <Text style={dynamicStyles.selectedProgText}>{t('admin.program_label', {defaultValue: 'Program:'})} {selectedProgram.title}</Text>
             )}
 
             <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 350 }}>
-              <Text style={dynamicStyles.inputLabel}>Nominal Disalurkan (Rp)</Text>
+              <Text style={dynamicStyles.inputLabel}>{t('admin.distribute_amount', {defaultValue: 'Nominal Disalurkan (Rp)'})}</Text>
               <TextInput
                 style={[dynamicStyles.input, { marginBottom: Spacing.md, fontSize: 14 }]}
-                placeholder="Contoh: 5000000"
+                placeholder={t('admin.distribute_amount_ph', {defaultValue: 'Contoh: 5000000'})}
                 placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
                 value={distributeData.amount}
                 onChangeText={v => setDistributeData({...distributeData, amount: v})}
               />
 
-              <Text style={dynamicStyles.inputLabel}>Deskripsi Penyaluran</Text>
+              <Text style={dynamicStyles.inputLabel}>{t('admin.distribute_desc', {defaultValue: 'Deskripsi Penyaluran'})}</Text>
               <TextInput
                 style={[dynamicStyles.input, { marginBottom: Spacing.xl, fontSize: 14, minHeight: 80 }]}
-                placeholder="Misal: Penyerahan bantuan sembako kepada 50 KK di desa X."
+                placeholder={t('admin.distribute_desc_ph', {defaultValue: 'Misal: Penyerahan bantuan sembako kepada 50 KK di desa X.'})}
                 placeholderTextColor={colors.textMuted}
                 multiline
                 textAlignVertical="top"
@@ -366,7 +366,7 @@ export default function AdminZiswafScreen() {
               onPress={handleDistribute}
               disabled={distributing}
             >
-              {distributing ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>Publikasikan Penyaluran</Text>}
+              {distributing ? <ActivityIndicator color={Colors.white} /> : <Text style={dynamicStyles.submitBtnText}>{t('admin.publish_distribute', {defaultValue: 'Publikasikan Penyaluran'})}</Text>}
             </TouchableOpacity>
           </View>
         </View>

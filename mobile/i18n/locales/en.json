@@ -204,6 +204,8 @@
     "distribute_amount": "Distributed Amount (Rp)",
     "distribute_amount_ph": "Example: 5000000",
     "distribute_desc": "Distribution Description",
+    "distribute_desc_ph": "Example: Delivery of basic food assistance to 50 families in village X.",
+    "publish_distribute": "Publish Distribution",
     "verify_success": "Request successfully processed.",
     "unknown_error": "Unknown error",
     "verify_failed": "Failed to process verification.",
