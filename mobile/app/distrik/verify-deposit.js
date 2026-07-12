@@ -8,7 +8,6 @@ import Colors from '../../theme/colors';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Spacing, BorderRadius, Shadows } from '../../theme/spacing';
-import moment from 'moment';
 
 export default function VerifyDepositScreen() {
   const { t } = useTranslation();
@@ -134,7 +133,7 @@ export default function VerifyDepositScreen() {
                     </View>
                     <View style={{ marginLeft: Spacing.sm }}>
                       <Text style={dynamicStyles.userName}>{item.user_name}</Text>
-                      <Text style={dynamicStyles.dateText}>{moment(item.created_at).format('DD MMM YYYY, HH:mm')}</Text>
+                      <Text style={dynamicStyles.dateText}>{new Date(item.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
                     </View>
                   </View>
                   <View style={dynamicStyles.badgePending}>
