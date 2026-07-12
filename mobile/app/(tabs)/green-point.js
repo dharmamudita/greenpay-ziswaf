@@ -113,7 +113,6 @@ export default function GreenPointScreen() {
               </View>
               <Text style={dynamicStyles.balanceLabel}>{t('green_point.balance')}</Text>
             </View>
-            <Ionicons name="ellipsis-horizontal" size={20} color="rgba(255,255,255,0.6)" />
           </View>
           
           <View style={dynamicStyles.balanceCenter}>
