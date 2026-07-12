@@ -216,7 +216,7 @@ export default function LoginScreen() {
                   <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={dynamicStyles.inputIcon} />
                   <TextInput
                     style={[dynamicStyles.input, { flex: 1 }]}
-                    placeholder="Masukkan password Anda"
+                    placeholder="Masukkan password"
                     placeholderTextColor={colors.textMuted}
                     value={password}
                     onChangeText={setPassword}
