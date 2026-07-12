@@ -126,11 +126,12 @@ export default function MarketplaceScreen() {
   const fmt = (n) => formatCurrency(n, i18n.language);
 
   return (
-    <ScrollView 
-      style={dynamicStyles.screen} 
-      showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
-    >
+    <View style={dynamicStyles.screen}>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.green[500]} />}
+      >
       <View style={dynamicStyles.container}>
         
         {/* Header Section */}
@@ -244,6 +245,8 @@ export default function MarketplaceScreen() {
       </View>
       <View style={{ height: Spacing['3xl'] }} />
 
+      </ScrollView>
+
       {/* Confirmation Modal */}
       {confirmModal.visible && confirmModal.product && (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }]}>
@@ -313,7 +316,7 @@ export default function MarketplaceScreen() {
         </View>
       )}
 
-    </ScrollView>
+    </View>
   );
 }
 
