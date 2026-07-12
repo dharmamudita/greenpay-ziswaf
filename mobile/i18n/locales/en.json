@@ -184,6 +184,8 @@
     "notif_msg_label": "Message Content",
     "notif_msg_placeholder": "Example: The app will be updated tonight...",
     "send_broadcast": "Send Broadcast",
+    "send_now": "Send Now",
+    "menu_notif_desc": "Send broadcast or personal announcements to users.",
     "cash": "Cash",
     "distribute": "Distribute",
     "add_cash": "Add Cash Fund",
