@@ -329,7 +329,7 @@ router.get('/history', authenticateToken, requireRole('distrik'), async (req, re
 router.get('/toko/rewards', authenticateToken, requireRole('distrik'), async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM rewards WHERE created_by = $1 ORDER BY created_at DESC",
+      "SELECT * FROM rewards WHERE created_by = $1 AND is_active = true ORDER BY created_at DESC",
       [req.user.id]
     );
     res.json(result.rows);
@@ -395,7 +395,7 @@ router.delete('/toko/rewards/:id', authenticateToken, requireRole('distrik'), as
 
   try {
     const result = await pool.query(
-      "DELETE FROM rewards WHERE id = $1 AND created_by = $2 RETURNING id",
+      "UPDATE rewards SET is_active = false WHERE id = $1 AND created_by = $2 RETURNING id",
       [id, req.user.id]
     );
 
