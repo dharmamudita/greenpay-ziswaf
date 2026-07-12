@@ -61,7 +61,7 @@ export default function DistrikDashboardScreen() {
       id: 'tinjau',
       title: 'Tinjau Setoran',
       icon: 'scan',
-      route: '/admin/distrik',
+      route: '/distrik/verify-deposit',
       color: Colors.green[500],
       bg: isDark ? 'rgba(16, 185, 129, 0.15)' : Colors.green[50],
       badge: dashboardData.pendingCount > 0 ? dashboardData.pendingCount.toString() : null
@@ -208,7 +208,7 @@ export default function DistrikDashboardScreen() {
                   <Text style={dynamicStyles.depositUser}>{item.user_name}</Text>
                   <Text style={dynamicStyles.depositDetail}>{item.waste_type} • {parseFloat(item.weight_kg)} Kg</Text>
                 </View>
-                <TouchableOpacity style={dynamicStyles.verifyBtn} onPress={() => router.push('/admin/distrik')}>
+                <TouchableOpacity style={dynamicStyles.verifyBtn} onPress={() => router.push('/distrik/verify-deposit')}>
                   <Text style={dynamicStyles.verifyBtnText}>{t('distrik.review', {defaultValue: 'Tinjau'})}</Text>
                 </TouchableOpacity>
               </View>
