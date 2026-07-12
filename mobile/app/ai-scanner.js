@@ -93,15 +93,6 @@ export default function AiScannerScreen() {
 
   return (
     <ScrollView style={dynamicStyles.screen} contentContainerStyle={dynamicStyles.container}>
-      <View style={dynamicStyles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <View style={dynamicStyles.headerCenter}>
-          <Text style={dynamicStyles.title}>{t('ai_scanner.title')}</Text>
-        </View>
-        <View style={{ width: 24 }} />
-      </View>
 
       <Text style={dynamicStyles.subtitle}>
         {t('ai_scanner.subtitle')}<Text style={{ color: Colors.green[500], fontWeight: 'bold' }}>{t('ai_scanner.subtitle_highlight')}</Text>{t('ai_scanner.subtitle2')}
