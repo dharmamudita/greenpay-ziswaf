@@ -60,31 +60,34 @@ export default function VerifyDistrikScreen() {
     const executeVerify = async () => {
       try {
         await api.put(`/distrik/admin/requests/${id}`, { status });
+        const successMsg = t('admin.verify_success', {defaultValue: `Pengajuan berhasil di-${status}.`});
         if (Platform.OS === 'web') {
-          window.alert(`Pengajuan berhasil di-${status}.`);
+          window.alert(successMsg);
         } else {
-          Alert.alert('Sukses', `Pengajuan berhasil di-${status}.`);
+          Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), successMsg);
         }
         fetchData();
       } catch (error) {
         console.log('Error Verify:', error.response?.data || error.message);
-        const errMsg = error.response?.data?.error || error.message || 'Unknown error';
+        const errMsg = error.response?.data?.error || error.message || t('admin.unknown_error', {defaultValue: 'Unknown error'});
         if (Platform.OS === 'web') {
-          window.alert(`Gagal memproses verifikasi: ${errMsg}`);
+          window.alert(t('admin.verify_failed', {defaultValue: `Gagal memproses verifikasi: ${errMsg}`}));
         } else {
-          Alert.alert('Error', `Gagal memproses verifikasi: ${errMsg}`);
+          Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.verify_failed', {defaultValue: `Gagal memproses verifikasi: ${errMsg}`}));
         }
       }
     };
 
+    const confirmMsg = t('admin.confirm_verify_msg', {defaultValue: `Apakah Anda yakin ingin ${actionText} pengajuan ini?`});
+
     if (Platform.OS === 'web') {
-      if (window.confirm(`Apakah Anda yakin ingin ${actionText} pengajuan ini?`)) {
+      if (window.confirm(confirmMsg)) {
         executeVerify();
       }
     } else {
       Alert.alert(
-        'Konfirmasi',
-        `Apakah Anda yakin ingin ${actionText} pengajuan ini?`,
+        t('admin.confirm', {defaultValue: 'Konfirmasi'}),
+        confirmMsg,
         [
           { text: 'Batal', style: 'cancel' },
           { 

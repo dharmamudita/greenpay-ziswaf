@@ -53,30 +53,34 @@ export default function VerifyDepositScreen() {
     const executeVerify = async () => {
       try {
         await api.put(`/waste/verify/${id}`, { status });
+        const successMsg = t('distrik.verify_success', {defaultValue: `Setoran berhasil di-${status === 'verified' ? 'verifikasi' : 'tolak'}.`});
         if (Platform.OS === 'web') {
-          window.alert(`Setoran berhasil di-${status === 'verified' ? 'verifikasi' : 'tolak'}.`);
+          window.alert(successMsg);
         } else {
-          Alert.alert('Sukses', `Setoran berhasil di-${status === 'verified' ? 'verifikasi' : 'tolak'}.`);
+          Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), successMsg);
         }
         fetchData();
       } catch (error) {
         console.log('Error Verify Deposit:', error.response?.data || error.message);
+        const errMsg = error.response?.data?.error || t('distrik.process_failed', {defaultValue: 'Gagal memproses setoran.'});
         if (Platform.OS === 'web') {
-          window.alert(error.response?.data?.error || 'Gagal memproses setoran.');
+          window.alert(errMsg);
         } else {
-          Alert.alert('Error', error.response?.data?.error || 'Gagal memproses setoran.');
+          Alert.alert(t('admin.error', {defaultValue: 'Error'}), errMsg);
         }
       }
     };
 
+    const confirmMsg = t('distrik.confirm_verify_msg', {defaultValue: `Apakah Anda yakin ingin ${actionText} setoran sampah ini?`});
+
     if (Platform.OS === 'web') {
-      if (window.confirm(`Apakah Anda yakin ingin ${actionText} setoran sampah ini?`)) {
+      if (window.confirm(confirmMsg)) {
         executeVerify();
       }
     } else {
       Alert.alert(
-        'Konfirmasi',
-        `Apakah Anda yakin ingin ${actionText} setoran sampah ini?`,
+        t('admin.confirm', {defaultValue: 'Konfirmasi'}),
+        confirmMsg,
         [
           { text: 'Batal', style: 'cancel' },
           { 

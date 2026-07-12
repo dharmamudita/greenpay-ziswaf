@@ -83,8 +83,8 @@ export default function AdminZiswafScreen() {
   };
 
   const handleDistribute = async () => {
-    if (!distributeData.amount || isNaN(distributeData.amount) || !distributeData.description) {
-      return Alert.alert('Error', 'Nominal valid dan deskripsi wajib diisi.');
+    if (!distributeData.amount || isNaN(distributeData.amount) || Number(distributeData.amount) <= 0 || !distributeData.description) {
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.invalid_amount_desc', {defaultValue: 'Nominal valid dan deskripsi wajib diisi.'}));
     }
     
     setDistributing(true);
@@ -94,11 +94,13 @@ export default function AdminZiswafScreen() {
         amount: parseInt(distributeData.amount),
         description: distributeData.description
       });
-      Alert.alert('Sukses', 'Bukti penyaluran berhasil disimpan dan dipublikasikan.');
+      fetchZiswaf();
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('admin.success_distribute', {defaultValue: 'Bukti penyaluran berhasil disimpan dan dipublikasikan.'}));
       setDistributeModalVisible(false);
       setDistributeData({ amount: '', description: '' });
     } catch (error) {
-      Alert.alert('Error', 'Gagal menyimpan bukti penyaluran.');
+      console.log('Error distributing:', error);
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.error_distribute', {defaultValue: 'Gagal menyimpan bukti penyaluran.'}));
     } finally {
       setDistributing(false);
     }
@@ -106,7 +108,7 @@ export default function AdminZiswafScreen() {
 
   const handleCreateProgram = async () => {
     if (!newProgram.title || !newProgram.target_amount) {
-      return Alert.alert('Error', 'Judul dan target dana wajib diisi.');
+      return Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.error_title_target', {defaultValue: 'Judul dan target dana wajib diisi.'}));
     }
     
     setCreating(true);
@@ -118,13 +120,13 @@ export default function AdminZiswafScreen() {
         target_amount: parseInt(newProgram.target_amount),
         image_url: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=500&q=80' // default img
       });
-      Alert.alert('Sukses', 'Program ZISWAF baru berhasil dibuat!');
+      fetchZiswaf();
+      Alert.alert(t('admin.success', {defaultValue: 'Sukses'}), t('admin.success_create', {defaultValue: 'Program ZISWAF baru berhasil dibuat!'}));
       setCreateModalVisible(false);
       setNewProgram({ title: '', description: '', category: 'zakat', target_amount: '' });
-      fetchZiswaf();
     } catch (error) {
       console.log('Error creating program:', error);
-      Alert.alert('Error', 'Gagal membuat program baru.');
+      Alert.alert(t('admin.error', {defaultValue: 'Error'}), t('admin.error_create', {defaultValue: 'Gagal membuat program baru.'}));
     } finally {
       setCreating(false);
     }
