@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../theme/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -9,6 +10,7 @@ export default function TabLayout() {
   const { isDistrik, isAdmin } = useAuth();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   
   return (
     <Tabs
@@ -21,8 +23,8 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + Math.max(insets.bottom, 0),
+          paddingBottom: 8 + Math.max(insets.bottom, 0),
           paddingTop: 4,
         },
         tabBarActiveTintColor: Colors.green[500],
