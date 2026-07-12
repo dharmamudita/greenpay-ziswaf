@@ -1,29 +1,28 @@
 const express = require('express');
 const router = express.Router();
 
-const AI_MODELS = ['gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-2.0-flash'];
+const axios = require('axios');
+const AI_MODELS = ['gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
 // Helper: panggil Gemini REST API langsung (lebih cepat dari SDK)
 async function callGeminiAPI(apiKey, modelName, requestBody) {
   const url = `${API_BASE}/models/${modelName}:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody),
-  });
+  
+  try {
+    const response = await axios.post(url, requestBody, {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 15000 // 15 seconds timeout
+    });
 
-  if (!response.ok) {
-    const errData = await response.json().catch(() => ({}));
-    const errMsg = errData.error?.message || `HTTP ${response.status}`;
-    throw new Error(`[${response.status}] ${errMsg}`);
+    const data = response.data;
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const textParts = parts.filter(p => p.text && !p.thought);
+    return textParts.map(p => p.text).join('').trim();
+  } catch (error) {
+    const errMsg = error.response?.data?.error?.message || error.message || `HTTP Error`;
+    throw new Error(`[Axios] ${errMsg}`);
   }
-
-  const data = await response.json();
-  // Ambil text dari response, skip thinking parts
-  const parts = data.candidates?.[0]?.content?.parts || [];
-  const textParts = parts.filter(p => p.text && !p.thought);
-  return textParts.map(p => p.text).join('').trim();
 }
 
 // Helper: coba beberapa model dengan retry
